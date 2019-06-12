@@ -461,8 +461,14 @@ public class GuiContainerManager
         // Support for LWGJL 2.9.0 or later
         int k = Keyboard.getEventKey();
         char c = Keyboard.getEventCharacter();
-        if (Keyboard.getEventKeyState() || (k == 0 && Character.isDefined(c)))
-            keyTyped(c, k);
+        if (Keyboard.getEventKeyState() || (k == 0 && Character.isDefined(c))) {
+            try {
+                keyTyped(c, k);
+            } catch (java.lang.IndexOutOfBoundsException e) {
+                System.err.println("Caught out of bounds exception pressing " + c + " " + k);
+                e.printStackTrace();
+            }
+        }
 
         window.mc.func_152348_aa();
     }
