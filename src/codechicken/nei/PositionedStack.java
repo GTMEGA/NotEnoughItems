@@ -95,7 +95,7 @@ public class PositionedStack
         item = items[index].copy();
         if(item.getItem() == null)
             item = new ItemStack(Blocks.fire);
-        else if(item.getItemDamage() == OreDictionary.WILDCARD_VALUE)
+        else if(item.getItemDamage() == OreDictionary.WILDCARD_VALUE && item.getItem() != null && item.getItem().isRepairable())
             item.setItemDamage(0);
     }
 
