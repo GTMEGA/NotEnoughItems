@@ -43,7 +43,7 @@ dependencies {
     compile "codechicken:CodeChickenCore:${config.mc_version}-${config.ccc_version}:dev"
 }
 
-version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
+version =  "${project.config.mod_version}." + "gtnh"
 
 println  config.mc_version + "-" + config.forge_version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
