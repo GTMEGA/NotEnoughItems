@@ -22,9 +22,20 @@ import org.lwjgl.input.Keyboard;
 
 import java.text.MessageFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import static codechicken.nei.NEIClientConfig.*;
+import static codechicken.nei.NEIClientConfig.canCheatItem;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
+import static codechicken.nei.NEIClientConfig.getItemQuantity;
+import static codechicken.nei.NEIClientConfig.getStringArrSetting;
+import static codechicken.nei.NEIClientConfig.getStringSetting;
+import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
+import static codechicken.nei.NEIClientConfig.invCreativeMode;
+import static codechicken.nei.NEIClientConfig.world;
 
 public class NEIClientUtils extends NEIServerUtils
 {

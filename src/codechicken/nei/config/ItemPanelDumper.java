@@ -2,7 +2,7 @@ package codechicken.nei.config;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel;
+import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.guihook.GuiContainerManager;
 import net.minecraft.client.Minecraft;
@@ -36,7 +36,7 @@ public class ItemPanelDumper extends DataDumper
     @Override
     public Iterable<String[]> dump(int mode) {
         LinkedList<String[]> list = new LinkedList<String[]>();
-        for (ItemStack stack : ItemPanel.items)
+        for (ItemStack stack : ItemPanels.itemPanel.items)
             list.add(new String[]{
                     Item.itemRegistry.getNameForObject(stack.getItem()),
                     Integer.toString(Item.getIdFromItem(stack.getItem())),
@@ -123,7 +123,7 @@ public class ItemPanelDumper extends DataDumper
 
     public void dumpNBT(File file) throws IOException {
         NBTTagList list = new NBTTagList();
-        for (ItemStack stack : ItemPanel.items)
+        for (ItemStack stack : ItemPanels.itemPanel.items)
             list.appendTag(stack.writeToNBT(new NBTTagCompound()));
 
         NBTTagCompound tag = new NBTTagCompound();
@@ -134,7 +134,7 @@ public class ItemPanelDumper extends DataDumper
 
     public void dumpJson(File file) throws IOException {
         PrintWriter p = new PrintWriter(file);
-        for (ItemStack stack : ItemPanel.items) {
+        for (ItemStack stack : ItemPanels.itemPanel.items) {
             NBTTagCompound tag = stack.writeToNBT(new NBTTagCompound());
             tag.removeTag("Count");
             p.println(tag);

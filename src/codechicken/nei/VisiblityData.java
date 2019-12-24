@@ -3,11 +3,14 @@ package codechicken.nei;
 public class VisiblityData
 {
     public boolean showUtilityButtons = true;
-    public boolean showStateButtons = true;
     /**
      * Item panel and associated buttons
      */
     public boolean showItemPanel = true;
+    /**
+     * Bookmark panel and associated buttons
+     */
+    public boolean showBookmarkPanel = true;
     /**
      * Item and search section
      */
@@ -31,8 +34,8 @@ public class VisiblityData
         if(!showNEI)
             showWidgets = false;
         if(!showWidgets)
-            showItemSection = showUtilityButtons = showStateButtons = false;
+            showItemSection = showUtilityButtons = false;
         if(!showItemSection)
-            showSearchSection = showItemPanel = false;
+            showBookmarkPanel = showSearchSection = showItemPanel = false;
     }
 }

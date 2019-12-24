@@ -7,11 +7,11 @@ public class Image
     public int width;
     public int height;
 
-    public Image(int i, int j, int k, int l)
+    public Image(int x, int y, int w, int h)
     {
-        x = i;
-        y = j;
-        width = k;
-        height = l;
+        this.x = x;
+        this.y = y;
+        width = w;
+        height = h;
     }
 }

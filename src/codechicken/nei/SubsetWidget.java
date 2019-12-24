@@ -18,9 +18,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -58,7 +63,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
                 if(slot < sorted.size()) {
                     SubsetTag tag = sorted.get(slot);
                     if (NEIClientUtils.shiftKey())
-                        LayoutManager.searchField.setText("@" + tag.fullname);
+                        codechicken.nei.LayoutManager.searchField.setText("@" + tag.fullname);
                     else if (button == 0 && count >= 2)
                         SubsetWidget.showOnly(tag);
                     else
@@ -78,7 +83,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
                 Rectangle4i r = new Rectangle4i(x, y, w, getSlotHeight(slot));
                 if(slot < sorted.size()) {
                     SubsetTag tag = sorted.get(slot);
-                    LayoutManager.getLayoutStyle().drawSubsetTag(tag.displayName(), x, y, r.w, r.h, tag.state.state, r.contains(mx, my));
+                    codechicken.nei.LayoutManager.getLayoutStyle().drawSubsetTag(tag.displayName(), x, y, r.w, r.h, tag.state.state, r.contains(mx, my));
                 }
                 else {
                     ItemStack stack = state.items.get(slot-sorted.size());
@@ -87,7 +92,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
                     int itemx = w/2-8;
                     int itemy = 1;
 
-                    LayoutManager.getLayoutStyle().drawSubsetTag(null, x, y, r.w, r.h, hidden ? 0 : 2, false);
+                    codechicken.nei.LayoutManager.getLayoutStyle().drawSubsetTag(null, x, y, r.w, r.h, hidden ? 0 : 2, false);
 
                     GuiContainerManager.drawItem(x+itemx, y+itemy, stack);
                     if(new Rectangle4i(itemx, itemy, 16, 16).contains(mx, my))
@@ -696,13 +701,10 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     @Override
     public ItemFilter getFilter() {
-        return new ItemFilter()//synchronise access on hiddenItems
-        {
-            @Override
-            public boolean matches(ItemStack item) {
-                synchronized (hiddenItems) {
-                    return !hiddenItems.matches(item);
-                }
+        //synchronise access on hiddenItems
+        return item -> {
+            synchronized (hiddenItems) {
+                return !hiddenItems.matches(item);
             }
         };
     }

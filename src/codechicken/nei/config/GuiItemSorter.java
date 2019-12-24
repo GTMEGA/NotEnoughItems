@@ -1,13 +1,13 @@
 package codechicken.nei.config;
 
 import codechicken.lib.math.MathHelper;
-import codechicken.nei.*;
+import codechicken.nei.ItemSorter;
 import codechicken.nei.ItemSorter.SortEntry;
 import codechicken.nei.LayoutManager;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 

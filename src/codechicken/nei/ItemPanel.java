@@ -14,19 +14,23 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 
 import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
 
-public class ItemPanel extends Widget
-{
+public class ItemPanel extends Widget {
     /**
      * Should not be externally modified, use updateItemList
      */
-    public static ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+    public ArrayList<ItemStack> items = new ArrayList<ItemStack>();
     /**
      * Swapped into visible items on update
      */
-    private static ArrayList<ItemStack> _items = items;
+    protected ArrayList<ItemStack> _items = items;
 
-    public static void updateItemList(ArrayList<ItemStack> newItems) {
+    public ArrayList<ItemStack> getItems() {
+        return items;
+    }
+
+    public void updateItemList(ArrayList<ItemStack> newItems) {
         _items = newItems;
     }
 
@@ -44,6 +48,11 @@ public class ItemPanel extends Widget
     public ItemStack draggedStack;
     public int mouseDownSlot = -1;
 
+    public Button prev;
+    public Button next;
+    public Label pageLabel;
+
+
     private int marginLeft;
     private int marginTop;
     private int rows;
@@ -56,11 +65,112 @@ public class ItemPanel extends Widget
     private int page;
     private int numPages;
 
-    public void resize() {
-        items = _items;
 
-        marginLeft = x + (w % 18) / 2;
-        marginTop = y + (h % 18) / 2;
+
+    public void init() {
+        pageLabel = new Label("(0/0)", true);
+
+        prev = new Button("Prev")
+        {
+            public boolean onButtonPress(boolean rightclick) {
+                if (!rightclick) {
+                    scroll(-1);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String getRenderLabel() {
+                return "<";
+            }
+        };
+        next = new Button("Next")
+        {
+            public boolean onButtonPress(boolean rightclick) {
+                if (!rightclick) {
+                    scroll(1);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String getRenderLabel() {
+                return ">";
+            }
+        };
+    }
+
+    public int getMarginLeft() {
+        return x + (w % 18) / 2;
+    }
+
+    public int getMarginTop() {
+        return y + (h % 18) / 2;
+    }
+
+    public int getButtonTop() {
+        return 2;
+    }
+
+    public int getNextX(GuiContainer gui) {
+        return gui.width - prev.w - 2;
+    }
+
+    public int getPrevX(GuiContainer gui) {
+        return (gui.xSize + gui.width) / 2 + 2;
+    }
+
+    public int getPageX(GuiContainer gui) {
+        return gui.guiLeft * 3 / 2 + gui.xSize + 1;
+    }
+
+    public int getHeight(GuiContainer gui) {
+        return gui.height - 15 - y + getHightAdjustment();
+    }
+
+    public int getHightAdjustment() {
+        int hAdj = 0;
+        if (!canPerformAction("item"))
+            hAdj += 15;
+        return hAdj;
+    }
+
+    public int getWidth(GuiContainer gui) {
+        return LayoutManager.getSideWidth(gui) - x;
+    }
+
+    public String getLabelText() {
+        return pageLabel.text = "(" + getPage() + "/" + getNumPages() + ")";
+    }
+
+    public void resize(GuiContainer gui) {
+        items = _items;
+        final int buttonHeight = 16;
+        final int buttonWidth = 16;
+
+        prev.x = getPrevX(gui);
+        prev.y = getButtonTop();
+        prev.h = buttonHeight;
+        prev.w = buttonWidth;
+
+        next.x = getNextX(gui);
+        next.y = getButtonTop();
+        next.h = buttonHeight;
+        next.w = buttonWidth;
+
+        pageLabel.x = getPageX(gui);
+        pageLabel.y = prev.y + 5;
+        pageLabel.text = getLabelText();
+
+        y = prev.h + prev.y;
+        x = (gui.xSize + gui.width) / 2 + 3;
+        w = getWidth(gui);
+        h = getHeight(gui);
+
+        marginLeft = getMarginLeft();
+        marginTop = getMarginTop();
         columns = w / 18;
         rows = h / 18;
         //sometimes width and height can be negative with certain resizing
@@ -86,6 +196,12 @@ public class ItemPanel extends Widget
             page = firstIndex / itemsPerPage + 1;
     }
 
+    public void setVisible() {
+        LayoutManager.addWidget(prev);
+        LayoutManager.addWidget(next);
+        LayoutManager.addWidget(pageLabel);
+
+    }
     private void updateValidSlots() {
         GuiContainer gui = NEIClientUtils.getGuiContainer();
         validSlotMap = new boolean[rows * columns];
@@ -146,7 +262,7 @@ public class ItemPanel extends Widget
     @Override
     public void mouseDragged(int mousex, int mousey, int button, long heldTime) {
         if (mouseDownSlot >= 0 && draggedStack == null && NEIClientUtils.getHeldItem() == null &&
-                NEIClientConfig.hasSMPCounterPart() && !GuiInfo.hasCustomSlots(NEIClientUtils.getGuiContainer())) {
+            NEIClientConfig.hasSMPCounterPart() && !GuiInfo.hasCustomSlots(NEIClientUtils.getGuiContainer())) {
             ItemPanelSlot mouseOverSlot = getSlotMouseOver(mousex, mousey);
             ItemStack stack = new ItemPanelSlot(mouseDownSlot).item;
             if (stack != null && (mouseOverSlot == null || mouseOverSlot.slotIndex != mouseDownSlot || heldTime > 500)) {

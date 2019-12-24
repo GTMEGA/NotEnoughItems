@@ -85,7 +85,6 @@ nei.options.inventory.widgetsenabled.false=NEI désactivé
 nei.options.inventory.cheatmode.0=Mode recette
 nei.options.inventory.cheatmode.1=Mode utilitaire
 nei.options.inventory.cheatmode.2=Mode triche
-nei.options.inventory.layoutstyle=Mise en page
 nei.options.inventory.profileRecipes=Profil Recettes
 nei.options.inventory.profileRecipes.true=Vrai
 nei.options.inventory.profileRecipes.false=Faux
@@ -154,8 +153,8 @@ nei.options.tools.dump.itempanel.mode.0=CSV
 nei.options.tools.dump.itempanel.mode.1=NBT
 nei.options.tools.dump.itempanel.mode.2=Json
 
-nei.layoutstyle.minecraft=Minecraft
-nei.layoutstyle.oldtmi=Ancien TMI
+
+
 
 nei.recipe.page=Page %s/%s
 nei.recipe.shaped=Modèle de recette

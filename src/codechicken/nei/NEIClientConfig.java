@@ -1,19 +1,34 @@
 package codechicken.nei;
 
-import codechicken.core.*;
+import codechicken.core.CCUpdateChecker;
+import codechicken.core.ClassDiscoverer;
+import codechicken.core.ClientUtils;
+import codechicken.core.CommonUtils;
 import codechicken.lib.config.ConfigFile;
 import codechicken.lib.config.ConfigTag;
 import codechicken.lib.config.ConfigTagParent;
-import codechicken.nei.api.*;
-import codechicken.nei.config.*;
+import codechicken.nei.api.API;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.IConfigureNEI;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.api.NEIInfo;
+import codechicken.nei.config.ConfigSet;
+import codechicken.nei.config.GuiHighlightTips;
+import codechicken.nei.config.GuiNEIOptionList;
+import codechicken.nei.config.GuiOptionList;
+import codechicken.nei.config.OptionCycled;
+import codechicken.nei.config.OptionGamemodes;
+import codechicken.nei.config.OptionList;
+import codechicken.nei.config.OptionOpenGui;
+import codechicken.nei.config.OptionTextField;
+import codechicken.nei.config.OptionToggleButton;
+import codechicken.nei.config.OptionUtilities;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.SaveFormatComparator;
 import org.apache.logging.log4j.LogManager;
@@ -21,11 +36,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 public class NEIClientConfig
 {
@@ -38,9 +50,9 @@ public class NEIClientConfig
             new File("saves/NEI/client.dat"),
             new ConfigFile(new File(configDir, "client.cfg")));
     public static ConfigSet world;
+    public static File bookmarkFile = new File(configDir, "bookmarks.ini");
 
-    public static ItemStack creativeInv[];
-    private static boolean statesSaved[] = new boolean[7];
+    public static ItemStack[] creativeInv;
 
     public static boolean hasSMPCounterpart;
     public static HashSet<String> permissableActions = new HashSet<String>();
@@ -84,42 +96,6 @@ public class NEIClientConfig
         tag.getTag("inventory.gamemodes").setDefaultValue("creative, creative+, adventure");
         API.addOption(new OptionGamemodes("inventory.gamemodes"));
 
-        tag.getTag("inventory.layoutstyle").getIntValue(0);
-        API.addOption(new OptionCycled("inventory.layoutstyle", 0)
-        {
-            @Override
-            public String getPrefix() {
-                return translateN(name);
-            }
-
-            @Override
-            public String getButtonText() {
-                return NEIClientUtils.translate("layoutstyle." +
-                        LayoutManager.getLayoutStyle(renderTag().getIntValue()).getName());
-            }
-
-            @Override
-            public boolean cycle() {
-                LinkedList<Integer> list = new LinkedList<Integer>();
-                for (Entry<Integer, LayoutStyle> entry : LayoutManager.layoutStyles.entrySet())
-                    list.add(entry.getKey());
-
-                Collections.sort(list);
-
-                int nextLayout = renderTag().getIntValue();
-                if (nextLayout == list.getLast())//loop list
-                    nextLayout = -1;
-                for (Integer i : list) {
-                    if (i > nextLayout) {
-                        nextLayout = i;
-                        break;
-                    }
-                }
-
-                getTag().setIntValue(nextLayout);
-                return true;
-            }
-        });
 
         ItemSorter.initConfig(tag);
 
@@ -186,6 +162,7 @@ public class NEIClientConfig
         API.addKeyBind("gui.next", Keyboard.KEY_NEXT);
         API.addKeyBind("gui.hide", Keyboard.KEY_O);
         API.addKeyBind("gui.search", Keyboard.KEY_F);
+        API.addKeyBind("gui.bookmark", Keyboard.KEY_A);
         API.addKeyBind("world.chunkoverlay", Keyboard.KEY_F9);
         API.addKeyBind("world.moboverlay", Keyboard.KEY_F7);
         API.addKeyBind("world.highlight_tips", Keyboard.KEY_NUMPAD0);
@@ -252,23 +229,16 @@ public class NEIClientConfig
         if (configLoaded)
             return;
 
-        loadStates();
-        //ItemVisibilityHash.loadStates();
-        //vishash = new ItemVisibilityHash();
         ItemInfo.load(world);
         GuiInfo.load();
         RecipeInfo.load();
         LayoutManager.load();
+        ItemPanels.bookmarkPanel.loadBookmarks();
         NEIController.load();
 
         configLoaded = true;
 
-        ClassDiscoverer classDiscoverer = new ClassDiscoverer(new IStringMatcher()
-        {
-            public boolean matches(String test) {
-                return test.startsWith("NEI") && test.endsWith("Config.class");
-            }
-        }, IConfigureNEI.class);
+        ClassDiscoverer classDiscoverer = new ClassDiscoverer(test -> test.startsWith("NEI") && test.endsWith("Config.class"), IConfigureNEI.class);
 
         classDiscoverer.findClasses();
 
@@ -286,19 +256,10 @@ public class NEIClientConfig
         ItemSorter.loadConfig();
     }
 
-    public static void loadStates() {
-        for (int state = 0; state < 7; state++)
-            statesSaved[state] = !global.nbt.getCompoundTag("save" + state).hasNoTags();
-    }
-
     public static boolean isWorldSpecific(String setting) {
         if(world == null) return false;
         ConfigTag tag = world.config.getTag(setting, false);
         return tag != null && tag.value != null;
-    }
-
-    public static boolean isStateSaved(int i) {
-        return statesSaved[i];
     }
 
     public static ConfigTag getSetting(String s) {
@@ -390,79 +351,6 @@ public class NEIClientConfig
         return hasSMPCounterPart() || getSetting("command.item").getValue().contains("{3}");
     }
 
-    public static void clearState(int state) {
-        statesSaved[state] = false;
-        global.nbt.setTag("save" + state, new NBTTagCompound());
-        global.saveNBT();
-    }
-
-    public static void loadState(int state) {
-        if (!statesSaved[state])
-            return;
-
-        NBTTagCompound statesave = global.nbt.getCompoundTag("save" + state);
-        GuiContainer currentContainer = NEIClientUtils.getGuiContainer();
-        LinkedList<TaggedInventoryArea> saveAreas = new LinkedList<TaggedInventoryArea>();
-        saveAreas.add(new TaggedInventoryArea(NEIClientUtils.mc().thePlayer.inventory));
-
-        for (INEIGuiHandler handler : GuiInfo.guiHandlers) {
-            List<TaggedInventoryArea> areaList = handler.getInventoryAreas(currentContainer);
-            if (areaList != null)
-                saveAreas.addAll(areaList);
-        }
-
-        for (TaggedInventoryArea area : saveAreas) {
-            if (!statesave.hasKey(area.tagName))
-                continue;
-
-            for (int slot : area.slots) {
-                NEIClientUtils.setSlotContents(slot, null, area.isContainer());
-            }
-
-            NBTTagList areaTag = statesave.getTagList(area.tagName, 10);
-            for (int i = 0; i < areaTag.tagCount(); i++) {
-                NBTTagCompound stacksave = areaTag.getCompoundTagAt(i);
-                int slot = stacksave.getByte("Slot") & 0xFF;
-                if (!area.slots.contains(slot))
-                    continue;
-
-                NEIClientUtils.setSlotContents(slot, ItemStack.loadItemStackFromNBT(stacksave), area.isContainer());
-            }
-        }
-    }
-
-    public static void saveState(int state) {
-        NBTTagCompound statesave = global.nbt.getCompoundTag("save" + state);
-        GuiContainer currentContainer = NEIClientUtils.getGuiContainer();
-        LinkedList<TaggedInventoryArea> saveAreas = new LinkedList<TaggedInventoryArea>();
-        saveAreas.add(new TaggedInventoryArea(NEIClientUtils.mc().thePlayer.inventory));
-
-        for (INEIGuiHandler handler : GuiInfo.guiHandlers) {
-            List<TaggedInventoryArea> areaList = handler.getInventoryAreas(currentContainer);
-            if (areaList != null)
-                saveAreas.addAll(areaList);
-        }
-
-        for (TaggedInventoryArea area : saveAreas) {
-            NBTTagList areaTag = new NBTTagList();
-
-            for (int i : area.slots) {
-                ItemStack stack = area.getStackInSlot(i);
-                if (stack == null)
-                    continue;
-                NBTTagCompound stacksave = new NBTTagCompound();
-                stacksave.setByte("Slot", (byte) i);
-                stack.writeToNBT(stacksave);
-                areaTag.appendTag(stacksave);
-            }
-            statesave.setTag(area.tagName, areaTag);
-        }
-
-        global.nbt.setTag("save" + state, statesave);
-        global.saveNBT();
-        statesSaved[state] = true;
-    }
-
     public static boolean hasSMPCounterPart() {
         return hasSMPCounterpart;
     }
@@ -494,10 +382,7 @@ public class NEIClientConfig
             return false;
 
         String cmd = getStringSetting("command." + base);
-        if (cmd == null || !cmd.startsWith("/"))
-            return false;
-
-        return true;
+        return cmd != null && cmd.startsWith("/");
     }
 
     private static boolean modePermitsAction(String name) {

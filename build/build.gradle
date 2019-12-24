@@ -45,6 +45,11 @@ dependencies {
 
 version =  "${project.config.mod_version}"
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 println  config.mc_version + "-" + config.forge_version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
@@ -104,6 +109,10 @@ task devJar(type: Jar) {
 // Tell the artifact system about our extra jars
 artifacts {
     archives sourceJar, devJar
+}
+
+sourceSets {
+    main { output.resourcesDir = output.classesDir }
 }
 
 // Configure an upload task.

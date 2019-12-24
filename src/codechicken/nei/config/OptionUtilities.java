@@ -44,8 +44,10 @@ public class OptionUtilities extends OptionStringSet
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         ItemStack sword = new ItemStack(Items.diamond_sword);
         sword.addEnchantment(Enchantment.sharpness, 1);
-        GuiContainerManager.drawItem(x+2, 2, sword); x+=24;
-        GuiContainerManager.drawItem(x+2, 2, new ItemStack(Items.potionitem)); x+=24;
-        GuiContainerManager.drawItem(x+2, 2, new ItemStack(Blocks.stone)); x+=24;
+        GuiContainerManager.drawItem(x+2, 2, sword);
+        x+=24;
+        GuiContainerManager.drawItem(x+2, 2, new ItemStack(Items.potionitem));
+        x+=24;
+        GuiContainerManager.drawItem(x+2, 2, new ItemStack(Blocks.stone));
     }
 }

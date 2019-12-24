@@ -10,7 +10,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback
 {
@@ -44,7 +47,8 @@ public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback
 
     public static void sort(ArrayList<ItemStack> items) {
         try {
-            Collections.sort(items, instance);
+//            items = (ArrayList<ItemStack>) items.parallelStream().sorted(instance).collect(Collectors.toList());
+            items.sort(instance);
         } catch (Exception e) {
             NEIClientConfig.logger.error("Exception sorting item list", e);
         }

@@ -1,14 +1,34 @@
 package codechicken.nei;
 
+import codechicken.nei.api.LayoutStyle;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import org.lwjgl.opengl.GL11;
 
 import static codechicken.lib.gui.GuiDraw.drawStringC;
-import static codechicken.nei.LayoutManager.*;
+import static codechicken.nei.LayoutManager.bookmarkPanel;
+import static codechicken.nei.LayoutManager.delete;
+import static codechicken.nei.LayoutManager.dropDown;
+import static codechicken.nei.LayoutManager.gamemode;
+import static codechicken.nei.LayoutManager.heal;
+import static codechicken.nei.LayoutManager.itemPanel;
+import static codechicken.nei.LayoutManager.less;
+import static codechicken.nei.LayoutManager.magnet;
+import static codechicken.nei.LayoutManager.more;
+import static codechicken.nei.LayoutManager.options;
+import static codechicken.nei.LayoutManager.quantity;
+import static codechicken.nei.LayoutManager.rain;
+import static codechicken.nei.LayoutManager.searchField;
+import static codechicken.nei.LayoutManager.timeButtons;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
+import static codechicken.nei.NEIClientConfig.disabledActions;
+import static codechicken.nei.NEIClientConfig.getMagnetMode;
+import static codechicken.nei.NEIClientConfig.isEnabled;
 
-public class LayoutStyleMinecraft extends LayoutStyleDefault
+public class LayoutStyleMinecraft extends LayoutStyle
 {
-    int stateButtonCount;
-    int clickButtonCount;
+    public int buttonCount;
+    public int leftSize;
+    public int numButtons;
 
     @Override
     public String getName() {
@@ -18,38 +38,118 @@ public class LayoutStyleMinecraft extends LayoutStyleDefault
     @Override
     public void init() {
         delete.icon = new Image(144, 12, 12, 12);
+        rain.icon = new Image(120, 12, 12, 12);
         gamemode.icons[0] = new Image(132, 12, 12, 12);
         gamemode.icons[1] = new Image(156, 12, 12, 12);
         gamemode.icons[2] = new Image(168, 12, 12, 12);
-        rain.icon = new Image(120, 12, 12, 12);
         magnet.icon = new Image(180, 24, 12, 12);
         timeButtons[0].icon = new Image(132, 24, 12, 12);
         timeButtons[1].icon = new Image(120, 24, 12, 12);
         timeButtons[2].icon = new Image(144, 24, 12, 12);
         timeButtons[3].icon = new Image(156, 24, 12, 12);
         heal.icon = new Image(168, 24, 12, 12);
-        dropDown.x = 90;
     }
 
     @Override
     public void reset() {
-        stateButtonCount = clickButtonCount = 0;
+        buttonCount = 0;
     }
 
     @Override
-    public void layoutButton(Button button) {
-        if ((button.state & 0x4) != 0) {
-            button.x = 6 + stateButtonCount * 20;
-            button.y = 3;
-            stateButtonCount++;
+    public void layout(GuiContainer gui, VisiblityData visiblity) {
+        reset();
+
+        //leftSize = ((gui.width - gui.xSize) / 2) - 3;
+        leftSize = ItemPanels.bookmarkPanel.getWidth(gui);
+        numButtons = leftSize / 18;
+
+        delete.state = 0x4;
+        if (NEIController.getDeleteMode())
+            delete.state |= 1;
+        else if (!visiblity.enableDeleteMode)
+            delete.state |= 2;
+
+        rain.state = 0x4;
+        if (disabledActions.contains("rain"))
+            rain.state |= 2;
+        else if (NEIClientUtils.isRaining())
+            rain.state |= 1;
+
+        gamemode.state = 0x4;
+        if (NEIClientUtils.getGamemode() != 0) {
+            gamemode.state |= 0x1;
+            gamemode.index = NEIClientUtils.getGamemode() - 1;
         } else {
-            button.x = 6 + (clickButtonCount % 4) * 20;
-            button.y = 3 + (1 + clickButtonCount / 4) * 18;
-            clickButtonCount++;
+            if (NEIClientUtils.isValidGamemode("creative"))
+                gamemode.index = 0;
+            else if (NEIClientUtils.isValidGamemode("creative+"))
+                gamemode.index = 1;
+            else if (NEIClientUtils.isValidGamemode("adventure"))
+                gamemode.index = 2;
         }
+
+        magnet.state = 0x4 | (getMagnetMode() ? 1 : 0);
+
+        if (canPerformAction("delete"))
+            layoutButton(delete);
+        if (canPerformAction("rain"))
+            layoutButton(rain);
+        if (NEIClientUtils.isValidGamemode("creative") ||
+            NEIClientUtils.isValidGamemode("creative+") ||
+            NEIClientUtils.isValidGamemode("adventure"))
+            layoutButton(gamemode);
+        if (canPerformAction("magnet"))
+            layoutButton(magnet);
+        if (canPerformAction("time")) {
+            for (int i = 0; i < 4; i++) {
+                timeButtons[i].state = disabledActions.contains(NEIActions.timeZones[i]) ? 2 : 0;
+                layoutButton(timeButtons[i]);
+            }
+        }
+        if (canPerformAction("heal"))
+            layoutButton(heal);
+
+        itemPanel.resize(gui);
+        bookmarkPanel.resize(gui);
+
+        more.w = more.h = less.w = less.h = 16;
+        less.x = itemPanel.prev.x;
+        more.x = gui.width - less.w - 2;
+        more.y = less.y = gui.height - more.h - 2;
+
+        quantity.x = less.x + less.w + 2;
+        quantity.y = less.y;
+        quantity.w = more.x - quantity.x - 2;
+        quantity.h = less.h;
+
+        options.x = isEnabled() ? 0 : 6;
+        options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
+        options.w = 80;
+        options.h = 22;
+
+        searchField.y = gui.height - searchField.h - 2;
+
+        dropDown.x = itemPanel.x - 150;
+        dropDown.h = 20;
+        dropDown.w = Math.min(itemPanel.prev.x - dropDown.x - 3, 100);
+        searchField.h = 20;
+        searchField.w = 150;
+        searchField.x = (gui.width - searchField.w) / 2;
+
+        if (!visiblity.showItemSection) {
+            searchField.setFocus(false);
+        }
+
+    }
+
+    public void layoutButton(Button button) {
+        button.x = 6 + (buttonCount % numButtons) * 20;
+        button.y = 3 + (buttonCount / numButtons) * 18;
 
         button.h = 17;
         button.w = button.contentWidth() + 6;
+
+        buttonCount++;
     }
 
     @Override
@@ -61,7 +161,7 @@ public class LayoutStyleMinecraft extends LayoutStyleDefault
         if ((b.state & 0x3) == 2)
             tex = 0;
         else if ((b.state & 0x4) == 0 && b.contains(mousex, mousey) ||//not a state button and mouseover
-                (b.state & 0x3) == 1)//state active
+            (b.state & 0x3) == 1)//state active
             tex = 2;
         else
             tex = 1;
@@ -70,7 +170,7 @@ public class LayoutStyleMinecraft extends LayoutStyleDefault
         Image icon = b.getRenderIcon();
         if (icon == null) {
             int colour = tex == 2 ? 0xffffa0 :
-                    tex == 0 ? 0x601010 : 0xe0e0e0;
+                tex == 0 ? 0x601010 : 0xe0e0e0;
 
             drawStringC(b.getRenderLabel(), b.x + b.w / 2, b.y + (b.h - 8) / 2, colour);
         } else {

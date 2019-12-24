@@ -5,7 +5,11 @@ import codechicken.nei.LayoutManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static codechicken.lib.gui.GuiDraw.drawString;
 
@@ -70,9 +74,9 @@ public abstract class OptionStringSet extends Option
     public boolean clickButton(int mousex, int mousey, int button) {
         int x = buttonX();
         List<String> values = values();
-        for (int i = 0; i < options.size(); i++) {
+        for (String option : options) {
             if (new Rectangle4i(x, 0, 20, 20).contains(mousex, mousey)) {
-                String s = options.get(i);
+                String s = option;
                 boolean set = values.contains(s);
                 if (button == 0 && !set) {
                     setValue(s);

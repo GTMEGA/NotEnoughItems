@@ -22,7 +22,7 @@ public class ItemList
     /**
      * Fields are replaced atomically and contents never modified.
      */
-    public static volatile List<ItemStack> items = new ArrayList<ItemStack>();
+    public static volatile List<ItemStack>  items = new ArrayList<ItemStack>();
     /**
      * Fields are replaced atomically and contents never modified.
      */
@@ -233,17 +233,21 @@ public class ItemList
         public void execute() {
             ArrayList<ItemStack> filtered = new ArrayList<ItemStack>();
             ItemFilter filter = getItemListFilter();
-            for(ItemStack item : items) {
+
+            items.parallelStream().forEach(item -> {
                 if (interrupted()) return;
 
-                if(filter.matches(item))
-                    filtered.add(item);
-            }
+                if(filter.matches(item)) {
+                    synchronized (filtered){
+                        filtered.add(item);
+                    }
+                }
+            });
 
             if(interrupted()) return;
             ItemSorter.sort(filtered);
             if(interrupted()) return;
-            ItemPanel.updateItemList(filtered);
+            ItemPanels.itemPanel.updateItemList(filtered);
         }
     };
 

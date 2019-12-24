@@ -1,3 +1,13 @@
+GTNH Modifications:
+
+GNU LESSER GENERAL PUBLIC LICENSE - See COPYING & COPYING.LESSER
+
+Copyright (c) 2019 mitchej123 
+
+
+
+Base NEI License:
+
 The MIT License (MIT)
 
 Copyright (c) 2014 ChickenBones

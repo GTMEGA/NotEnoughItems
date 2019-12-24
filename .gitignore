@@ -1,3 +1,7 @@
-/build/build
-/build/.gradle
+build/build/*
+build/run/*
+build/.gradle/*
+*.ipr
+*.iml
+*.iws
 .idea/**

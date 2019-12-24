@@ -7,7 +7,7 @@ public class Label extends Widget
 {
     boolean centered;
     int colour;
-    String text;
+    public String text;
     
     public Label(String s, boolean center, int color)
     {
