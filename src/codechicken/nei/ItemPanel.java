@@ -30,8 +30,8 @@ public class ItemPanel extends Widget {
         return items;
     }
 
-    public void updateItemList(ArrayList<ItemStack> newItems) {
-        _items = newItems;
+    public static void updateItemList(ArrayList<ItemStack> newItems) {
+        ItemPanels.itemPanel._items = newItems;
     }
 
     public class ItemPanelSlot
