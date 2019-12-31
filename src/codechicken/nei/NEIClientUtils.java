@@ -157,7 +157,7 @@ public class NEIClientUtils extends NEIServerUtils
             ItemStack typestack = copyStack(stack, 1);
             if (!infinite && !canItemFitInInventory(mc().thePlayer, stack) && (mc().currentScreen instanceof GuiContainer)) {
                 GuiContainer gui = getGuiContainer();
-                List<Iterable<Integer>> handlerSlots = new LinkedList<Iterable<Integer>>();
+                List<Iterable<Integer>> handlerSlots = new LinkedList<>();
                 for(INEIGuiHandler handler : GuiInfo.guiHandlers)
                     handlerSlots.add(handler.getItemSpawnSlots(gui, typestack));
 
@@ -306,7 +306,7 @@ public class NEIClientUtils extends NEIServerUtils
     }
 
     public static ArrayList<int[]> concatIntegersToRanges(List<Integer> damages) {
-        ArrayList<int[]> ranges = new ArrayList<int[]>();
+        ArrayList<int[]> ranges = new ArrayList<>();
         if (damages.size() == 0) return ranges;
 
         Collections.sort(damages);

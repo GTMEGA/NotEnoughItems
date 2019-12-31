@@ -12,7 +12,7 @@ import static codechicken.lib.gui.GuiDraw.getStringWidth;
 public class OptionTextField extends Option
 {
     private boolean focused = false;
-    private TextField textField = new TextField("")
+    private final TextField textField = new TextField("")
     {
 
         @Override

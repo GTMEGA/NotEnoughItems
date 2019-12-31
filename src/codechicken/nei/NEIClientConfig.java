@@ -50,14 +50,14 @@ public class NEIClientConfig
             new File("saves/NEI/client.dat"),
             new ConfigFile(new File(configDir, "client.cfg")));
     public static ConfigSet world;
-    public static File bookmarkFile = new File(configDir, "bookmarks.ini");
+    public static final File bookmarkFile = new File(configDir, "bookmarks.ini");
 
     public static ItemStack[] creativeInv;
 
     public static boolean hasSMPCounterpart;
-    public static HashSet<String> permissableActions = new HashSet<String>();
-    public static HashSet<String> disabledActions = new HashSet<String>();
-    public static HashSet<String> enabledActions = new HashSet<String>();
+    public static HashSet<String> permissableActions = new HashSet<>();
+    public static HashSet<String> disabledActions = new HashSet<>();
+    public static HashSet<String> enabledActions = new HashSet<>();
 
     public static ItemStackSet bannedBlocks = new ItemStackSet();
 
@@ -417,7 +417,7 @@ public class NEIClientConfig
             logger.error("Error loading saves", e);
             return;
         }
-        HashSet<String> saveFileNames = new HashSet<String>();
+        HashSet<String> saveFileNames = new HashSet<>();
         for (SaveFormatComparator save : saves)
             saveFileNames.add(save.getFileName());
 

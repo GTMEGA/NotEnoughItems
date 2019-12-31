@@ -1,6 +1,10 @@
 package codechicken.nei;
 
-import codechicken.nei.api.*;
+import codechicken.nei.api.API;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.IInfiniteItemHandler;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.ItemInfo;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerSlotClickHandler;
@@ -11,14 +15,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.LinkedList;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 public class NEIController implements IContainerSlotClickHandler, IContainerInputHandler
 {
-    private static NEIController instance = new NEIController();
+    private static final NEIController instance = new NEIController();
 
     public static GuiContainerManager manager;
     public static FastTransferManager fastTransferManager;
@@ -56,7 +60,7 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
         if (!NEIClientConfig.canPerformAction("item") || !NEIClientConfig.hasSMPCounterPart())
             return;
 
-        LinkedList<ItemStack> beforeStacks = new LinkedList<ItemStack>();
+        LinkedList<ItemStack> beforeStacks = new LinkedList<>();
         for (int i = 0; i < inventory.getSizeInventory(); i++)
             beforeStacks.add(NEIServerUtils.copyStack(inventory.getStackInSlot(i)));
 

@@ -6,8 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.LinkedList;
 import java.util.List;
 
 import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
@@ -93,7 +94,7 @@ public abstract class GuiOptionPane extends GuiScreenWidget
 
     public void drawTooltip() {
         Point mouse = getMousePosition();
-        drawMultilineTip(mouse.x + 12, mouse.y - 12, handleTooltip(mouse.x, mouse.y, new LinkedList<String>()));
+        drawMultilineTip(mouse.x + 12, mouse.y - 12, handleTooltip(mouse.x, mouse.y, new LinkedList<>()));
     }
 
     public List<String> handleTooltip(int mx, int my, List<String> tooltip) {

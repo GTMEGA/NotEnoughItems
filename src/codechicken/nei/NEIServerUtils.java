@@ -25,8 +25,16 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipException;
 
 public class NEIServerUtils
@@ -287,7 +295,7 @@ public class NEIServerUtils
     }
 
     public static List<int[]> getEnchantments(ItemStack itemstack) {
-        ArrayList<int[]> arraylist = new ArrayList<int[]>();
+        ArrayList<int[]> arraylist = new ArrayList<>();
         if (itemstack != null) {
             NBTTagList nbttaglist = itemstack.getEnchantmentTagList();
             if (nbttaglist != null)

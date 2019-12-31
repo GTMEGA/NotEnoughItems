@@ -10,7 +10,6 @@ nei.inventory.options=옵션
 nei.inventory.prev=이전
 nei.inventory.next=다음
 nei.inventory.item_subsets=아이템 하위집합
-nei.inventory.delete.all=현재의 화면에 있는 모든 항목을 삭제
 nei.inventory.delete.one=%s 삭제
 nei.inventory.delete.all=%s 모두삭제
 nei.inventory.delete.enable=삭제모드 활성화

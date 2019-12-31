@@ -5,8 +5,8 @@ import static codechicken.lib.gui.GuiDraw.drawStringC;
 
 public class Label extends Widget
 {
-    boolean centered;
-    int colour;
+    final boolean centered;
+    final int colour;
     public String text;
     
     public Label(String s, boolean center, int color)

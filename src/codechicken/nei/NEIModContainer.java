@@ -20,11 +20,14 @@ import cpw.mods.fml.common.versioning.VersionRange;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class NEIModContainer extends DummyModContainer
 {
-    public static LinkedList<IConfigureNEI> plugins = new LinkedList<IConfigureNEI>();
+    public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     public NEIModContainer() {
         super(MetadataCollection.from(MetadataCollection.class.getResourceAsStream("/neimod.info"), "NotEnoughItems").getMetadataForId("NotEnoughItems", null));
@@ -33,14 +36,14 @@ public class NEIModContainer extends DummyModContainer
 
     @Override
     public Set<ArtifactVersion> getRequirements() {
-        Set<ArtifactVersion> deps = new HashSet<ArtifactVersion>();
+        Set<ArtifactVersion> deps = new HashSet<>();
         deps.add(VersionParser.parseVersionReference("CodeChickenCore@["+CodeChickenCorePlugin.version+",)"));
         return deps;
     }
 
     @Override
     public List<ArtifactVersion> getDependencies() {
-        return new LinkedList<ArtifactVersion>(getRequirements());
+        return new LinkedList<>(getRequirements());
     }
 
     private String description;
@@ -50,22 +53,22 @@ public class NEIModContainer extends DummyModContainer
 
     @Override
     public ModMetadata getMetadata() {
-        String s_plugins = "";
+        StringBuilder s_plugins = new StringBuilder();
         if (plugins.size() == 0) {
-            s_plugins += EnumChatFormatting.RED+"No installed plugins.";
+            s_plugins.append(EnumChatFormatting.RED).append("No installed plugins.");
         } else {
-            s_plugins += EnumChatFormatting.GREEN+"Installed plugins: ";
+            s_plugins.append(EnumChatFormatting.GREEN).append("Installed plugins: ");
             for (int i = 0; i < plugins.size(); i++) {
                 if (i > 0)
-                    s_plugins += ", ";
+                    s_plugins.append(", ");
                 IConfigureNEI plugin = plugins.get(i);
-                s_plugins += plugin.getName() + " " + plugin.getVersion();
+                s_plugins.append(plugin.getName()).append(" ").append(plugin.getVersion());
             }
-            s_plugins += ".";
+            s_plugins.append(".");
         }
 
         ModMetadata meta = super.getMetadata();
-        meta.description = description.replace("<plugins>", s_plugins);
+        meta.description = description.replace("<plugins>", s_plugins.toString());
         return meta;
     }
 

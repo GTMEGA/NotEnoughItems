@@ -97,7 +97,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
     public static IRecipeOverlayRenderer overlayRenderer;
 
-    public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<Integer, LayoutStyle>();
+    public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<>();
 
     public static boolean ftbUtilsLoaded = false;
 
@@ -588,8 +588,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public static void updateWidgetVisiblities(GuiContainer gui, VisiblityData visiblity) {
-        drawWidgets = new TreeSet<Widget>(new WidgetZOrder(false));
-        controlWidgets = new TreeSet<Widget>(new WidgetZOrder(true));
+        drawWidgets = new TreeSet<>(new WidgetZOrder(false));
+        controlWidgets = new TreeSet<>(new WidgetZOrder(true));
 
         if (!visiblity.showNEI)
             return;
@@ -709,7 +709,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     @Override
     public void renderSlotOverlay(GuiContainer window, Slot slot) {
         ItemStack item = slot.getStack();
-        if (world.nbt.getBoolean("searchinventories") && (item == null ? !getSearchExpression().equals("") : !ItemList.itemMatches(item))) {
+        if (world.nbt.getBoolean("searchinventories") && (item == null ? !getSearchExpression().equals("") : !ItemList.getItemListFilter().matches(item))) {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glTranslatef(0, 0, 150);
             drawRect(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, 0x80000000);

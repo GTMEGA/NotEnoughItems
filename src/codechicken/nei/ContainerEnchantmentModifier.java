@@ -29,12 +29,12 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
             level = l;
         }
 
-        Enchantment enchantment;
+        final Enchantment enchantment;
         int state;
-        int level;
+        final int level;
     }
 
-    public ArrayList<EnchantmentHash> slotEnchantment = new ArrayList<EnchantmentHash>();
+    public final ArrayList<EnchantmentHash> slotEnchantment = new ArrayList<>();
     int level = 5;
 
     public int scrollclicky = -1;
@@ -60,11 +60,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
         int sbarh = (int) ((height / (float) getContentHeight()) * height);
         if (sbarh > height) {
             return height;
-        } else if (sbarh < height / 15) {
-            return height / 15;
-        } else {
-            return sbarh;
-        }
+        } else return Math.max(sbarh, height / 15);
     }
 
     public int getScrollBarWidth() {
@@ -237,7 +233,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
 
     public void drawSlots(GuiEnchantmentModifier gui) {
         for (int slot = 0; slot < 3; slot++) {
-            int shade = 0;
+            int shade;
             String text = "";
 
             int containerslot = slot + getScrolledSlots();

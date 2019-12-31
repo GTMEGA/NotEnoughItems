@@ -14,7 +14,6 @@ nei.inventory.options=Опции
 nei.inventory.prev=Предыдущая
 nei.inventory.next=Следующая
 nei.inventory.item_subsets=Подмножества предметов
-nei.inventory.delete.all=УДАЛИТЬ ВСЕ ПРЕДМЕТЫ из текущего инвентаря
 nei.inventory.delete.one=Удалить %s
 nei.inventory.delete.all=Удалить ВСЕ %s
 nei.inventory.delete.enable=Режим удаления

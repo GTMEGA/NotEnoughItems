@@ -14,7 +14,7 @@ public class GuiCraftingRecipe extends GuiRecipe
         GuiContainer prevscreen = mc.currentScreen instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
 
         TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
-        ArrayList<ICraftingHandler> handlers = new ArrayList<ICraftingHandler>();
+        ArrayList<ICraftingHandler> handlers = new ArrayList<>();
         for (ICraftingHandler craftinghandler : craftinghandlers) {
             profiler.start(craftinghandler.getRecipeName());
             ICraftingHandler handler = craftinghandler.getRecipeHandler(outputId, results);
@@ -48,5 +48,5 @@ public class GuiCraftingRecipe extends GuiRecipe
 
     public ArrayList<ICraftingHandler> currenthandlers;
 
-    public static ArrayList<ICraftingHandler> craftinghandlers = new ArrayList<ICraftingHandler>();
+    public static ArrayList<ICraftingHandler> craftinghandlers = new ArrayList<>();
 }

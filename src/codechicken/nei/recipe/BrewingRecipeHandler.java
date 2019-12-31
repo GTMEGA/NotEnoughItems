@@ -5,9 +5,6 @@ import codechicken.nei.NEIClientUtils;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.API;
-import codechicken.nei.api.ItemFilter;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemPotion;
@@ -16,11 +13,12 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static net.minecraft.init.Items.potionitem;
 
@@ -41,7 +39,7 @@ public class BrewingRecipeHandler extends TemplateRecipeHandler
 
     public class CachedBrewingRecipe extends CachedRecipe
     {
-        public BrewingRecipe recipe;
+        public final BrewingRecipe recipe;
 
         public CachedBrewingRecipe(BrewingRecipe recipe) {
             this.recipe = recipe;
@@ -54,7 +52,7 @@ public class BrewingRecipeHandler extends TemplateRecipeHandler
 
         @Override
         public ArrayList<PositionedStack> getIngredients() {
-            ArrayList<PositionedStack> recipestacks = new ArrayList<PositionedStack>();
+            ArrayList<PositionedStack> recipestacks = new ArrayList<>();
             recipestacks.add(recipe.ingredient);
             recipestacks.add(recipe.precursorPotion);
             return recipestacks;
@@ -62,7 +60,7 @@ public class BrewingRecipeHandler extends TemplateRecipeHandler
     }
 
     public static final ItemStackSet ingredients = new ItemStackSet();
-    public static final HashSet<BrewingRecipe> apotions = new HashSet<BrewingRecipe>();
+    public static final HashSet<BrewingRecipe> apotions = new HashSet<>();
 
     @Override
     public void loadTransferRects() {
@@ -121,12 +119,12 @@ public class BrewingRecipeHandler extends TemplateRecipeHandler
     }
 
     public static void searchPotions() {
-        TreeSet<Integer> allPotions = new TreeSet<Integer>();
-        HashSet<Integer> searchPotions = new HashSet<Integer>();
+        TreeSet<Integer> allPotions = new TreeSet<>();
+        HashSet<Integer> searchPotions = new HashSet<>();
         searchPotions.add(0);
         allPotions.add(0);
         do {
-            HashSet<Integer> newPotions = new HashSet<Integer>();
+            HashSet<Integer> newPotions = new HashSet<>();
             for (Integer basePotion : searchPotions) {
                 if (ItemPotion.isSplash(basePotion))
                     continue;
@@ -155,21 +153,9 @@ public class BrewingRecipeHandler extends TemplateRecipeHandler
         }
         while (!searchPotions.isEmpty());
 
-        API.setItemListEntries(potionitem, Iterables.transform(allPotions, new Function<Integer, ItemStack>()//override with only potions that can be crafted
-        {
-            @Override
-            public ItemStack apply(Integer potionID) {
-                return new ItemStack(potionitem, 1, potionID);
-            }
-        }));
+        API.setItemListEntries(potionitem, allPotions.stream().map(potionID -> new ItemStack(potionitem, 1, potionID)).collect(Collectors.toList()));
         API.addSubset("Items.Potions", new ItemStackSet().with(potionitem));
-        API.addSubset("Items.Potions.Splash", new ItemFilter()
-        {
-            @Override
-            public boolean matches(ItemStack item) {
-                return item.getItem() == potionitem && (item.getItemDamage() & 0x4000) != 0;
-            }
-        });
+        API.addSubset("Items.Potions.Splash", item -> item.getItem() == potionitem && (item.getItemDamage() & 0x4000) != 0);
 
         ItemStackSet positivepots = new ItemStackSet();
         ItemStackSet negativepots = new ItemStackSet();

@@ -6,9 +6,14 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
-import static codechicken.nei.NEIServerUtils.*;
+import static codechicken.nei.NEIServerUtils.areStacksIdentical;
+import static codechicken.nei.NEIServerUtils.areStacksSameType;
+import static codechicken.nei.NEIServerUtils.copyStack;
 
 public class FastTransferManager
 {
@@ -17,7 +22,7 @@ public class FastTransferManager
      */
     public static class SlotPositionComparator implements Comparator<Integer>
     {
-        Container container;
+        final Container container;
 
         public SlotPositionComparator(Container c) {
             container = c;
@@ -34,8 +39,8 @@ public class FastTransferManager
         }
     }
 
-    public LinkedList<LinkedList<Integer>> slotZones = new LinkedList<LinkedList<Integer>>();
-    public HashMap<Integer, Integer> slotZoneMap = new HashMap<Integer, Integer>();
+    public LinkedList<LinkedList<Integer>> slotZones = new LinkedList<>();
+    public HashMap<Integer, Integer> slotZoneMap = new HashMap<>();
 
     private void generateSlotMap(Container container, ItemStack stack) {
         stack = stack.copy();
@@ -45,11 +50,11 @@ public class FastTransferManager
             if (slotZoneMap.containsKey(slotNo) || !container.getSlot(slotNo).isItemValid(stack))
                 continue;
 
-            HashSet<Integer> connectedSlots = new HashSet<Integer>();
+            HashSet<Integer> connectedSlots = new HashSet<>();
             findConnectedSlots(container, slotNo, connectedSlots);
 
-            LinkedList<Integer> zoneSlots = new LinkedList<Integer>(connectedSlots);
-            Collections.sort(zoneSlots, new SlotPositionComparator(container));
+            LinkedList<Integer> zoneSlots = new LinkedList<>(connectedSlots);
+            zoneSlots.sort(new SlotPositionComparator(container));
             slotZones.add(zoneSlots);
 
             for (int i : zoneSlots) {
@@ -77,7 +82,7 @@ public class FastTransferManager
     public static int findSlotWithItem(Container container, ItemStack teststack) {
         for (int slotNo = 0; slotNo < container.inventorySlots.size(); slotNo++) {
             ItemStack stack = container.getSlot(slotNo).getStack();
-            if (stack != null && areStacksSameType(stack, teststack))
+            if (areStacksSameType(stack, teststack))
                 return slotNo;
         }
         return -1;
@@ -159,7 +164,7 @@ public class FastTransferManager
     }
 
     public LinkedList<ItemStack> saveContainer(Container container) {
-        LinkedList<ItemStack> stacks = new LinkedList<ItemStack>();
+        LinkedList<ItemStack> stacks = new LinkedList<>();
         for (int i = 0; i < container.inventorySlots.size(); i++)
             stacks.add(copyStack(container.getSlot(i).getStack()));
 

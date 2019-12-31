@@ -16,7 +16,7 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler
 {
     public class CachedFuelRecipe extends CachedRecipe
     {
-        public FuelPair fuel;
+        public final FuelPair fuel;
 
         public CachedFuelRecipe(FuelPair fuel) {
             this.fuel = fuel;
@@ -38,7 +38,7 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler
         }
     }
 
-    private ArrayList<SmeltingPair> mfurnace = new ArrayList<FurnaceRecipeHandler.SmeltingPair>();
+    private final ArrayList<SmeltingPair> mfurnace = new ArrayList<>();
 
     public FuelRecipeHandler() {
         super();

@@ -22,7 +22,7 @@ public class ItemList
     /**
      * Fields are replaced atomically and contents never modified.
      */
-    public static volatile List<ItemStack>  items = new ArrayList<ItemStack>();
+    public static volatile List<ItemStack>  items = new ArrayList<>();
     /**
      * Fields are replaced atomically and contents never modified.
      */
@@ -30,11 +30,11 @@ public class ItemList
     /**
      * Updates to this should be synchronised on this
      */
-    public static final List<ItemFilterProvider> itemFilterers = new LinkedList<ItemFilterProvider>();
-    public static final List<ItemsLoadedCallback> loadCallbacks = new LinkedList<ItemsLoadedCallback>();
+    public static final List<ItemFilterProvider> itemFilterers = new LinkedList<>();
+    public static final List<ItemsLoadedCallback> loadCallbacks = new LinkedList<>();
 
-    private static HashSet<Item> erroredItems = new HashSet<Item>();
-    private static HashSet<String> stackTraces = new HashSet<String>();
+    private static final HashSet<Item> erroredItems = new HashSet<>();
+    private static final HashSet<String> stackTraces = new HashSet<>();
 
     public static class EverythingItemFilter implements ItemFilter
     {
@@ -68,14 +68,14 @@ public class ItemList
 
     public static class AllMultiItemFilter implements ItemFilter
     {
-        public List<ItemFilter> filters = new LinkedList<ItemFilter>();
+        public List<ItemFilter> filters;
 
         public AllMultiItemFilter(List<ItemFilter> filters) {
             this.filters = filters;
         }
 
         public AllMultiItemFilter() {
-            this(new LinkedList<ItemFilter>());
+            this(new LinkedList<>());
         }
 
         @Override
@@ -93,14 +93,14 @@ public class ItemList
 
     public static class AnyMultiItemFilter implements ItemFilter
     {
-        public List<ItemFilter> filters = new LinkedList<ItemFilter>();
+        public List<ItemFilter> filters;
 
         public AnyMultiItemFilter(List<ItemFilter> filters) {
             this.filters = filters;
         }
 
         public AnyMultiItemFilter() {
-            this(new LinkedList<ItemFilter>());
+            this(new LinkedList<>());
         }
 
         @Override
@@ -147,7 +147,7 @@ public class ItemList
     }
 
     public static List<ItemFilter> getItemFilters() {
-        LinkedList<ItemFilter> filters = new LinkedList<ItemFilter>();
+        LinkedList<ItemFilter> filters = new LinkedList<>();
         synchronized (itemFilterers) {
             for(ItemFilterProvider p : itemFilterers)
                 filters.add(p.getFilter());
@@ -158,7 +158,7 @@ public class ItemList
     public static final RestartableTask loadItems = new RestartableTask("NEI Item Loading")
     {
         private void damageSearch(Item item, List<ItemStack> permutations) {
-            HashSet<String> damageIconSet = new HashSet<String>();
+            HashSet<String> damageIconSet = new HashSet<>();
             for (int damage = 0; damage < 16; damage++)
                 try {
                     ItemStack itemstack = new ItemStack(item, 1, damage);
@@ -182,8 +182,8 @@ public class ItemList
         public void execute() {
             ThreadOperationTimer timer = getTimer(500);
 
-            LinkedList<ItemStack> items = new LinkedList<ItemStack>();
-            LinkedList<ItemStack> permutations = new LinkedList<ItemStack>();
+            LinkedList<ItemStack> items = new LinkedList<>();
+            LinkedList<ItemStack> permutations = new LinkedList<>();
             ListMultimap<Item, ItemStack> itemMap = ArrayListMultimap.create();
 
             timer.setLimit(500);
@@ -231,7 +231,7 @@ public class ItemList
     {
         @Override
         public void execute() {
-            ArrayList<ItemStack> filtered = new ArrayList<ItemStack>();
+            ArrayList<ItemStack> filtered = new ArrayList<>();
             ItemFilter filter = getItemListFilter();
 
             items.parallelStream().forEach(item -> {
@@ -247,7 +247,7 @@ public class ItemList
             if(interrupted()) return;
             ItemSorter.sort(filtered);
             if(interrupted()) return;
-            ItemPanels.itemPanel.updateItemList(filtered);
+            ItemPanel.updateItemList(filtered);
         }
     };
 

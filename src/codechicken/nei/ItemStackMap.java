@@ -1,6 +1,6 @@
 package codechicken.nei;
 
-import com.google.common.base.*;
+import com.google.common.base.Objects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,8 +21,8 @@ public class ItemStackMap<T>
 {
     public static class StackMetaKey
     {
-        public int damage;
-        public NBTTagCompound tag;
+        public final int damage;
+        public final NBTTagCompound tag;
 
         public StackMetaKey(int damage, NBTTagCompound tag) {
             this.damage = damage;
@@ -47,8 +47,8 @@ public class ItemStackMap<T>
 
     public static class Entry<T>
     {
-        public ItemStack key;
-        public T value;
+        public final ItemStack key;
+        public final T value;
 
         public Entry(ItemStack key, T value) {
             this.key = key;
@@ -70,11 +70,11 @@ public class ItemStackMap<T>
                 return wildcard;
 
             if (damageMap != null) {
-                T ret = damageMap.get(actualDamage(key));
+                final T ret = damageMap.get(actualDamage(key));
                 if (ret != null) return ret;
             }
             if (tagMap != null) {
-                T ret = tagMap.get(key.stackTagCompound);
+                final T ret = tagMap.get(key.stackTagCompound);
                 if (ret != null) return ret;
             }
             if (metaMap != null)
@@ -87,13 +87,13 @@ public class ItemStackMap<T>
             try {
                 switch (getKeyType(actualDamage(key), key.stackTagCompound)) {
                     case 0:
-                        if (metaMap == null) metaMap = new HashMap<StackMetaKey, T>();
+                        if (metaMap == null) metaMap = new HashMap<>();
                         return metaMap.put(new StackMetaKey(key), value);
                     case 1:
-                        if (tagMap == null) tagMap = new HashMap<NBTTagCompound, T>();
+                        if (tagMap == null) tagMap = new HashMap<>();
                         return tagMap.put(key.stackTagCompound, value);
                     case 2:
-                        if (damageMap == null) damageMap = new HashMap<Integer, T>();
+                        if (damageMap == null) damageMap = new HashMap<>();
                         return damageMap.put(actualDamage(key), value);
                     case 3:
                         T ret = wildcard;
@@ -167,16 +167,16 @@ public class ItemStackMap<T>
 
         public void addEntries(Item item, List<Entry<T>> list) {
             if (wildcard != null)
-                list.add(new Entry<T>(newItemStack(item, 1, WILDCARD_VALUE, WILDCARD_TAG), wildcard));
+                list.add(new Entry<>(newItemStack(item, 1, WILDCARD_VALUE, WILDCARD_TAG), wildcard));
             if (damageMap != null)
                 for (Map.Entry<Integer, T> entry : damageMap.entrySet())
-                    list.add(new Entry<T>(newItemStack(item, 1, entry.getKey(), WILDCARD_TAG), entry.getValue()));
+                    list.add(new Entry<>(newItemStack(item, 1, entry.getKey(), WILDCARD_TAG), entry.getValue()));
             if (tagMap != null)
                 for (Map.Entry<NBTTagCompound, T> entry : tagMap.entrySet())
-                    list.add(new Entry<T>(newItemStack(item, 1, WILDCARD_VALUE, entry.getKey()), entry.getValue()));
+                    list.add(new Entry<>(newItemStack(item, 1, WILDCARD_VALUE, entry.getKey()), entry.getValue()));
             if (metaMap != null)
                 for (Map.Entry<StackMetaKey, T> entry : metaMap.entrySet())
-                    list.add(new Entry<T>(newItemStack(item, 1, entry.getKey().damage, entry.getKey().tag), entry.getValue()));
+                    list.add(new Entry<>(newItemStack(item, 1, entry.getKey().damage, entry.getKey().tag), entry.getValue()));
         }
     }
 
@@ -199,21 +199,22 @@ public class ItemStackMap<T>
         return tag != null && tag.getBoolean("*");
     }
 
-    public static NBTTagCompound WILDCARD_TAG;
+    public static final NBTTagCompound WILDCARD_TAG;
 
     static {
         WILDCARD_TAG = new NBTTagCompound();
         WILDCARD_TAG.setBoolean("*", true);
     }
 
-    private HashMap<Item, DetailMap> itemMap = new HashMap<Item, DetailMap>();
+    private final HashMap<Item, DetailMap> itemMap = new HashMap<>();
     private int size;
 
     public T get(ItemStack key) {
-        if (key == null || key.getItem() == null)
-            return null;
+        if (key == null) return null;
+        final Item item = key.getItem();
+        if (item == null) return null;
 
-        DetailMap map = itemMap.get(key.getItem());
+        final DetailMap map = itemMap.get(item);
         return map == null ? null : map.get(key);
     }
 
@@ -240,21 +241,21 @@ public class ItemStackMap<T>
     }
 
     public List<ItemStack> keys() {
-        LinkedList<ItemStack> list = new LinkedList<ItemStack>();
+        LinkedList<ItemStack> list = new LinkedList<>();
         for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet())
             entry.getValue().addKeys(entry.getKey(), list);
         return list;
     }
 
     public List<T> values() {
-        LinkedList<T> list = new LinkedList<T>();
+        LinkedList<T> list = new LinkedList<>();
         for (DetailMap map : itemMap.values())
             map.addValues(list);
         return list;
     }
 
     public List<Entry<T>> entries() {
-        LinkedList<Entry<T>> list = new LinkedList<Entry<T>>();
+        LinkedList<Entry<T>> list = new LinkedList<>();
         for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet())
             entry.getValue().addEntries(entry.getKey(), list);
         return list;

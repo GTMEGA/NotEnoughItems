@@ -23,8 +23,8 @@ public class KeyManager
         public boolean up;
     }
     
-    public static HashMap<String, KeyState> keyStates = new HashMap<String, KeyState>();
-    public static LinkedList<IKeyStateTracker> trackers = new LinkedList<IKeyStateTracker>();
+    public static HashMap<String, KeyState> keyStates = new HashMap<>();
+    public static LinkedList<IKeyStateTracker> trackers = new LinkedList<>();
     
     public static void tickKeyStates()
     {

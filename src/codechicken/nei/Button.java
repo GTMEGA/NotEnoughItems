@@ -56,7 +56,7 @@ public abstract class Button extends Widget
         return label;
     }
 
-    public String label;
+    public final String label;
     public Image icon;
 
     /**

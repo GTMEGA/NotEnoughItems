@@ -1,6 +1,6 @@
 package codechicken.nei;
 
 public class ItemPanels {
-    public static ItemPanel itemPanel = new ItemPanel();
-    public static BookmarkPanel bookmarkPanel = new BookmarkPanel();
+    public static final ItemPanel itemPanel = new ItemPanel();
+    public static final BookmarkPanel bookmarkPanel = new BookmarkPanel();
 }

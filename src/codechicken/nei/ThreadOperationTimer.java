@@ -16,7 +16,7 @@ public class ThreadOperationTimer extends Thread
         }
     }
 
-    private Thread thread;
+    private final Thread thread;
     private Object operation;
     private long opTime;
     private long limit;

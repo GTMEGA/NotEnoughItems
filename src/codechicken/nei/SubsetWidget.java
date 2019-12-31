@@ -36,7 +36,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     public static class SubsetState
     {
         int state = 2;
-        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> items = new ArrayList<>();
     }
 
     public static class SubsetTag
@@ -128,7 +128,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
         public final String fullname;
         public final ItemFilter filter;
-        public TreeMap<String, SubsetTag> children = new TreeMap<String, SubsetTag>();
+        public TreeMap<String, SubsetTag> children = new TreeMap<>();
         public List<SubsetTag> sorted = Collections.emptyList();
         private int childwidth;
 
@@ -177,7 +177,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         private void recacheChildren() {
-            sorted = new ArrayList<SubsetTag>(children.values());
+            sorted = new ArrayList<>(children.values());
             childwidth = 0;
             for(SubsetTag tag : sorted)
                 childwidth = Math.max(childwidth, tag.nameWidth()+2);
@@ -372,12 +372,12 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     public static Rectangle4i area = new Rectangle4i();
     public static ItemStack hoverStack;
 
-    private static HashMap<String, SubsetState> subsetState = new HashMap<String, SubsetState>();
+    private static HashMap<String, SubsetState> subsetState = new HashMap<>();
     /**
      * All operations on this variable should be synchronised.
      */
     private static final ItemStackSet hiddenItems = new ItemStackSet();
-    private static final AtomicReference<NBTTagList> dirtyHiddenItems = new AtomicReference<NBTTagList>();
+    private static final AtomicReference<NBTTagList> dirtyHiddenItems = new AtomicReference<>();
 
     public static SubsetState getState(SubsetTag tag) {
         SubsetState state = subsetState.get(tag.fullname);
@@ -388,6 +388,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         updateState.stop();
         synchronized (root) {
             root.addTag(tag);
+            NEIClientConfig.logger.info("Adding Tag {}", tag.displayName());
             updateState.reallocate();
         }
     }
@@ -455,7 +456,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             hiddenItems.clear();
         }
 
-        List<ItemStack> itemList = new LinkedList<ItemStack>();
+        List<ItemStack> itemList = new LinkedList<>();
         try {
             NBTTagList list = NEIClientConfig.world.nbt.getTagList("hiddenItems", 10);
             for(int i = 0; i < list.tagCount(); i++)
@@ -524,8 +525,8 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
         @Override
         public void execute() {
-            HashMap<String, SubsetState> state = new HashMap<String, SubsetState>();
-            List<SubsetTag> tags = new LinkedList<SubsetTag>();
+            HashMap<String, SubsetState> state = new HashMap<>();
+            List<SubsetTag> tags = new LinkedList<>();
             synchronized (root) {
                 cloneStates(root, tags, state);
                 if(interrupted()) return;
@@ -728,7 +729,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             Pattern p = SearchField.getPattern(searchText);
             if(p == null) return null;
 
-            List<SubsetTag> matching = new LinkedList<SubsetTag>();
+            List<SubsetTag> matching = new LinkedList<>();
             root.search(matching, p);
             if(matching.isEmpty()) return null;
             for(SubsetTag tag2 : matching)

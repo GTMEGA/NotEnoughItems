@@ -1,7 +1,6 @@
 package codechicken.nei;
 
 import codechicken.core.CommonUtils;
-import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.inventory.SlotDummy;
 import codechicken.lib.packet.PacketCustom;
@@ -112,15 +111,11 @@ public class NEISPH implements IServerPacketHandler
 
     public static void processCreativeInv(EntityPlayerMP sender, boolean open) {
         if (open) {
-            ServerUtils.openSMPContainer(sender, new ContainerCreativeInv(sender, new ExtendedCreativeInv(NEIServerConfig.forPlayer(sender.getCommandSenderName()), Side.SERVER)), new IGuiPacketSender()
-            {
-                @Override
-                public void sendPacket(EntityPlayerMP player, int windowId) {
-                    PacketCustom packet = new PacketCustom(channel, 23);
-                    packet.writeBoolean(true);
-                    packet.writeByte(windowId);
-                    packet.sendToPlayer(player);
-                }
+            ServerUtils.openSMPContainer(sender, new ContainerCreativeInv(sender, new ExtendedCreativeInv(NEIServerConfig.forPlayer(sender.getCommandSenderName()), Side.SERVER)), (player, windowId) -> {
+                PacketCustom packet = new PacketCustom(channel, 23);
+                packet.writeBoolean(true);
+                packet.writeByte(windowId);
+                packet.sendToPlayer(player);
             });
         } else {
             sender.closeContainer();
@@ -155,14 +150,10 @@ public class NEISPH implements IServerPacketHandler
     }
 
     private void openEnchantmentGui(EntityPlayerMP player) {
-        ServerUtils.openSMPContainer(player, new ContainerEnchantmentModifier(player.inventory, player.worldObj, 0, 0, 0), new IGuiPacketSender()
-        {
-            @Override
-            public void sendPacket(EntityPlayerMP player, int windowId) {
-                PacketCustom packet = new PacketCustom(channel, 21);
-                packet.writeByte(windowId);
-                packet.sendToPlayer(player);
-            }
+        ServerUtils.openSMPContainer(player, new ContainerEnchantmentModifier(player.inventory, player.worldObj, 0, 0, 0), (player1, windowId) -> {
+            PacketCustom packet = new PacketCustom(channel, 21);
+            packet.writeByte(windowId);
+            packet.sendToPlayer(player1);
         });
     }
 
@@ -170,14 +161,10 @@ public class NEISPH implements IServerPacketHandler
         InventoryBasic b = new InventoryBasic("potionStore", true, 9);
         for (int i = 0; i < b.getSizeInventory(); i++)
             b.setInventorySlotContents(i, packet.readItemStack());
-        ServerUtils.openSMPContainer(player, new ContainerPotionCreator(player.inventory, b), new IGuiPacketSender()
-        {
-            @Override
-            public void sendPacket(EntityPlayerMP player, int windowId) {
-                PacketCustom packet = new PacketCustom(channel, 24);
-                packet.writeByte(windowId);
-                packet.sendToPlayer(player);
-            }
+        ServerUtils.openSMPContainer(player, new ContainerPotionCreator(player.inventory, b), (player1, windowId) -> {
+            PacketCustom packet1 = new PacketCustom(channel, 24);
+            packet1.writeByte(windowId);
+            packet1.sendToPlayer(player1);
         });
     }
 
@@ -196,10 +183,10 @@ public class NEISPH implements IServerPacketHandler
     }
 
     private void sendLoginState(EntityPlayerMP player) {
-        LinkedList<String> actions = new LinkedList<String>();
-        LinkedList<String> disabled = new LinkedList<String>();
-        LinkedList<String> enabled = new LinkedList<String>();
-        LinkedList<ItemStack> bannedItems = new LinkedList<ItemStack>();
+        LinkedList<String> actions = new LinkedList<>();
+        LinkedList<String> disabled = new LinkedList<>();
+        LinkedList<String> enabled = new LinkedList<>();
+        LinkedList<ItemStack> bannedItems = new LinkedList<>();
         PlayerSave playerSave = NEIServerConfig.forPlayer(player.getCommandSenderName());
 
         for (String name : NEIActions.nameActionMap.keySet()) {

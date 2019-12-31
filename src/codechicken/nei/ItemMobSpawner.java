@@ -33,8 +33,8 @@ public class ItemMobSpawner extends ItemBlock
         hasSubtypes = true;
         MinecraftForgeClient.registerItemRenderer(this, new SpawnerRenderer());
 
-        entityHashMap = new HashMap<Integer, EntityLiving>();
-        IDtoNameMap = new HashMap<Integer, String>();
+        entityHashMap = new HashMap<>();
+        IDtoNameMap = new HashMap<>();
     }
 
     /**

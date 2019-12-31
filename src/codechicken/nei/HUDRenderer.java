@@ -12,13 +12,15 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import static codechicken.lib.gui.GuiDraw.*;
+import static codechicken.lib.gui.GuiDraw.displaySize;
+import static codechicken.lib.gui.GuiDraw.drawString;
+import static codechicken.lib.gui.GuiDraw.drawTooltipBox;
+import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
 public class HUDRenderer implements IKeyStateTracker
 {

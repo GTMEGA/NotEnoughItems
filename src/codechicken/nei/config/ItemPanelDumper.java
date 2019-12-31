@@ -22,7 +22,7 @@ import java.util.LinkedList;
 
 public class ItemPanelDumper extends DataDumper
 {
-    private static int[] resolutions = new int[]{16, 32, 48, 64, 128, 256};
+    private static final int[] resolutions = new int[]{16, 32, 48, 64, 128, 256};
 
     public ItemPanelDumper(String name) {
         super(name);
@@ -35,7 +35,7 @@ public class ItemPanelDumper extends DataDumper
 
     @Override
     public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<String[]>();
+        LinkedList<String[]> list = new LinkedList<>();
         for (ItemStack stack : ItemPanels.itemPanel.items)
             list.add(new String[]{
                     Item.itemRegistry.getNameForObject(stack.getItem()),

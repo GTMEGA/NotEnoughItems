@@ -14,7 +14,7 @@ import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
 public abstract class OptionButton extends Option
 {
-    protected static ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
+    protected static final ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
 
     public final String prefix;
     public final String text;

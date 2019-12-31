@@ -1,14 +1,12 @@
 package codechicken.nei;
 
-import cpw.mods.fml.client.config.HoverChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 
 public abstract class TextField extends Widget
 {
-    protected GuiTextField field;
-    protected final HoverChecker hoverChecker;
+    protected final GuiTextField field;
 
     private static final int maxSearchLength = 256;
 
@@ -21,7 +19,6 @@ public abstract class TextField extends Widget
         identifier = ident;
         field = new GuiTextField(Minecraft.getMinecraft().fontRenderer, 0, 0, 0, 0);
         field.setMaxStringLength(maxSearchLength);
-        this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
         field.setCursorPositionZero();
 //        Keyboard.enableRepeatEvents(true);
     }

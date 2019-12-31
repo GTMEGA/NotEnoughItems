@@ -39,7 +39,7 @@ public class GuiItemIconDumper extends GuiScreen
     private Option opt;
     private int drawIndex;
     private int parseIndex;
-    private File dir = new File(CommonUtils.getMinecraftDir(), "dumps/itempanel_icons");
+    private final File dir = new File(CommonUtils.getMinecraftDir(), "dumps/itempanel_icons");
     private int iconSize;
     private int borderSize;
     private int boxSize;
@@ -127,7 +127,7 @@ public class GuiItemIconDumper extends GuiScreen
     public static String cleanFileName(String name) {
         StringBuilder cleanName = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
-            int c = (int)name.charAt(i);
+            int c = name.charAt(i);
             if (Arrays.binarySearch(illegalChars, c) < 0)
                 cleanName.append((char)c);
             else

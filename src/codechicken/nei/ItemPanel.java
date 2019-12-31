@@ -20,7 +20,7 @@ public class ItemPanel extends Widget {
     /**
      * Should not be externally modified, use updateItemList
      */
-    public ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+    public ArrayList<ItemStack> items = new ArrayList<>();
     /**
      * Swapped into visible items on update
      */

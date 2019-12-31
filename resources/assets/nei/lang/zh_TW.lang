@@ -12,7 +12,6 @@ nei.inventory.next=下一頁
 nei.inventory.item_subsets=物品分類表
 nei.inventory.delete.all=刪除當前物品欄內所有物品
 nei.inventory.delete.one=刪除 %s
-nei.inventory.delete.all=清空物品欄
 nei.inventory.delete.enable=開啟刪除模式設定
 nei.inventory.delete.1=開啟刪除模式
 nei.inventory.delete.0=關閉刪除模式

@@ -18,11 +18,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-import static codechicken.lib.gui.GuiDraw.*;
+import static codechicken.lib.gui.GuiDraw.changeTexture;
+import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 /**
  * A Template Recipe Handler!
@@ -53,7 +61,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
          * @return A list of positioned ingredient items.
          */
         public List<PositionedStack> getIngredients() {
-            ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
+            ArrayList<PositionedStack> stacks = new ArrayList<>();
             PositionedStack stack = getIngredient();
             if (stack != null)
                 stacks.add(stack);
@@ -74,7 +82,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
          * @return A list of positioned items.
          */
         public List<PositionedStack> getOtherStacks() {
-            ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
+            ArrayList<PositionedStack> stacks = new ArrayList<>();
             PositionedStack stack = getOtherStack();
             if (stack != null)
                 stacks.add(stack);
@@ -183,18 +191,14 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
 
     public static class RecipeTransferRectHandler implements IContainerInputHandler, IContainerTooltipHandler
     {
-        private static HashMap<Class<? extends GuiContainer>, HashSet<RecipeTransferRect>> guiMap = new HashMap<Class<? extends GuiContainer>, HashSet<RecipeTransferRect>>();
+        private static HashMap<Class<? extends GuiContainer>, HashSet<RecipeTransferRect>> guiMap = new HashMap<>();
 
         public static void registerRectsToGuis(List<Class<? extends GuiContainer>> classes, List<RecipeTransferRect> rects) {
             if (classes == null)
                 return;
 
             for (Class<? extends GuiContainer> clazz : classes) {
-                HashSet<RecipeTransferRect> set = guiMap.get(clazz);
-                if (set == null) {
-                    set = new HashSet<RecipeTransferRect>();
-                    guiMap.put(clazz, set);
-                }
+                HashSet<RecipeTransferRect> set = guiMap.computeIfAbsent(clazz, k -> new HashSet<>());
                 set.addAll(rects);
             }
         }
@@ -300,11 +304,11 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     /**
      * The list of matching recipes
      */
-    public ArrayList<CachedRecipe> arecipes = new ArrayList<CachedRecipe>();
+    public ArrayList<CachedRecipe> arecipes = new ArrayList<>();
     /**
      * A list of transferRects that apon when clicked or R is pressed will open a new recipe.
      */
-    public LinkedList<RecipeTransferRect> transferRects = new LinkedList<RecipeTransferRect>();
+    public LinkedList<RecipeTransferRect> transferRects = new LinkedList<>();
 
     public TemplateRecipeHandler() {
         loadTransferRects();
@@ -439,7 +443,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     public List<Class<? extends GuiContainer>> getRecipeTransferRectGuis() {
         Class<? extends GuiContainer> clazz = getGuiClass();
         if (clazz != null) {
-            LinkedList<Class<? extends GuiContainer>> list = new LinkedList<Class<? extends GuiContainer>>();
+            LinkedList<Class<? extends GuiContainer>> list = new LinkedList<>();
             list.add(clazz);
             return list;
         }

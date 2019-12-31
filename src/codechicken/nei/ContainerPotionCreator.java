@@ -1,9 +1,9 @@
 package codechicken.nei;
 
 import codechicken.lib.inventory.ContainerExtended;
-import codechicken.lib.inventory.SlotHandleClicks;
 import codechicken.lib.inventory.InventoryNBT;
 import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.inventory.SlotHandleClicks;
 import codechicken.lib.packet.PacketCustom;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -86,9 +86,9 @@ public class ContainerPotionCreator extends ContainerExtended
         }
     }
 
-    InventoryPlayer playerInv;
-    InventoryBasic potionInv;
-    IInventory potionStoreInv;
+    final InventoryPlayer playerInv;
+    final InventoryBasic potionInv;
+    final IInventory potionStoreInv;
 
     public ContainerPotionCreator(InventoryPlayer inventoryPlayer, IInventory potionStoreInv) {
         playerInv = inventoryPlayer;

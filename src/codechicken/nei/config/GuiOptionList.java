@@ -27,7 +27,7 @@ public class GuiOptionList extends GuiScreenWidget
 {
     public class OptionScrollSlot extends GuiScrollSlot
     {
-        public ArrayList<Option> options = new ArrayList<Option>();
+        public final ArrayList<Option> options = new ArrayList<>();
 
         public OptionScrollSlot() {
             super(0, 0, 0, 0);
@@ -244,7 +244,7 @@ public class GuiOptionList extends GuiScreenWidget
     }
 
     private void drawTooltip() {
-        List<String> tooltip = new LinkedList<String>();
+        List<String> tooltip = new LinkedList<>();
         Point mouse = getMousePosition();
         if (worldButton.pointInside(mouse.x, mouse.y))
             tooltip.addAll(Arrays.asList(translateToLocal("nei.options.global.tip." + (world ? "1" : "0")).split(":")));

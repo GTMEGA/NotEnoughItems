@@ -12,7 +12,7 @@ import static codechicken.nei.NEIClientUtils.translate;
 
 public class GuiEnchantmentModifier extends GuiContainer
 {
-    ContainerEnchantmentModifier container;
+    final ContainerEnchantmentModifier container;
 
     public GuiEnchantmentModifier(InventoryPlayer inventoryplayer, World world, int i, int j, int k) {
         super(new ContainerEnchantmentModifier(inventoryplayer, world, i, j, k));
