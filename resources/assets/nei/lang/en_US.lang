@@ -60,6 +60,7 @@ nei.options.wbutton.tip.0=Using global settings
 nei.options.wbutton.tip.1=Overriding global setting
 
 nei.options.keys=KeyBindings
+nei.options.keys.showenchant=Show Enchant
 nei.options.keys.gui=Inventory
 nei.options.keys.gui.recipe=Recipe
 nei.options.keys.gui.usage=Usage

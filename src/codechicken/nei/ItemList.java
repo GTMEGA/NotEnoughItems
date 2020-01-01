@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Pattern;
 
 public class ItemList
@@ -227,6 +229,16 @@ public class ItemList
         }
     };
 
+    public static ForkJoinPool getPool(int poolSize) {
+        if(poolSize < 1)
+            poolSize = 1;
+
+        return new ForkJoinPool(poolSize);
+    }
+
+    public static final int numProcessors = Runtime.getRuntime().availableProcessors();
+    public static ForkJoinPool forkJoinPool = getPool(numProcessors * 2 / 3);
+
     public static final RestartableTask updateFilter = new RestartableTask("NEI Item Filtering")
     {
         @Override
@@ -234,15 +246,20 @@ public class ItemList
             ArrayList<ItemStack> filtered = new ArrayList<>();
             ItemFilter filter = getItemListFilter();
 
-            items.parallelStream().forEach(item -> {
-                if (interrupted()) return;
+            try {
+                ItemList.forkJoinPool.submit(() -> items.parallelStream().forEach(item -> {
+                    if (interrupted()) return;
 
-                if(filter.matches(item)) {
-                    synchronized (filtered){
-                        filtered.add(item);
+                    if(filter.matches(item)) {
+                        synchronized (filtered){
+                            filtered.add(item);
+                        }
                     }
-                }
-            });
+                })).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                stop();
+            }
 
             if(interrupted()) return;
             ItemSorter.sort(filtered);
