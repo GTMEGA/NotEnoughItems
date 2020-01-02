@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard;
 
 public abstract class TextField extends Widget
 {
-    protected final GuiTextField field;
+    protected GuiTextField field;
 
     private static final int maxSearchLength = 256;
 
@@ -15,11 +15,15 @@ public abstract class TextField extends Widget
 
     private boolean previousKeyboardRepeatEnabled;
 
-    public TextField(String ident) {
-        identifier = ident;
+    protected void initInternalTextField() {
         field = new GuiTextField(Minecraft.getMinecraft().fontRenderer, 0, 0, 0, 0);
         field.setMaxStringLength(maxSearchLength);
         field.setCursorPositionZero();
+    }
+
+    public TextField(String ident) {
+        identifier = ident;
+        initInternalTextField();
 //        Keyboard.enableRepeatEvents(true);
     }
 
@@ -27,15 +31,29 @@ public abstract class TextField extends Widget
         return focused() ? 0xFFE0E0E0 : 0xFF909090;
     }
 
-    @Override
-    public void draw(int mousex, int mousey) {
+    protected void setDimensionsAndColor() {
         field.xPosition = this.x + 2;
         field.yPosition = this.y + 2;
         field.width = this.w - 4;
         field.height = this.h - 4;
         field.setTextColor(getTextColour());
+    }
 
-        field.drawTextBox();
+    @Override
+    public void draw(int mousex, int mousey) {
+        try {
+            setDimensionsAndColor();
+            field.drawTextBox();
+        } catch(NullPointerException npe) {
+            // Hack to deal with a null font renderer... recreate the field and it should work
+            GuiTextField oldField = field;
+
+            initInternalTextField();
+            setDimensionsAndColor();
+
+            field.setText(oldField.getText());
+            field.drawTextBox();
+        }
     }
 
     @Override

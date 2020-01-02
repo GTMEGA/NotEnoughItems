@@ -12,9 +12,8 @@ import static codechicken.lib.gui.GuiDraw.getStringWidth;
 public class OptionTextField extends Option
 {
     private boolean focused = false;
-    private final TextField textField = new TextField("")
+    private TextField textField = new TextField("test")
     {
-
         @Override
         public void onTextChange(String oldText) {
             if(focused() && isValidValue(text()))
