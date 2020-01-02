@@ -16,7 +16,7 @@ public class PositionedStack
 {    
     public int relx;
     public int rely;
-    public ItemStack items[];
+    public ItemStack[] items;
     //compatibility dummy
     public ItemStack item;
     
@@ -44,7 +44,7 @@ public class PositionedStack
         if(permutated)
             return;
         
-        ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> stacks = new ArrayList<>();
         for(ItemStack item : items)
         {
             if(item == null || item.getItem() == null)

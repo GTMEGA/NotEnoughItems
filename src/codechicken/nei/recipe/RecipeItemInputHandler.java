@@ -1,5 +1,6 @@
 package codechicken.nei.recipe;
 
+import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.guihook.GuiContainerManager;
@@ -21,7 +22,12 @@ public class RecipeItemInputHandler implements IContainerInputHandler
         
         if(keyCode == NEIClientConfig.getKeyBinding("gui.recipe"))
             return GuiCraftingRecipe.openRecipeGui("item", stackover.copy());
-        
+
+        if(keyCode == NEIClientConfig.getKeyBinding("gui.bookmark")) {
+            NEIClientConfig.logger.debug("Adding or removing {} from bookmarks", stackover.getDisplayName());
+            ItemPanels.bookmarkPanel.addOrRemoveItem(stackover.copy());
+        }
+
         return false;
     }
 

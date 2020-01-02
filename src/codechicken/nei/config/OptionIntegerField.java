@@ -2,8 +2,8 @@ package codechicken.nei.config;
 
 public class OptionIntegerField extends OptionTextField
 {
-    public int min;
-    public int max;
+    public final int min;
+    public final int max;
     public OptionIntegerField(String name, int min, int max) {
         super(name);
         this.min = min;

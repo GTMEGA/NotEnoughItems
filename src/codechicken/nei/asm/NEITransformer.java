@@ -1,18 +1,43 @@
 package codechicken.nei.asm;
 
-import codechicken.lib.asm.*;
-import codechicken.lib.asm.ModularASMTransformer.*;
+import codechicken.lib.asm.ASMBlock;
+import codechicken.lib.asm.ASMHelper;
+import codechicken.lib.asm.ASMInit;
+import codechicken.lib.asm.ASMReader;
+import codechicken.lib.asm.ClassHeirachyManager;
+import codechicken.lib.asm.InsnListSection;
+import codechicken.lib.asm.ModularASMTransformer;
+import codechicken.lib.asm.ModularASMTransformer.FieldWriter;
+import codechicken.lib.asm.ModularASMTransformer.MethodInjector;
+import codechicken.lib.asm.ModularASMTransformer.MethodReplacer;
+import codechicken.lib.asm.ModularASMTransformer.MethodTransformer;
+import codechicken.lib.asm.ModularASMTransformer.MethodWriter;
+import codechicken.lib.asm.ObfMapping;
 import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import java.util.Map;
 
-import static codechicken.lib.asm.InsnComparator.*;
+import static codechicken.lib.asm.InsnComparator.findN;
+import static codechicken.lib.asm.InsnComparator.findOnce;
+import static codechicken.lib.asm.InsnComparator.getControlFlowLabels;
+import static codechicken.lib.asm.InsnComparator.matches;
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
 import static org.objectweb.asm.ClassWriter.COMPUTE_MAXS;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 public class NEITransformer implements IClassTransformer
 {
@@ -20,8 +45,8 @@ public class NEITransformer implements IClassTransformer
         ASMInit.init();
     }
 
-    private ModularASMTransformer transformer = new ModularASMTransformer();
-    private Map<String, ASMBlock> asmblocks = ASMReader.loadResource("/assets/nei/asm/blocks.asm");
+    private final ModularASMTransformer transformer = new ModularASMTransformer();
+    private final Map<String, ASMBlock> asmblocks = ASMReader.loadResource("/assets/nei/asm/blocks.asm");
 
     public NEITransformer() {
         if(FMLLaunchHandler.side().isClient()) {
@@ -199,7 +224,7 @@ public class NEITransformer implements IClassTransformer
         transformer.add(new MethodWriter(ACC_PUBLIC, publicCall, forward2));
     }
 
-    private ObfMapping c_GuiContainer = new ObfMapping("net/minecraft/client/gui/inventory/GuiContainer").toClassloading();
+    private final ObfMapping c_GuiContainer = new ObfMapping("net/minecraft/client/gui/inventory/GuiContainer").toClassloading();
     /**
      * Adds super.updateScreen() to non implementing GuiContainer subclasses
      */

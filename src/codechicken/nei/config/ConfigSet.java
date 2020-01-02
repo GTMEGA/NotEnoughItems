@@ -2,16 +2,15 @@ package codechicken.nei.config;
 
 import codechicken.lib.config.ConfigTagParent;
 import codechicken.nei.NEIServerUtils;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.io.File;
 
 public class ConfigSet
 {
-    private File nbtFile;
+    private final File nbtFile;
     public NBTTagCompound nbt;
-    public ConfigTagParent config;
+    public final ConfigTagParent config;
 
     public ConfigSet(File nbtFile, ConfigTagParent config) {
         this.nbtFile = nbtFile;

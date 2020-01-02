@@ -79,7 +79,7 @@ public class ContainerRecipe extends Container
         }
     }
     
-    private RecipeInventory recipeInventory = new RecipeInventory();
+    private final RecipeInventory recipeInventory = new RecipeInventory();
     
     public void clearInventory()
     {
@@ -119,10 +119,9 @@ public class ContainerRecipe extends Container
 
     public Slot getSlotWithStack(PositionedStack stack, int recipex, int recipey)
     {
-        for(int i = 0; i < inventorySlots.size(); i++)
-        {
-            Slot slot = (Slot) inventorySlots.get(i);
-            if(slot.xDisplayPosition == (stack.relx + recipex) && slot.yDisplayPosition == (stack.rely + recipey))
+        for (Object inventorySlot : inventorySlots) {
+            Slot slot = (Slot) inventorySlot;
+            if (slot.xDisplayPosition == (stack.relx + recipex) && slot.yDisplayPosition == (stack.rely + recipey))
                 return slot;
         }
         return null;

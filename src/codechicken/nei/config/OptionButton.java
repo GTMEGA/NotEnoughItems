@@ -4,14 +4,17 @@ import codechicken.nei.LayoutManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.List;
 
-import static codechicken.lib.gui.GuiDraw.*;
+import static codechicken.lib.gui.GuiDraw.changeTexture;
+import static codechicken.lib.gui.GuiDraw.drawString;
+import static codechicken.lib.gui.GuiDraw.drawStringC;
+import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
 public abstract class OptionButton extends Option
 {
-    protected static ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
+    protected static final ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
 
     public final String prefix;
     public final String text;

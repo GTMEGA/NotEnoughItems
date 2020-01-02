@@ -8,16 +8,19 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class FurnaceRecipeHandler extends TemplateRecipeHandler
 {
@@ -30,7 +33,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         }
 
         public List<PositionedStack> getIngredients() {
-            return getCycledIngredients(cycleticks / 48, Arrays.asList(ingred));
+            return getCycledIngredients(cycleticks / 48, Collections.singletonList(ingred));
         }
 
         public PositionedStack getResult() {
@@ -41,8 +44,8 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
             return afuels.get((cycleticks / 48) % afuels.size()).stack;
         }
 
-        PositionedStack ingred;
-        PositionedStack result;
+        final PositionedStack ingred;
+        final PositionedStack result;
     }
 
     public static class FuelPair
@@ -52,8 +55,8 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
             this.burnTime = burnTime;
         }
 
-        public PositionedStack stack;
-        public int burnTime;
+        public final PositionedStack stack;
+        public final int burnTime;
     }
 
     public static ArrayList<FuelPair> afuels;
@@ -114,7 +117,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
             if (NEIServerUtils.areStacksSameTypeCrafting(recipe.getKey(), ingredient)) {
                 SmeltingPair arecipe = new SmeltingPair(recipe.getKey(), recipe.getValue());
-                arecipe.setIngredientPermutation(Arrays.asList(arecipe.ingred), ingredient);
+                arecipe.setIngredientPermutation(Collections.singletonList(arecipe.ingred), ingredient);
                 arecipes.add(arecipe);
             }
     }
@@ -131,7 +134,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
     }
 
     private static Set<Item> excludedFuels() {
-        Set<Item> efuels = new HashSet<Item>();
+        Set<Item> efuels = new HashSet<>();
         efuels.add(Item.getItemFromBlock(Blocks.brown_mushroom));
         efuels.add(Item.getItemFromBlock(Blocks.red_mushroom));
         efuels.add(Item.getItemFromBlock(Blocks.standing_sign));
@@ -142,7 +145,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
     }
 
     private static void findFuels() {
-        afuels = new ArrayList<FuelPair>();
+        afuels = new ArrayList<>();
         Set<Item> efuels = excludedFuels();
         for (ItemStack item : ItemList.items)
             if (!efuels.contains(item.getItem())) {

@@ -1,13 +1,13 @@
 package codechicken.nei.config;
 
 import codechicken.lib.math.MathHelper;
-import codechicken.nei.*;
+import codechicken.nei.ItemSorter;
 import codechicken.nei.ItemSorter.SortEntry;
 import codechicken.nei.LayoutManager;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class GuiItemSorter extends GuiOptionPane
     {
         public double ya;
         public double y;
-        public SortEntry e;
+        public final SortEntry e;
 
         public SortItem(SortEntry e) {
             this.e = e;
@@ -45,9 +45,9 @@ public class GuiItemSorter extends GuiOptionPane
         }
     }
 
-    public Option opt;
-    public List<SortItem> slots = new ArrayList<SortItem>();
-    public List<SortEntry> list;
+    public final Option opt;
+    public final List<SortItem> slots = new ArrayList<>();
+    public final List<SortEntry> list;
 
     boolean dragging;
     public SortItem dragged;
@@ -120,7 +120,7 @@ public class GuiItemSorter extends GuiOptionPane
                 list.add(nslot, dragged.e);
                 opt.getTag().setValue(ItemSorter.getSaveString(list));
                 if(opt.activeTag() == opt.getTag())
-                    ItemSorter.list = new ArrayList<SortEntry>(list);
+                    ItemSorter.list = new ArrayList<>(list);
             }
         }
     }

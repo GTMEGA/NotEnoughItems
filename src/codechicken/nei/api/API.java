@@ -1,13 +1,25 @@
 package codechicken.nei.api;
 
-import codechicken.nei.*;
+import codechicken.nei.ItemList;
+import codechicken.nei.ItemSorter;
+import codechicken.nei.ItemStackSet;
+import codechicken.nei.KeyManager;
 import codechicken.nei.KeyManager.KeyState;
+import codechicken.nei.LayoutManager;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.OffsetPositioner;
+import codechicken.nei.SearchField;
 import codechicken.nei.SearchField.ISearchProvider;
+import codechicken.nei.SubsetWidget;
 import codechicken.nei.SubsetWidget.SubsetTag;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.config.Option;
 import codechicken.nei.config.OptionKeyBind;
-import codechicken.nei.recipe.*;
+import codechicken.nei.recipe.GuiCraftingRecipe;
+import codechicken.nei.recipe.GuiUsageRecipe;
+import codechicken.nei.recipe.ICraftingHandler;
+import codechicken.nei.recipe.IUsageHandler;
+import codechicken.nei.recipe.RecipeInfo;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;

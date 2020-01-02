@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Pattern;
 
 public class ItemList
@@ -22,7 +24,7 @@ public class ItemList
     /**
      * Fields are replaced atomically and contents never modified.
      */
-    public static volatile List<ItemStack> items = new ArrayList<ItemStack>();
+    public static volatile List<ItemStack>  items = new ArrayList<>();
     /**
      * Fields are replaced atomically and contents never modified.
      */
@@ -30,11 +32,11 @@ public class ItemList
     /**
      * Updates to this should be synchronised on this
      */
-    public static final List<ItemFilterProvider> itemFilterers = new LinkedList<ItemFilterProvider>();
-    public static final List<ItemsLoadedCallback> loadCallbacks = new LinkedList<ItemsLoadedCallback>();
+    public static final List<ItemFilterProvider> itemFilterers = new LinkedList<>();
+    public static final List<ItemsLoadedCallback> loadCallbacks = new LinkedList<>();
 
-    private static HashSet<Item> erroredItems = new HashSet<Item>();
-    private static HashSet<String> stackTraces = new HashSet<String>();
+    private static final HashSet<Item> erroredItems = new HashSet<>();
+    private static final HashSet<String> stackTraces = new HashSet<>();
 
     public static class EverythingItemFilter implements ItemFilter
     {
@@ -68,14 +70,14 @@ public class ItemList
 
     public static class AllMultiItemFilter implements ItemFilter
     {
-        public List<ItemFilter> filters = new LinkedList<ItemFilter>();
+        public List<ItemFilter> filters;
 
         public AllMultiItemFilter(List<ItemFilter> filters) {
             this.filters = filters;
         }
 
         public AllMultiItemFilter() {
-            this(new LinkedList<ItemFilter>());
+            this(new LinkedList<>());
         }
 
         @Override
@@ -93,14 +95,14 @@ public class ItemList
 
     public static class AnyMultiItemFilter implements ItemFilter
     {
-        public List<ItemFilter> filters = new LinkedList<ItemFilter>();
+        public List<ItemFilter> filters;
 
         public AnyMultiItemFilter(List<ItemFilter> filters) {
             this.filters = filters;
         }
 
         public AnyMultiItemFilter() {
-            this(new LinkedList<ItemFilter>());
+            this(new LinkedList<>());
         }
 
         @Override
@@ -147,7 +149,7 @@ public class ItemList
     }
 
     public static List<ItemFilter> getItemFilters() {
-        LinkedList<ItemFilter> filters = new LinkedList<ItemFilter>();
+        LinkedList<ItemFilter> filters = new LinkedList<>();
         synchronized (itemFilterers) {
             for(ItemFilterProvider p : itemFilterers)
                 filters.add(p.getFilter());
@@ -158,7 +160,7 @@ public class ItemList
     public static final RestartableTask loadItems = new RestartableTask("NEI Item Loading")
     {
         private void damageSearch(Item item, List<ItemStack> permutations) {
-            HashSet<String> damageIconSet = new HashSet<String>();
+            HashSet<String> damageIconSet = new HashSet<>();
             for (int damage = 0; damage < 16; damage++)
                 try {
                     ItemStack itemstack = new ItemStack(item, 1, damage);
@@ -182,8 +184,8 @@ public class ItemList
         public void execute() {
             ThreadOperationTimer timer = getTimer(500);
 
-            LinkedList<ItemStack> items = new LinkedList<ItemStack>();
-            LinkedList<ItemStack> permutations = new LinkedList<ItemStack>();
+            LinkedList<ItemStack> items = new LinkedList<>();
+            LinkedList<ItemStack> permutations = new LinkedList<>();
             ListMultimap<Item, ItemStack> itemMap = ArrayListMultimap.create();
 
             timer.setLimit(500);
@@ -227,17 +229,36 @@ public class ItemList
         }
     };
 
+    public static ForkJoinPool getPool(int poolSize) {
+        if(poolSize < 1)
+            poolSize = 1;
+
+        return new ForkJoinPool(poolSize);
+    }
+
+    public static final int numProcessors = Runtime.getRuntime().availableProcessors();
+    public static ForkJoinPool forkJoinPool = getPool(numProcessors * 2 / 3);
+
     public static final RestartableTask updateFilter = new RestartableTask("NEI Item Filtering")
     {
         @Override
         public void execute() {
-            ArrayList<ItemStack> filtered = new ArrayList<ItemStack>();
+            ArrayList<ItemStack> filtered = new ArrayList<>();
             ItemFilter filter = getItemListFilter();
-            for(ItemStack item : items) {
-                if (interrupted()) return;
 
-                if(filter.matches(item))
-                    filtered.add(item);
+            try {
+                ItemList.forkJoinPool.submit(() -> items.parallelStream().forEach(item -> {
+                    if (interrupted()) return;
+
+                    if(filter.matches(item)) {
+                        synchronized (filtered){
+                            filtered.add(item);
+                        }
+                    }
+                })).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                stop();
             }
 
             if(interrupted()) return;

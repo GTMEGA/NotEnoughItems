@@ -5,7 +5,11 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IStackPositioner;
 import com.google.common.base.Objects;
-import net.minecraft.client.gui.inventory.*;
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.client.gui.inventory.GuiInventory;
 
 import java.util.HashMap;
 
@@ -13,8 +17,8 @@ public class RecipeInfo
 {    
     private static class OverlayKey
     {
-        String ident;
-        Class<? extends GuiContainer> guiClass;
+        final String ident;
+        final Class<? extends GuiContainer> guiClass;
         
         public OverlayKey(Class<? extends GuiContainer> classz, String ident)
         {
@@ -38,9 +42,9 @@ public class RecipeInfo
         }
     }
     
-    static HashMap<OverlayKey, IOverlayHandler> overlayMap = new HashMap<OverlayKey, IOverlayHandler>();
-    static HashMap<OverlayKey, IStackPositioner> positionerMap = new HashMap<OverlayKey, IStackPositioner>();
-    static HashMap<Class<? extends GuiContainer>, int[]> offsets = new HashMap<Class<? extends GuiContainer>, int[]>();
+    static final HashMap<OverlayKey, IOverlayHandler> overlayMap = new HashMap<>();
+    static final HashMap<OverlayKey, IStackPositioner> positionerMap = new HashMap<>();
+    static final HashMap<Class<? extends GuiContainer>, int[]> offsets = new HashMap<>();
     
     public static void registerOverlayHandler(Class<? extends GuiContainer> classz, IOverlayHandler handler, String ident)
     {

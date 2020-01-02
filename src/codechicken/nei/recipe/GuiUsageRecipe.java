@@ -14,7 +14,7 @@ public class GuiUsageRecipe extends GuiRecipe
         GuiContainer prevscreen = mc.currentScreen instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
 
         TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
-        ArrayList<IUsageHandler> handlers = new ArrayList<IUsageHandler>();
+        ArrayList<IUsageHandler> handlers = new ArrayList<>();
         for (IUsageHandler usagehandler : usagehandlers) {
             profiler.start(usagehandler.getRecipeName());
             IUsageHandler handler = usagehandler.getUsageHandler(inputId, ingredients);
@@ -49,5 +49,5 @@ public class GuiUsageRecipe extends GuiRecipe
 
     public ArrayList<IUsageHandler> currenthandlers;
 
-    public static ArrayList<IUsageHandler> usagehandlers = new ArrayList<IUsageHandler>();
+    public static ArrayList<IUsageHandler> usagehandlers = new ArrayList<>();
 }

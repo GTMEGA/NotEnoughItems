@@ -5,7 +5,7 @@ import java.util.Comparator;
 public class WidgetZOrder
     implements Comparator<Widget>
 {
-    boolean topfirst;
+    final boolean topfirst;
     public WidgetZOrder(boolean topfirst)
     {
         this.topfirst = topfirst;

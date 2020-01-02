@@ -14,7 +14,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import static codechicken.nei.NEIClientUtils.translate;
@@ -25,7 +25,7 @@ public class GuiPotionCreator extends GuiContainerWidget
     {
         public int selectedslot = -1;
         public boolean enabled = true;
-        private ArrayList<Potion> validPotions = new ArrayList<Potion>();
+        private final ArrayList<Potion> validPotions = new ArrayList<>();
 
         public GuiSlotPotionEffects(int x, int y) {
             super(x, y, 108, 76);
@@ -256,7 +256,7 @@ public class GuiPotionCreator extends GuiContainerWidget
     GuiCCButton ampUp;
     GuiSlotPotionEffects slotPotionEffects;
     GuiDurationField durationField;
-    ContainerPotionCreator container;
+    final ContainerPotionCreator container;
 
     public GuiPotionCreator(InventoryPlayer inventoryplayer) {
         super(new ContainerPotionCreator(inventoryplayer, new ContainerPotionCreator.InventoryPotionStore()), 176, 208);

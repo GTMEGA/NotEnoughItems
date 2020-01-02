@@ -6,26 +6,28 @@ import codechicken.core.gui.GuiScrollSlot;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.LayoutManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiYesNoCallback;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.net.URI;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static codechicken.lib.gui.GuiDraw.*;
+import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
+import static codechicken.lib.gui.GuiDraw.drawStringC;
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static net.minecraft.util.StatCollector.translateToLocal;
 
 public class GuiOptionList extends GuiScreenWidget
 {
     public class OptionScrollSlot extends GuiScrollSlot
     {
-        public ArrayList<Option> options = new ArrayList<Option>();
+        public final ArrayList<Option> options = new ArrayList<>();
 
         public OptionScrollSlot() {
             super(0, 0, 0, 0);
@@ -35,8 +37,7 @@ public class GuiOptionList extends GuiScreenWidget
         @Override
         public void onAdded(GuiScreen s) {
             super.onAdded(s);
-            for (Option o : optionList.optionList)
-                options.add(o);
+            options.addAll(optionList.optionList);
             for (Option o : options)
                 o.onAdded(this);
         }
@@ -243,7 +244,7 @@ public class GuiOptionList extends GuiScreenWidget
     }
 
     private void drawTooltip() {
-        List<String> tooltip = new LinkedList<String>();
+        List<String> tooltip = new LinkedList<>();
         Point mouse = getMousePosition();
         if (worldButton.pointInside(mouse.x, mouse.y))
             tooltip.addAll(Arrays.asList(translateToLocal("nei.options.global.tip." + (world ? "1" : "0")).split(":")));

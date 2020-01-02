@@ -18,7 +18,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class ShapedRecipeHandler extends TemplateRecipeHandler
 
         public CachedShapedRecipe(int width, int height, Object[] items, ItemStack out) {
             result = new PositionedStack(out, 119, 24);
-            ingredients = new ArrayList<PositionedStack>();
+            ingredients = new ArrayList<>();
             setIngredients(width, height, items);
         }
 

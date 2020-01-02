@@ -9,7 +9,12 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class DefaultOverlayHandler implements IOverlayHandler
 {
@@ -20,7 +25,7 @@ public class DefaultOverlayHandler implements IOverlayHandler
             stack = InventoryUtils.copyStack(item, 1);
         }
         
-        public ItemStack stack;
+        public  ItemStack stack;
         public int invAmount;
         public int distributed;
         public int numSlots;
@@ -164,19 +169,19 @@ public class DefaultOverlayHandler implements IOverlayHandler
     {
         Slot[][] recipeSlots = mapIngredSlots(gui, ingredients);//setup the slot map
         
-        HashMap<Slot, Integer> distribution = new HashMap<Slot, Integer>();
-        for(int i = 0; i < recipeSlots.length; i++)
-            for(Slot slot : recipeSlots[i])
-                if(!distribution.containsKey(slot))
+        HashMap<Slot, Integer> distribution = new HashMap<>();
+        for (Slot[] recipeSlot : recipeSlots)
+            for (Slot slot : recipeSlot)
+                if (!distribution.containsKey(slot))
                     distribution.put(slot, -1);
         
-        HashSet<Slot> avaliableSlots = new HashSet<Slot>(distribution.keySet());
-        HashSet<Integer> remainingIngreds = new HashSet<Integer>();
-        ArrayList<LinkedList<Slot>> assignedSlots = new ArrayList<LinkedList<Slot>>();
+        HashSet<Slot> avaliableSlots = new HashSet<>(distribution.keySet());
+        HashSet<Integer> remainingIngreds = new HashSet<>();
+        ArrayList<LinkedList<Slot>> assignedSlots = new ArrayList<>();
         for(int i = 0; i < ingredients.size(); i++)
         {
             remainingIngreds.add(i);
-            assignedSlots.add(new LinkedList<Slot>());
+            assignedSlots.add(new LinkedList<>());
         }
                 
         while(avaliableSlots.size() > 0 && remainingIngreds.size() > 0)
@@ -214,7 +219,7 @@ public class DefaultOverlayHandler implements IOverlayHandler
 
     private List<IngredientDistribution> assignIngredients(List<PositionedStack> ingredients, List<DistributedIngred> ingredStacks)
     {
-        ArrayList<IngredientDistribution> assignedIngredients = new ArrayList<IngredientDistribution>();
+        ArrayList<IngredientDistribution> assignedIngredients = new ArrayList<>();
         for(PositionedStack posstack : ingredients)//assign what we need and have
         {
             DistributedIngred biggestIngred = null;
@@ -222,15 +227,12 @@ public class DefaultOverlayHandler implements IOverlayHandler
             int biggestSize = 0;
             for(ItemStack pstack : posstack.items)
             {
-                for(int j = 0; j < ingredStacks.size(); j++)
-                {
-                    DistributedIngred istack = ingredStacks.get(j);
-                    if(!canStack(pstack, istack.stack) || istack.invAmount-istack.distributed < pstack.stackSize)
+                for (DistributedIngred istack : ingredStacks) {
+                    if (!canStack(pstack, istack.stack) || istack.invAmount - istack.distributed < pstack.stackSize)
                         continue;
-                    
-                    int relsize = (istack.invAmount-istack.invAmount/istack.recipeAmount*istack.distributed)/pstack.stackSize;
-                    if(relsize > biggestSize)
-                    {
+
+                    int relsize = (istack.invAmount - istack.invAmount / istack.recipeAmount * istack.distributed) / pstack.stackSize;
+                    if (relsize > biggestSize) {
                         biggestSize = relsize;
                         biggestIngred = istack;
                         permutation = pstack;
@@ -266,7 +268,7 @@ public class DefaultOverlayHandler implements IOverlayHandler
 
     private List<DistributedIngred> getPermutationIngredients(List<PositionedStack> ingredients)
     {
-        ArrayList<DistributedIngred> ingredStacks = new ArrayList<DistributedIngred>();
+        ArrayList<DistributedIngred> ingredStacks = new ArrayList<>();
         for(PositionedStack posstack : ingredients)//work out what we need
         {
             for(ItemStack pstack : posstack.items)
@@ -290,7 +292,7 @@ public class DefaultOverlayHandler implements IOverlayHandler
         Slot[][] recipeSlotList = new Slot[ingredients.size()][];
         for(int i = 0; i < ingredients.size(); i++)//identify slots
         {
-            LinkedList<Slot> recipeSlots = new LinkedList<Slot>();
+            LinkedList<Slot> recipeSlots = new LinkedList<>();
             PositionedStack pstack = ingredients.get(i);
             for(Slot slot : (List<Slot>)gui.inventorySlots.inventorySlots)
             {

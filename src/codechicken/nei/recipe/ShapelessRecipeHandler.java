@@ -30,7 +30,7 @@ public class ShapelessRecipeHandler extends ShapedRecipeHandler
     public class CachedShapelessRecipe extends CachedRecipe
     {
         public CachedShapelessRecipe() {
-            ingredients = new ArrayList<PositionedStack>();
+            ingredients = new ArrayList<>();
         }
 
         public CachedShapelessRecipe(ItemStack output) {

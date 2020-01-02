@@ -11,8 +11,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.RecipeFireworks;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,11 +22,11 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler
 {
     public class CachedFireworkRecipe extends CachedShapelessRecipe
     {
-        LinkedList<Object> itemList = new LinkedList<Object>();
+        final LinkedList<Object> itemList = new LinkedList<>();
 
-        public Object[] baseIngredients;
-        public Object extraIngred;
-        public int recipeType;
+        public final Object[] baseIngredients;
+        public final Object extraIngred;
+        public final int recipeType;
 
         public CachedFireworkRecipe(Object[] base, Object extra, int type) {
             super(new ItemStack(Items.fireworks));
@@ -37,8 +39,7 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler
 
         public void cycle() {
             itemList.clear();
-            for (Object obj : baseIngredients)
-                itemList.add(obj);
+            itemList.addAll(Arrays.asList(baseIngredients));
             int extras = (cycleticks / 40) % (10 - itemList.size());
             for (int i = 0; i < extras; i++)
                 itemList.add(extraIngred);
@@ -54,10 +55,10 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler
         }
     }
 
-    private InventoryCrafting inventoryCrafting = new InventoryCraftingDummy();
-    private RecipeFireworks recipeFireworks = new RecipeFireworks();
+    private final InventoryCrafting inventoryCrafting = new InventoryCraftingDummy();
+    private final RecipeFireworks recipeFireworks = new RecipeFireworks();
 
-    public ArrayList<CachedFireworkRecipe> mfireworks = new ArrayList<CachedFireworkRecipe>();
+    public final ArrayList<CachedFireworkRecipe> mfireworks = new ArrayList<>();
 
     public FireworkRecipeHandler() {
         super();

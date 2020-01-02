@@ -15,7 +15,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -24,18 +24,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static codechicken.lib.gui.GuiDraw.*;
+import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.lib.gui.GuiDraw.renderEngine;
 
 public class GuiContainerManager
 {
     public GuiContainer window;
 
     public static RenderItem drawItems = new RenderItem();
-    public static final LinkedList<IContainerTooltipHandler> tooltipHandlers = new LinkedList<IContainerTooltipHandler>();
-    public static final LinkedList<IContainerInputHandler> inputHandlers = new LinkedList<IContainerInputHandler>();
-    public static final LinkedList<IContainerDrawHandler> drawHandlers = new LinkedList<IContainerDrawHandler>();
-    public static final LinkedList<IContainerObjectHandler> objectHandlers = new LinkedList<IContainerObjectHandler>();
-    public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers = new LinkedList<IContainerSlotClickHandler>();
+    public static LinkedList<IContainerTooltipHandler> tooltipHandlers = new LinkedList<>();
+    public static LinkedList<IContainerInputHandler> inputHandlers = new LinkedList<>();
+    public static LinkedList<IContainerDrawHandler> drawHandlers = new LinkedList<>();
+    public static LinkedList<IContainerObjectHandler> objectHandlers = new LinkedList<>();
+    public static LinkedList<IContainerSlotClickHandler> slotClickHandlers = new LinkedList<>();
 
     static {
         addSlotClickHandler(new DefaultSlotClickHandler());
@@ -120,7 +123,7 @@ public class GuiContainerManager
         } catch (Throwable ignored) {}
 
         if (namelist == null)
-            namelist = new ArrayList<String>();
+            namelist = new ArrayList<>();
 
         if (namelist.size() == 0)
             namelist.add("Unnamed");
@@ -178,7 +181,7 @@ public class GuiContainerManager
     }
 
     private static int modelviewDepth = -1;
-    private static HashSet<String> stackTraces = new HashSet<String>();
+    private static final HashSet<String> stackTraces = new HashSet<>();
 
     public static void drawItem(int i, int j, ItemStack itemstack, FontRenderer fontRenderer) {
         enable3DRender();
@@ -251,7 +254,7 @@ public class GuiContainerManager
     public GuiContainerManager(GuiContainer screen) {
         window = screen;
         if (screen instanceof IContainerTooltipHandler) {
-            instanceTooltipHandlers = new LinkedList<IContainerTooltipHandler>();
+            instanceTooltipHandlers = new LinkedList<>();
             instanceTooltipHandlers.add((IContainerTooltipHandler) screen);
             instanceTooltipHandlers.addAll(tooltipHandlers);
         } else
@@ -392,7 +395,7 @@ public class GuiContainerManager
     }
 
     public void renderToolTips(int mousex, int mousey) {
-        List<String> tooltip = new LinkedList<String>();
+        List<String> tooltip = new LinkedList<>();
         FontRenderer font = GuiDraw.fontRenderer;
 
         for (IContainerTooltipHandler handler : instanceTooltipHandlers)

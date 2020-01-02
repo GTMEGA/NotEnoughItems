@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiNEIButton extends GuiButton
 {
-    protected static ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
+    protected static final ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
     
     public GuiNEIButton(int i, int j, int k, int l, int i1, String s)
     {

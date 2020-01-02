@@ -12,7 +12,11 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -28,14 +32,14 @@ public class ClientHandler
 {
     private static ClientHandler instance;
 
-    private ArrayList<EntityItem> SMPmagneticItems = new ArrayList<EntityItem>();
+    private ArrayList<EntityItem> SMPmagneticItems = new ArrayList<>();
     private World lastworld;
     private GuiScreen lastGui;
 
     public void addSMPMagneticItem(int i, World world) {
         WorldClient cworld = (WorldClient) world;
         Entity e = cworld.getEntityByID(i);
-        if (e == null || !(e instanceof EntityItem)) {
+        if (!(e instanceof EntityItem)) {
             return;
         }
         SMPmagneticItems.add((EntityItem) e);

@@ -8,7 +8,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GuiExtendedCreativeInv extends GuiContainer implements INEIGuiHandler
@@ -41,7 +41,7 @@ public class GuiExtendedCreativeInv extends GuiContainer implements INEIGuiHandl
 
     @Override
     public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
-        return Arrays.asList(new TaggedInventoryArea("ExtendedCreativeInv", 0, 54, inventorySlots));
+        return Collections.singletonList(new TaggedInventoryArea("ExtendedCreativeInv", 0, 54, inventorySlots));
     }
 
     @Override

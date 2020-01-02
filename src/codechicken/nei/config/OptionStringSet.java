@@ -5,16 +5,20 @@ import codechicken.nei.LayoutManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static codechicken.lib.gui.GuiDraw.drawString;
 
 public abstract class OptionStringSet extends Option
 {
-    public LinkedList<String> options = new LinkedList<String>();
-    public Multimap<String, String> dependants = ArrayListMultimap.create();
-    public Map<String, String> dependancies = new HashMap<String, String>();
-    public Multimap<String, String> groups = ArrayListMultimap.create();
+    public final LinkedList<String> options = new LinkedList<>();
+    public final Multimap<String, String> dependants = ArrayListMultimap.create();
+    public final Map<String, String> dependancies = new HashMap<>();
+    public final Multimap<String, String> groups = ArrayListMultimap.create();
 
     public OptionStringSet(String name) {
         super(name);
@@ -70,16 +74,15 @@ public abstract class OptionStringSet extends Option
     public boolean clickButton(int mousex, int mousey, int button) {
         int x = buttonX();
         List<String> values = values();
-        for (int i = 0; i < options.size(); i++) {
+        for (String option : options) {
             if (new Rectangle4i(x, 0, 20, 20).contains(mousex, mousey)) {
-                String s = options.get(i);
-                boolean set = values.contains(s);
+                boolean set = values.contains(option);
                 if (button == 0 && !set) {
-                    setValue(s);
+                    setValue(option);
                     return true;
                 }
                 if (button == 1 && set) {
-                    remValue(s);
+                    remValue(option);
                     return true;
                 }
                 return false;
@@ -101,7 +104,7 @@ public abstract class OptionStringSet extends Option
             for (String grp : groups.get(s))
                 setValue(grp);
         } else {
-            List<String> setUtils = new LinkedList<String>(values());
+            List<String> setUtils = new LinkedList<>(values());
             setUtils.add(s);
             setValues(setUtils);
         }
@@ -115,7 +118,7 @@ public abstract class OptionStringSet extends Option
             for (String grp : groups.get(s))
                 remValue(grp);
         } else {
-            List<String> values = new LinkedList<String>(values());
+            List<String> values = new LinkedList<>(values());
             values.remove(s);
             setValues(values);
         }

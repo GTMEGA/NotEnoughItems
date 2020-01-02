@@ -88,7 +88,6 @@ nei.options.inventory.widgetsenabled.false=NEI Deaktiviert
 nei.options.inventory.cheatmode.0=Rezeptmodus
 nei.options.inventory.cheatmode.1=Mehrzweckmodus
 nei.options.inventory.cheatmode.2=Cheat-Modus
-nei.options.inventory.layoutstyle=Layout-Stil
 nei.options.inventory.profileRecipes=Profil-Rezepte
 nei.options.inventory.profileRecipes.true=Wahr
 nei.options.inventory.profileRecipes.false=Falsch
@@ -161,8 +160,8 @@ nei.options.tools.dump.itempanel.mode.3=PNG
 nei.options.tools.dump.itempanel.icon.dumped=Icons des Item-Panels wurden nach %s exportiert
 nei.options.tools.dump.itempanel.icon.cancelled=Export abgebrochen
 
-nei.layoutstyle.minecraft=Minecraft
-nei.layoutstyle.oldtmi=Altes TMI
+
+
 
 nei.recipe.page=Seite %s/%s
 nei.recipe.tooltip=Rezepte

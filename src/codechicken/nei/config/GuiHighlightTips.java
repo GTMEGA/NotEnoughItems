@@ -11,7 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,9 +22,9 @@ import static codechicken.nei.NEIClientUtils.translate;
 
 public class GuiHighlightTips extends GuiScreenWidget
 {
-    private String name;
+    private final String name;
     private GuiCCButton toggleButton;
-    private Option opt;
+    private final Option opt;
     private Point dragDown;
 
     public GuiHighlightTips(Option opt) {

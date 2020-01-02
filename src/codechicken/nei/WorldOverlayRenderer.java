@@ -98,8 +98,8 @@ public class WorldOverlayRenderer implements IKeyStateTracker
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    private static Entity dummyEntity = new EntityPig(null);
-    private static AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
+    private static final Entity dummyEntity = new EntityPig(null);
+    private static final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
     private static int getSpawnMode(Chunk chunk, int x, int y, int z) {
         if (!SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, chunk.worldObj, x, y, z) ||
                 chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15) >= 8)

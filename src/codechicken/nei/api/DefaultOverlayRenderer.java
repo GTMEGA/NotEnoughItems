@@ -13,7 +13,7 @@ public class DefaultOverlayRenderer implements IRecipeOverlayRenderer
     public DefaultOverlayRenderer(List<PositionedStack> ai, IStackPositioner positioner)
     {
         positioner = this.positioner = positioner;
-        ingreds = new ArrayList<PositionedStack>();
+        ingreds = new ArrayList<>();
         for(PositionedStack stack : ai)
             ingreds.add(stack.copy());
         ingreds = positioner.positionStacks(ingreds);
@@ -39,6 +39,6 @@ public class DefaultOverlayRenderer implements IRecipeOverlayRenderer
         GL11.glEnable(GL11.GL_LIGHTING);
     }
     
-    IStackPositioner positioner;    
+    final IStackPositioner positioner;
     ArrayList<PositionedStack> ingreds;
 }

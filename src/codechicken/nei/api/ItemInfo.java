@@ -1,9 +1,14 @@
 package codechicken.nei.api;
 
 import codechicken.core.featurehack.GameDataManipulator;
-import codechicken.nei.*;
-import codechicken.nei.ItemList.ItemsLoadedCallback;
-import codechicken.nei.api.ItemFilter.ItemFilterProvider;
+import codechicken.nei.InfiniteStackSizeHandler;
+import codechicken.nei.InfiniteToolHandler;
+import codechicken.nei.ItemList;
+import codechicken.nei.ItemMobSpawner;
+import codechicken.nei.ItemStackMap;
+import codechicken.nei.ItemStackSet;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.PopupInputHandler;
 import codechicken.nei.config.ArrayDumper;
 import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.config.RegistryDumper;
@@ -27,7 +32,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemHoe;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemSpade;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
@@ -38,7 +51,11 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -52,20 +69,20 @@ public class ItemInfo
     }
 
     public static final ArrayListMultimap<Layout, IHighlightHandler> highlightHandlers = ArrayListMultimap.create();
-    public static final ItemStackMap<String> nameOverrides = new ItemStackMap<String>();
+    public static final ItemStackMap<String> nameOverrides = new ItemStackMap<>();
     public static final ItemStackSet hiddenItems = new ItemStackSet();
     public static final ItemStackSet finiteItems = new ItemStackSet();
     public static final ArrayListMultimap<Item, ItemStack> itemOverrides = ArrayListMultimap.create();
     public static final ArrayListMultimap<Item, ItemStack> itemVariants = ArrayListMultimap.create();
 
-    public static final LinkedList<IInfiniteItemHandler> infiniteHandlers = new LinkedList<IInfiniteItemHandler>();
+    public static final LinkedList<IInfiniteItemHandler> infiniteHandlers = new LinkedList<>();
     public static final ArrayListMultimap<Block, IHighlightHandler> highlightIdentifiers = ArrayListMultimap.create();
-    public static final HashSet<Class<? extends Slot>> fastTransferExemptions = new HashSet<Class<? extends Slot>>();
+    public static final HashSet<Class<? extends Slot>> fastTransferExemptions = new HashSet<>();
 
-    public static final HashMap<Item, String> itemOwners = new HashMap<Item, String>();
+    public static final HashMap<Item, String> itemOwners = new HashMap<>();
 
     //lookup optimisation
-    public static final HashMap<ItemStack, String> itemSearchNames = new HashMap<ItemStack, String>();
+    public static final HashMap<ItemStack, String> itemSearchNames = new HashMap<>();
 
     public static boolean isHidden(ItemStack stack) {
         return hiddenItems.contains(stack);
@@ -111,28 +128,11 @@ public class ItemInfo
     }
 
     private static void addSearchOptimisation() {
-        ItemList.loadCallbacks.add(new ItemsLoadedCallback()
-        {
-            @Override public void itemsLoaded() {
-                itemSearchNames.clear();
-            }
-        });
+        ItemList.loadCallbacks.add(itemSearchNames::clear);
     }
 
     private static void addHiddenItemFilter() {
-        API.addItemFilter(new ItemFilterProvider()
-        {
-            @Override
-            public ItemFilter getFilter() {
-                return new ItemFilter()
-                {
-                    @Override
-                    public boolean matches(ItemStack item) {
-                        return !hiddenItems.contains(item);
-                    }
-                };
-            }
-        });
+        API.addItemFilter(() -> item -> !hiddenItems.contains(item));
     }
 
     private static void addIDDumps() {
@@ -264,7 +264,7 @@ public class ItemInfo
     }
 
     private static void parseModItems() {
-        HashMap<String, ItemStackSet> modSubsets = new HashMap<String, ItemStackSet>();
+        HashMap<String, ItemStackSet> modSubsets = new HashMap<>();
         for (Item item : (Iterable<Item>) Item.itemRegistry) {
             UniqueIdentifier ident = null;
             try {
@@ -323,20 +323,8 @@ public class ItemInfo
     }
 
     private static void addDefaultDropDowns() {
-        API.addSubset("Items", new ItemFilter()
-        {
-            @Override
-            public boolean matches(ItemStack item) {
-                return Block.getBlockFromItem(item.getItem()) == Blocks.air;
-            }
-        });
-        API.addSubset("Blocks", new ItemFilter()
-        {
-            @Override
-            public boolean matches(ItemStack item) {
-                return Block.getBlockFromItem(item.getItem()) != Blocks.air;
-            }
-        });
+        API.addSubset("Items", item -> Block.getBlockFromItem(item.getItem()) == Blocks.air);
+        API.addSubset("Blocks", item -> Block.getBlockFromItem(item.getItem()) != Blocks.air);
         API.addSubset("Blocks.MobSpawners", ItemStackSet.of(Blocks.mob_spawner));
     }
 
@@ -356,8 +344,8 @@ public class ItemInfo
         ItemStackSet food = new ItemStackSet();
         ItemStackSet potioningredients = new ItemStackSet();
 
-        ArrayList<ItemStackSet> creativeTabRanges = new ArrayList<ItemStackSet>(CreativeTabs.creativeTabArray.length);
-        List<ItemStack> stackList = new LinkedList<ItemStack>();
+        ArrayList<ItemStackSet> creativeTabRanges = new ArrayList<>(CreativeTabs.creativeTabArray.length);
+        List<ItemStack> stackList = new LinkedList<>();
 
         for (Item item : (Iterable<Item>) Item.itemRegistry) {
             if (item == null)
@@ -419,7 +407,7 @@ public class ItemInfo
                 food.with(item);
 
             try {
-                LinkedList<ItemStack> subItems = new LinkedList<ItemStack>();
+                LinkedList<ItemStack> subItems = new LinkedList<>();
                 item.getSubItems(item, null, subItems);
                 for(ItemStack stack : subItems) {
                     if (item.isPotionIngredient(stack) && item.getPotionEffect(stack) != null) {
@@ -473,9 +461,9 @@ public class ItemInfo
         int z = hit.blockZ;
         Block mouseoverBlock = world.getBlock(x, y, z);
 
-        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> items = new ArrayList<>();
 
-        ArrayList<IHighlightHandler> handlers = new ArrayList<IHighlightHandler>();
+        ArrayList<IHighlightHandler> handlers = new ArrayList<>();
         if (highlightIdentifiers.containsKey(null))
             handlers.addAll(highlightIdentifiers.get(null));
         if (highlightIdentifiers.containsKey(mouseoverBlock))
@@ -514,7 +502,7 @@ public class ItemInfo
     }
 
     public static List<String> getText(ItemStack itemStack, World world, EntityPlayer player, MovingObjectPosition mop) {
-        List<String> retString = new ArrayList<String>();
+        List<String> retString = new ArrayList<>();
 
         for (ItemInfo.Layout layout : ItemInfo.Layout.values())
             for (IHighlightHandler handler : ItemInfo.highlightHandlers.get(layout))

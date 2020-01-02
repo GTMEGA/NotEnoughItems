@@ -1,5 +1,6 @@
 package codechicken.nei;
 
+import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.ItemList.AnyMultiItemFilter;
 import codechicken.nei.ItemList.EverythingItemFilter;
 import codechicken.nei.ItemList.PatternItemFilter;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static codechicken.lib.gui.GuiDraw.drawGradientRect;
-import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.nei.NEIClientConfig.world;
 
 public class SearchField extends TextField implements ItemFilterProvider
@@ -49,7 +48,7 @@ public class SearchField extends TextField implements ItemFilterProvider
         }
     }
 
-    public static List<ISearchProvider> searchProviders = new LinkedList<ISearchProvider>();
+    public static List<ISearchProvider> searchProviders = new LinkedList<>();
 
     long lastclicktime;
 
@@ -64,18 +63,32 @@ public class SearchField extends TextField implements ItemFilterProvider
     }
 
     @Override
-    public void drawBox() {
-        if (searchInventories())
-            drawGradientRect(x, y, w, h, 0xFFFFFF00, 0xFFC0B000);
-        else
-            drawRect(x, y, w, h, 0xffA0A0A0);
-        drawRect(x + 1, y + 1, w - 2, h - 2, 0xFF000000);
+    public int getTextColour() {
+        if(ItemPanels.itemPanel.items.size() == 0) {
+            return focused() ? 0xFFcc3300 : 0xFF993300;
+        } else {
+            return focused() ? 0xFFE0E0E0 : 0xFF909090;
+        }
+    }
+
+    @Override
+    public void draw(int mousex, int mousey) {
+
+        super.draw(mousex, mousey);
+
+        if (searchInventories()) {
+            GuiDraw.drawGradientRect(x - 1, y - 1, 1, h + 2, 0xFFFFFF00, 0xFFC0B000); //Left
+            GuiDraw.drawGradientRect(x - 1, y - 1, w + 2, 1, 0xFFFFFF00, 0xFFC0B000); //Top
+            GuiDraw.drawGradientRect(x + w, y - 1, 1, h + 2, 0xFFFFFF00, 0xFFC0B000); //Left
+            GuiDraw.drawGradientRect(x - 1, y + h, w + 2, 1, 0xFFFFFF00, 0xFFC0B000); //Bottom
+        }
+
     }
 
     @Override
     public boolean handleClick(int mousex, int mousey, int button) {
         if (button == 0) {
-            if (focused() && (System.currentTimeMillis() - lastclicktime < 500)) {//double click
+            if (focused() && (System.currentTimeMillis() - lastclicktime < 400)) { //double click
                 NEIClientConfig.world.nbt.setBoolean("searchinventories", !searchInventories());
                 NEIClientConfig.world.saveNBT();
             }
@@ -86,7 +99,11 @@ public class SearchField extends TextField implements ItemFilterProvider
 
     @Override
     public void onTextChange(String oldText) {
-        NEIClientConfig.setSearchExpression(text());
+        final String newText = text();
+        if( newText.length() > 0)
+            NEIClientConfig.logger.info("Searching for " + text());
+
+        NEIClientConfig.setSearchExpression(newText);
         ItemList.updateFilter.restart();
     }
 
@@ -125,8 +142,8 @@ public class SearchField extends TextField implements ItemFilterProvider
     public ItemFilter getFilter() {
         String s_filter = text().toLowerCase();
 
-        List<ItemFilter> primary = new LinkedList<ItemFilter>();
-        List<ItemFilter> secondary = new LinkedList<ItemFilter>();
+        List<ItemFilter> primary = new LinkedList<>();
+        List<ItemFilter> secondary = new LinkedList<>();
         for (ISearchProvider p : searchProviders) {
             ItemFilter filter = p.getFilter(s_filter);
             if (filter != null)

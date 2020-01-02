@@ -2,7 +2,7 @@ package codechicken.nei.config;
 
 import codechicken.core.CommonUtils;
 import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.ItemPanel;
+import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.guihook.GuiContainerManager;
@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class GuiItemIconDumper extends GuiScreen
     private Option opt;
     private int drawIndex;
     private int parseIndex;
-    private File dir = new File(CommonUtils.getMinecraftDir(), "dumps/itempanel_icons");
+    private final File dir = new File(CommonUtils.getMinecraftDir(), "dumps/itempanel_icons");
     private int iconSize;
     private int borderSize;
     private int boxSize;
@@ -100,10 +100,10 @@ public class GuiItemIconDumper extends GuiScreen
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glColor4f(1, 1, 1, 1);
 
-        for(int i = 0; drawIndex < ItemPanel.items.size() && i < fit; drawIndex++, i++) {
+        for(int i = 0; drawIndex < ItemPanels.itemPanel.items.size() && i < fit; drawIndex++, i++) {
             int x = i%cols * 18;
             int y = i/cols * 18;
-            GuiContainerManager.drawItem(x+1, y+1, ItemPanel.items.get(drawIndex));
+            GuiContainerManager.drawItem(x+1, y+1, ItemPanels.itemPanel.items.get(drawIndex));
         }
 
         GL11.glFlush();
@@ -114,20 +114,20 @@ public class GuiItemIconDumper extends GuiScreen
         int rows = img.getHeight() / boxSize;
         int cols = img.getWidth() / boxSize;
         int fit = rows*cols;
-        for(int i = 0; parseIndex < ItemPanel.items.size() && i < fit; parseIndex++, i++) {
+        for(int i = 0; parseIndex < ItemPanels.itemPanel.items.size() && i < fit; parseIndex++, i++) {
             int x = i%cols * boxSize;
             int y = i/cols * boxSize;
-            exportImage(dir, img.getSubimage(x+borderSize, y+borderSize, iconSize, iconSize), ItemPanel.items.get(parseIndex));
+            exportImage(dir, img.getSubimage(x+borderSize, y+borderSize, iconSize, iconSize), ItemPanels.itemPanel.items.get(parseIndex));
         }
 
-        if(parseIndex >= ItemPanel.items.size())
+        if(parseIndex >= ItemPanels.itemPanel.items.size())
             returnScreen(new ChatComponentTranslation(opt.fullName()+".icon.dumped", "dumps/itempanel_icons"));
     }
 
     public static String cleanFileName(String name) {
         StringBuilder cleanName = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
-            int c = (int)name.charAt(i);
+            int c = name.charAt(i);
             if (Arrays.binarySearch(illegalChars, c) < 0)
                 cleanName.append((char)c);
             else

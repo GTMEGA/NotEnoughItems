@@ -2,8 +2,11 @@ package codechicken.nei.recipe;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.lib.render.CCRenderState;
-import codechicken.nei.*;
+import codechicken.nei.GuiNEIButton;
 import codechicken.nei.LayoutManager;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IGuiContainerOverlay;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
@@ -17,13 +20,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOverlay, IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler
 {
-    public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<IRecipeHandler>();
+    public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
 
     public int page;
     public int recipetype;

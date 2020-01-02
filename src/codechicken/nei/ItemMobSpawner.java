@@ -17,10 +17,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class ItemMobSpawner extends ItemBlock
 {
@@ -35,8 +33,8 @@ public class ItemMobSpawner extends ItemBlock
         hasSubtypes = true;
         MinecraftForgeClient.registerItemRenderer(this, new SpawnerRenderer());
 
-        entityHashMap = new HashMap<Integer, EntityLiving>();
-        IDtoNameMap = new HashMap<Integer, String>();
+        entityHashMap = new HashMap<>();
+        IDtoNameMap = new HashMap<>();
     }
 
     /**
@@ -129,11 +127,7 @@ public class ItemMobSpawner extends ItemBlock
             }
         }
 
-        for(Iterator<Entry<Integer, String>> it = IDtoNameMap.entrySet().iterator(); it.hasNext();) {
-            Entry<Integer, String> e = it.next();
-            if(getEntity(e.getKey()).getClass() == EntityPig.class && !e.getValue().equals("Pig"))
-                it.remove();
-        }
+        IDtoNameMap.entrySet().removeIf(e -> getEntity(e.getKey()).getClass() == EntityPig.class && !e.getValue().equals("Pig"));
     }
 
     @Override

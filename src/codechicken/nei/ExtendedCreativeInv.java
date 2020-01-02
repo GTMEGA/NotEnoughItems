@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 
 public class ExtendedCreativeInv implements IInventory
 {
-    PlayerSave playerSave;
-    Side side;
+    final PlayerSave playerSave;
+    final Side side;
 
     public ExtendedCreativeInv(PlayerSave playerSave, Side side) {
         this.playerSave = playerSave;
@@ -33,10 +33,9 @@ public class ExtendedCreativeInv implements IInventory
 
         if (item != null) {
             if (item.stackSize <= size) {
-                ItemStack itemstack = item;
                 setInventorySlotContents(slot, null);
                 markDirty();
-                return itemstack;
+                return item;
             }
             ItemStack itemstack1 = item.splitStack(size);
             if (item.stackSize == 0) {

@@ -9,8 +9,8 @@ import java.util.HashSet;
 
 public class TaggedInventoryArea
 {
-    public HashSet<Integer> slots = new HashSet<Integer>();
-    public String tagName;
+    public final HashSet<Integer> slots = new HashSet<>();
+    public final String tagName;
     /**
      * Only for player inventories.
      */
@@ -18,7 +18,7 @@ public class TaggedInventoryArea
     /**
      * Other inventories
      */
-    private Container container;
+    private final Container container;
     
     public TaggedInventoryArea(InventoryPlayer invPlayer)
     {

@@ -2,8 +2,18 @@ package codechicken.nei;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.KeyManager.IKeyStateTracker;
-import codechicken.nei.api.*;
-import codechicken.nei.guihook.*;
+import codechicken.nei.api.API;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.IRecipeOverlayRenderer;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IContainerDrawHandler;
+import codechicken.nei.guihook.IContainerInputHandler;
+import codechicken.nei.guihook.IContainerObjectHandler;
+import codechicken.nei.guihook.IContainerTooltipHandler;
+import cpw.mods.fml.common.Loader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -12,16 +22,45 @@ import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
-import static codechicken.lib.gui.GuiDraw.*;
-import static codechicken.nei.NEIClientConfig.*;
-import static codechicken.nei.NEIClientUtils.*;
+import static codechicken.lib.gui.GuiDraw.changeTexture;
+import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
+import static codechicken.nei.NEIClientConfig.disabledActions;
+import static codechicken.nei.NEIClientConfig.getItemQuantity;
+import static codechicken.nei.NEIClientConfig.getKeyBinding;
+import static codechicken.nei.NEIClientConfig.getOptionList;
+import static codechicken.nei.NEIClientConfig.getSearchExpression;
+import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
+import static codechicken.nei.NEIClientConfig.invCreativeMode;
+import static codechicken.nei.NEIClientConfig.isEnabled;
+import static codechicken.nei.NEIClientConfig.isHidden;
+import static codechicken.nei.NEIClientConfig.showIDs;
+import static codechicken.nei.NEIClientConfig.toggleBooleanSetting;
+import static codechicken.nei.NEIClientConfig.world;
+import static codechicken.nei.NEIClientUtils.controlKey;
+import static codechicken.nei.NEIClientUtils.cycleGamemode;
+import static codechicken.nei.NEIClientUtils.decreaseSlotStack;
+import static codechicken.nei.NEIClientUtils.deleteEverything;
+import static codechicken.nei.NEIClientUtils.deleteHeldItem;
+import static codechicken.nei.NEIClientUtils.deleteItemsOfType;
+import static codechicken.nei.NEIClientUtils.getGuiContainer;
+import static codechicken.nei.NEIClientUtils.getHeldItem;
+import static codechicken.nei.NEIClientUtils.getNextGamemode;
+import static codechicken.nei.NEIClientUtils.healPlayer;
+import static codechicken.nei.NEIClientUtils.isValidGamemode;
+import static codechicken.nei.NEIClientUtils.setHourForward;
+import static codechicken.nei.NEIClientUtils.setItemQuantity;
+import static codechicken.nei.NEIClientUtils.shiftKey;
+import static codechicken.nei.NEIClientUtils.toggleMagnetMode;
+import static codechicken.nei.NEIClientUtils.toggleRaining;
+import static codechicken.nei.NEIClientUtils.translate;
 
 public class LayoutManager implements IContainerInputHandler, IContainerTooltipHandler, IContainerDrawHandler, IContainerObjectHandler, IKeyStateTracker
 {
@@ -38,20 +77,16 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     private static TreeSet<Widget> controlWidgets;
 
     public static ItemPanel itemPanel;
+    public static BookmarkPanel bookmarkPanel;
     public static SubsetWidget dropDown;
     public static TextField searchField;
 
     public static Button options;
+    public static Button bookmarks;
 
-    public static Button prev;
-    public static Button next;
-    public static Label pageLabel;
     public static Button more;
     public static Button less;
     public static ItemQuantityField quantity;
-
-    public static SaveLoadButton[] stateButtons;
-    public static Button[] deleteButtons;
 
     public static Button delete;
     public static ButtonCycled gamemode;
@@ -62,11 +97,14 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
     public static IRecipeOverlayRenderer overlayRenderer;
 
-    public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<Integer, LayoutStyle>();
+    public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<>();
+
+    public static boolean ftbUtilsLoaded = false;
 
     public static void load() {
+        ftbUtilsLoaded = Loader.isModLoaded("FTBU");
+
         API.addLayoutStyle(0, new LayoutStyleMinecraft());
-        API.addLayoutStyle(1, new LayoutStyleTMIOld());
 
         instance = new LayoutManager();
         KeyManager.trackers.add(instance);
@@ -91,6 +129,13 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 button2.xPosition = gui.guiLeft + gui.xSize - 20;
             }
         }
+    }
+
+    public static int getSideWidth(GuiContainer gui) {
+        return gui.width - 3;
+    }
+    public static int getLeftSize(GuiContainer gui) {
+        return getSideWidth(gui) - (ftbUtilsLoaded ? 18 : 0);
     }
 
     @Override
@@ -263,7 +308,12 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     private static void init() {
-        itemPanel = new ItemPanel();
+        itemPanel = ItemPanels.itemPanel;
+        itemPanel.init();
+
+        bookmarkPanel = ItemPanels.bookmarkPanel;
+        bookmarkPanel.init();
+
         dropDown = new SubsetWidget();
         searchField = new SearchField("search");
 
@@ -283,37 +333,19 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 return translate("inventory.options");
             }
         };
-        prev = new Button("Prev")
+
+        bookmarks = new Button("Bookmarks")
         {
+            @Override
             public boolean onButtonPress(boolean rightclick) {
-                if (!rightclick) {
-                    LayoutManager.itemPanel.scroll(-1);
-                    return true;
-                }
                 return false;
             }
 
             @Override
             public String getRenderLabel() {
-                return translate("inventory.prev");
+                return translate("bookmark.toggle");
             }
         };
-        next = new Button("Next")
-        {
-            public boolean onButtonPress(boolean rightclick) {
-                if (!rightclick) {
-                    LayoutManager.itemPanel.scroll(1);
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public String getRenderLabel() {
-                return translate("inventory.next");
-            }
-        };
-        pageLabel = new Label("(0/0)", true);
         more = new Button("+")
         {
             @Override
@@ -350,43 +382,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         };
         quantity = new ItemQuantityField("quantity");
 
-        stateButtons = new SaveLoadButton[7];
-        deleteButtons = new Button[7];
-
-        for (int i = 0; i < 7; i++) {
-            final int savestate = i;
-            stateButtons[i] = new SaveLoadButton("")
-            {
-                @Override
-                public boolean onButtonPress(boolean rightclick) {
-                    if (isStateSaved(savestate))
-                        loadState(savestate);
-                    else
-                        saveState(savestate);
-                    return true;
-                }
-
-                @Override
-                public void onTextChange() {
-                    NBTTagCompound statelist = global.nbt.getCompoundTag("statename");
-                    global.nbt.setTag("statename", statelist);
-
-                    statelist.setString("" + savestate, label);
-                    global.saveNBT();
-                }
-            };
-            deleteButtons[i] = new Button("x")
-            {
-                @Override
-                public boolean onButtonPress(boolean rightclick) {
-                    if (!rightclick) {
-                        clearState(savestate);
-                        return true;
-                    }
-                    return false;
-                }
-            };
-        }
 
         delete = new Button()
         {
@@ -593,18 +588,18 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public static void updateWidgetVisiblities(GuiContainer gui, VisiblityData visiblity) {
-        drawWidgets = new TreeSet<Widget>(new WidgetZOrder(false));
-        controlWidgets = new TreeSet<Widget>(new WidgetZOrder(true));
+        drawWidgets = new TreeSet<>(new WidgetZOrder(false));
+        controlWidgets = new TreeSet<>(new WidgetZOrder(true));
 
         if (!visiblity.showNEI)
             return;
 
+
         addWidget(options);
         if (visiblity.showItemPanel) {
             addWidget(itemPanel);
-            addWidget(prev);
-            addWidget(next);
-            addWidget(pageLabel);
+            itemPanel.setVisible();
+
             if (canPerformAction("item")) {
                 addWidget(more);
                 addWidget(less);
@@ -612,18 +607,16 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             }
         }
 
+        if (visiblity.showBookmarkPanel) {
+            addWidget(bookmarkPanel);
+            bookmarkPanel.setVisible();
+        }
+
         if (visiblity.showSearchSection) {
             addWidget(dropDown);
             addWidget(searchField);
         }
 
-        if (canPerformAction("item") && hasSMPCounterPart() && visiblity.showStateButtons) {
-            for (int i = 0; i < 7; i++) {
-                addWidget(stateButtons[i]);
-                if (isStateSaved(i))
-                    addWidget(deleteButtons[i]);
-            }
-        }
         if (visiblity.showUtilityButtons) {
             if (canPerformAction("time")) {
                 for (int i = 0; i < 4; i++)
@@ -653,10 +646,10 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public static LayoutStyle getLayoutStyle() {
-        return getLayoutStyle(NEIClientConfig.getLayoutStyle());
+        return getLayoutStyle(0);
     }
 
-    private static void addWidget(Widget widget) {
+    public static void addWidget(Widget widget) {
         drawWidgets.add(widget);
         controlWidgets.add(widget);
     }
@@ -716,7 +709,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     @Override
     public void renderSlotOverlay(GuiContainer window, Slot slot) {
         ItemStack item = slot.getStack();
-        if (world.nbt.getBoolean("searchinventories") && (item == null ? !getSearchExpression().equals("") : !ItemList.itemMatches(item))) {
+        if (world.nbt.getBoolean("searchinventories") && (item == null ? !getSearchExpression().equals("") : !ItemList.getItemListFilter().matches(item))) {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glTranslatef(0, 0, 150);
             drawRect(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, 0x80000000);
@@ -798,4 +791,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         if (KeyManager.keyStates.get("world.creative").down)
             gamemode.onButtonPress(false);
     }
+
 }
+

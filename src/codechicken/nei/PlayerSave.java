@@ -4,7 +4,6 @@ import codechicken.core.ServerUtils;
 import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 

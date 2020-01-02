@@ -12,17 +12,13 @@ import static codechicken.lib.gui.GuiDraw.getStringWidth;
 public class OptionTextField extends Option
 {
     private boolean focused = false;
-    private TextField textField = new TextField("")
+    private final TextField textField = new TextField("")
     {
-        @Override
-        public boolean isValid(String string) {
-            return super.isValid(string) && isValidInput(string);
-        }
 
         @Override
         public void onTextChange(String oldText) {
             if(focused() && isValidValue(text()))
-                if(!defaulting() || !text().equals(getTag().getValue()))//don't override global if text hasn't changed
+                if(!defaulting() || !text().equals(getTag().getValue()))  //don't override global if text hasn't changed
                     getTag().setValue(text());
         }
 

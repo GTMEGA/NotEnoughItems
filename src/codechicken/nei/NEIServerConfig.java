@@ -21,7 +21,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class NEIServerConfig
 {
@@ -30,9 +37,9 @@ public class NEIServerConfig
     public static Logger logger = LogManager.getLogger("NotEnoughItems");
     public static File saveDir;
     public static ConfigFile serverConfig;
-    public static Map<Integer, NBTTagCompound> dimTags = new HashMap<Integer, NBTTagCompound>();
-    public static HashMap<String, PlayerSave> playerSaves = new HashMap<String, PlayerSave>();
-    public static ItemStackMap<Set<String>> bannedItems = new ItemStackMap<Set<String>>();
+    public static Map<Integer, NBTTagCompound> dimTags = new HashMap<>();
+    public static HashMap<String, PlayerSave> playerSaves = new HashMap<>();
+    public static ItemStackMap<Set<String>> bannedItems = new ItemStackMap<>();
 
     public static void load(World world) {
         if (MinecraftServer.getServer() != server) {
@@ -89,13 +96,13 @@ public class NEIServerConfig
         if (names.length == 0)
             names = new String[]{"OP"};
 
-        String list = "";
+        StringBuilder list = new StringBuilder();
         for (int i = 0; i < names.length; i++) {
             if (i >= 1)
-                list += ", ";
-            list += names[i];
+                list.append(", ");
+            list.append(names[i]);
         }
-        serverConfig.getTag("permissions." + featurename).setDefaultValue(list);
+        serverConfig.getTag("permissions." + featurename).setDefaultValue(list.toString());
     }
 
     private static void saveWorld(int dim) {
@@ -139,7 +146,7 @@ public class NEIServerConfig
 
     public static HashSet<String> getPlayerList(String tag) {
         String[] list = serverConfig.getTag(tag).getValue("").replace(" ", "").split(",");
-        return new HashSet<String>(Arrays.asList(list));
+        return new HashSet<>(Arrays.asList(list));
     }
 
     public static void addPlayerToList(String playername, String tag) {
@@ -179,7 +186,7 @@ public class NEIServerConfig
         bannedItems.clear();
         File file = new File(saveDir, "banneditems.cfg");
         if(!file.exists()) {
-            bannedItems.put(new ItemStack(Blocks.command_block), new HashSet<String>(Arrays.asList("NONE")));
+            bannedItems.put(new ItemStack(Blocks.command_block), new HashSet<>(Collections.singletonList("NONE")));
             saveBannedItems();
             return;
         }
@@ -196,7 +203,7 @@ public class NEIServerConfig
                 }
                 try {
                     NBTTagCompound key = (NBTTagCompound) JsonToNBT.func_150315_a(s.substring(0, delim));
-                    Set<String> values = new HashSet<String>();
+                    Set<String> values = new HashSet<>();
                     for(String s2 : s.substring(delim+1).split(","))
                         values.add(s2.trim());
                     bannedItems.put(InventoryUtils.loadPersistant(key), values);

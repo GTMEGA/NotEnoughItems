@@ -14,7 +14,6 @@ nei.inventory.options=Опции
 nei.inventory.prev=Предыдущая
 nei.inventory.next=Следующая
 nei.inventory.item_subsets=Подмножества предметов
-nei.inventory.delete.all=УДАЛИТЬ ВСЕ ПРЕДМЕТЫ из текущего инвентаря
 nei.inventory.delete.one=Удалить %s
 nei.inventory.delete.all=Удалить ВСЕ %s
 nei.inventory.delete.enable=Режим удаления
@@ -88,7 +87,7 @@ nei.options.inventory.widgetsenabled.false=NEI выключен
 nei.options.inventory.cheatmode.0=Режим рецептов
 nei.options.inventory.cheatmode.1=Режим полезностей
 nei.options.inventory.cheatmode.2=Чит-режим
-nei.options.inventory.layoutstyle=Стиль расположения
+
 nei.options.inventory.profileRecipes=Рецепты профиля
 nei.options.inventory.profileRecipes.true=Да
 nei.options.inventory.profileRecipes.false=Нет
@@ -161,8 +160,8 @@ nei.options.tools.dump.itempanel.mode.3=PNG
 nei.options.tools.dump.itempanel.icon.dumped=Иконки панели предметов сохранены в %s
 nei.options.tools.dump.itempanel.icon.cancelled=Дамп отменён
 
-nei.layoutstyle.minecraft=Minecraft
-nei.layoutstyle.oldtmi=Старый TMI
+
+
 
 nei.recipe.page=Страница %s/%s
 nei.recipe.tooltip=Рецепты
