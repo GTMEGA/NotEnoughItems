@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.Point;
@@ -76,7 +77,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public void keyTyped(char c, int i) {
-        if (i == 1)//esc
+        if (i == Keyboard.KEY_ESCAPE) //esc
         {
             mc.displayGuiScreen(firstGui);
             return;
@@ -93,6 +94,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             mc.displayGuiScreen(firstGui);
         else if (i == NEIClientConfig.getKeyBinding("gui.back"))
             mc.displayGuiScreen(prevGui);
+        else if (i == NEIClientConfig.getKeyBinding("gui.prev_machine"))
+            prevType();
+        else if (i == NEIClientConfig.getKeyBinding("gui.next_machine"))
+            nextType();
+        else if (i == NEIClientConfig.getKeyBinding("gui.prev_recipe"))
+            prevPage();
+        else if (i == NEIClientConfig.getKeyBinding("gui.next_recipe"))
+            nextPage();
 
     }
 

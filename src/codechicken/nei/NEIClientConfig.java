@@ -160,6 +160,10 @@ public class NEIClientConfig
         API.addKeyBind("gui.potion", Keyboard.KEY_P);
         API.addKeyBind("gui.prev", Keyboard.KEY_PRIOR);
         API.addKeyBind("gui.next", Keyboard.KEY_NEXT);
+        API.addKeyBind("gui.prev_machine", Keyboard.KEY_UP);
+        API.addKeyBind("gui.next_machine", Keyboard.KEY_DOWN);
+        API.addKeyBind("gui.prev_recipe", Keyboard.KEY_LEFT);
+        API.addKeyBind("gui.next_recipe", Keyboard.KEY_RIGHT);
         API.addKeyBind("gui.hide", Keyboard.KEY_O);
         API.addKeyBind("gui.search", Keyboard.KEY_F);
         API.addKeyBind("gui.bookmark", Keyboard.KEY_A);
