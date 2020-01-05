@@ -1,6 +1,8 @@
 package codechicken.nei;
 
+import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -36,10 +38,35 @@ public class BookmarkPanel extends ItemPanel {
         saveBookmarks();
     }
 
+    public static NBTTagCompound itemStackToNBT(ItemStack stack, NBTTagCompound nbTag)
+    {
+        String strId = Item.itemRegistry.getNameForObject(stack.getItem());
+        nbTag.setString("strId", strId);
+        nbTag.setByte("Count", (byte)stack.stackSize);
+        nbTag.setShort("Damage", (short)stack.getItemDamage());
+
+        if (stack.stackTagCompound != null)
+        {
+            nbTag.setTag("tag", stack.stackTagCompound);
+        }
+
+        return nbTag;
+    }
+
+    public static ItemStack loadFromNBT(NBTTagCompound nbtTag)
+    {
+        if (!nbtTag.hasKey("id")) {
+            final short id = (short)GameData.getItemRegistry().getId(nbtTag.getString("strId"));
+             nbtTag.setShort("id", id);
+        }
+        ItemStack stack = ItemStack.loadItemStackFromNBT(nbtTag);
+        return stack;
+    }
+
     public void saveBookmarks() {
         List<String> strings = new ArrayList<>();
         for (ItemStack item:_items) {
-            strings.add(item.writeToNBT(new NBTTagCompound()).toString());
+            strings.add(itemStackToNBT(item, new NBTTagCompound()).toString());
         }
         File file = NEIClientConfig.bookmarkFile;
         if(file != null) {
@@ -68,7 +95,7 @@ public class BookmarkPanel extends ItemPanel {
         for (String itemStr: itemStrings) {
             try {
                 NBTTagCompound itemStackNBT = (NBTTagCompound)JsonToNBT.func_150315_a(itemStr);
-                ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackNBT);
+                ItemStack itemStack = loadFromNBT(itemStackNBT);
                 if (itemStack != null) {
                     _items.add(itemStack);
                 } else {
