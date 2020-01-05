@@ -388,7 +388,6 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         updateState.stop();
         synchronized (root) {
             root.addTag(tag);
-            NEIClientConfig.logger.info("Adding Tag {}", tag.displayName());
             updateState.reallocate();
         }
     }

@@ -101,7 +101,7 @@ public class SearchField extends TextField implements ItemFilterProvider
     public void onTextChange(String oldText) {
         final String newText = text();
         if( newText.length() > 0)
-            NEIClientConfig.logger.info("Searching for " + text());
+            NEIClientConfig.logger.debug("Searching for " + text());
 
         NEIClientConfig.setSearchExpression(newText);
         ItemList.updateFilter.restart();
