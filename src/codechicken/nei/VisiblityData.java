@@ -28,7 +28,11 @@ public class VisiblityData
      */
     public boolean showNEI = true;
     public boolean enableDeleteMode = true;
+
     
+    // Deprecated -- left in for campatability with other mods that mess with this
+    public boolean showStateButtons = false;
+
     public void translateDependancies()
     {
         if(!showNEI)
