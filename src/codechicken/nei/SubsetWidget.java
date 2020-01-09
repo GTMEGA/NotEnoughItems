@@ -518,12 +518,15 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         public synchronized void reallocate() {
+            // System.out.println("NEI Subset - Reallocate");
+            // Thread.dumpStack();
             reallocate = true;
             restart();
         }
 
         @Override
         public void execute() {
+            // System.out.println("Executing NEI Subset Item Allocation");
             HashMap<String, SubsetState> state = new HashMap<>();
             List<SubsetTag> tags = new LinkedList<>();
             synchronized (root) {
