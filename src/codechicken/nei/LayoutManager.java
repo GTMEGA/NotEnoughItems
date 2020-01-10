@@ -100,6 +100,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<>();
 
     public static boolean ftbUtilsLoaded = false;
+    public static boolean itemsLoaded = false;
 
     public static void load() {
         ftbUtilsLoaded = Loader.isModLoaded("FTBU");
@@ -559,7 +560,10 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         if (isEnabled()) {
             setInputFocused(null);
 
-            ItemList.loadItems.restart();
+            if(!itemsLoaded) {
+                ItemList.loadItems.restart();
+                itemsLoaded = true;
+            }
             overlayRenderer = null;
 
             getLayoutStyle().init();

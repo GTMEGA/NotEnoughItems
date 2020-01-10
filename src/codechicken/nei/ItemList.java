@@ -182,6 +182,7 @@ public class ItemList
 
         @Override
         public void execute() {
+            // System.out.println("Executing NEI Item Loading");
             ThreadOperationTimer timer = getTimer(500);
 
             LinkedList<ItemStack> items = new LinkedList<>();
@@ -243,6 +244,7 @@ public class ItemList
     {
         @Override
         public void execute() {
+            // System.out.println("Executing NEI Item Filtering");
             ArrayList<ItemStack> filtered = new ArrayList<>();
             ItemFilter filter = getItemListFilter();
 
