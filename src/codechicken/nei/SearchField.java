@@ -64,7 +64,7 @@ public class SearchField extends TextField implements ItemFilterProvider
 
     @Override
     public int getTextColour() {
-        if(ItemPanels.itemPanel.items.size() == 0) {
+        if(ItemPanels.itemPanel.realItems.size() == 0) {
             return focused() ? 0xFFcc3300 : 0xFF993300;
         } else {
             return focused() ? 0xFFE0E0E0 : 0xFF909090;

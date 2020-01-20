@@ -100,10 +100,10 @@ public class GuiItemIconDumper extends GuiScreen
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glColor4f(1, 1, 1, 1);
 
-        for(int i = 0; drawIndex < ItemPanels.itemPanel.items.size() && i < fit; drawIndex++, i++) {
+        for(int i = 0; drawIndex < ItemPanels.itemPanel.realItems.size() && i < fit; drawIndex++, i++) {
             int x = i%cols * 18;
             int y = i/cols * 18;
-            GuiContainerManager.drawItem(x+1, y+1, ItemPanels.itemPanel.items.get(drawIndex));
+            GuiContainerManager.drawItem(x+1, y+1, ItemPanels.itemPanel.realItems.get(drawIndex));
         }
 
         GL11.glFlush();
@@ -114,13 +114,13 @@ public class GuiItemIconDumper extends GuiScreen
         int rows = img.getHeight() / boxSize;
         int cols = img.getWidth() / boxSize;
         int fit = rows*cols;
-        for(int i = 0; parseIndex < ItemPanels.itemPanel.items.size() && i < fit; parseIndex++, i++) {
+        for(int i = 0; parseIndex < ItemPanels.itemPanel.realItems.size() && i < fit; parseIndex++, i++) {
             int x = i%cols * boxSize;
             int y = i/cols * boxSize;
-            exportImage(dir, img.getSubimage(x+borderSize, y+borderSize, iconSize, iconSize), ItemPanels.itemPanel.items.get(parseIndex));
+            exportImage(dir, img.getSubimage(x+borderSize, y+borderSize, iconSize, iconSize), ItemPanels.itemPanel.realItems.get(parseIndex));
         }
 
-        if(parseIndex >= ItemPanels.itemPanel.items.size())
+        if(parseIndex >= ItemPanels.itemPanel.realItems.size())
             returnScreen(new ChatComponentTranslation(opt.fullName()+".icon.dumped", "dumps/itempanel_icons"));
     }
 

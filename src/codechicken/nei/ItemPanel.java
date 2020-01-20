@@ -18,16 +18,21 @@ import static codechicken.nei.NEIClientConfig.canPerformAction;
 
 public class ItemPanel extends Widget {
     /**
+     *  Backwards compat :-/
+     */
+    public static ArrayList<ItemStack> items = new ArrayList<>();
+
+    /**
      * Should not be externally modified, use updateItemList
      */
-    public ArrayList<ItemStack> items = new ArrayList<>();
+    public ArrayList<ItemStack> realItems = new ArrayList<>();
     /**
      * Swapped into visible items on update
      */
-    protected ArrayList<ItemStack> _items = items;
+    protected ArrayList<ItemStack> _items = realItems;
 
     public ArrayList<ItemStack> getItems() {
-        return items;
+        return realItems;
     }
 
     public static void updateItemList(ArrayList<ItemStack> newItems) {
@@ -40,7 +45,7 @@ public class ItemPanel extends Widget {
         public int slotIndex;
 
         public ItemPanelSlot(int index) {
-            item = items.get(index);
+            item = realItems.get(index);
             slotIndex = index;
         }
     }
@@ -145,8 +150,15 @@ public class ItemPanel extends Widget {
         return pageLabel.text = "(" + getPage() + "/" + getNumPages() + ")";
     }
 
+    protected void setItems() {
+        realItems = _items;
+
+        // Backwards compat
+        ItemPanels.itemPanel._items = _items;
+    }
+
     public void resize(GuiContainer gui) {
-        items = _items;
+        setItems();
         final int buttonHeight = 16;
         final int buttonWidth = 16;
 
@@ -185,9 +197,9 @@ public class ItemPanel extends Widget {
         if (itemsPerPage == 0)
             numPages = 0;
         else
-            numPages = (int) Math.ceil((float) items.size() / (float) itemsPerPage);
+            numPages = (int) Math.ceil((float) realItems.size() / (float) itemsPerPage);
 
-        if (firstIndex >= items.size())
+        if (firstIndex >= realItems.size())
             firstIndex = 0;
 
         if (numPages == 0)
@@ -236,13 +248,13 @@ public class ItemPanel extends Widget {
 
         GuiContainerManager.enableMatrixStackLogging();
         int index = firstIndex;
-        for (int i = 0; i < rows * columns && index < items.size(); i++) {
+        for (int i = 0; i < rows * columns && index < realItems.size(); i++) {
             if (validSlotMap[i]) {
                 Rectangle4i rect = getSlotRect(i);
                 if (rect.contains(mousex, mousey))
                     drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
 
-                GuiContainerManager.drawItem(rect.x + 1, rect.y + 1, items.get(index));
+                GuiContainerManager.drawItem(rect.x + 1, rect.y + 1, realItems.get(index));
 
                 index++;
             }
@@ -416,7 +428,7 @@ public class ItemPanel extends Widget {
 
     public ItemPanelSlot getSlotMouseOver(int mousex, int mousey) {
         int index = firstIndex;
-        for (int i = 0; i < rows * columns && index < items.size(); i++)
+        for (int i = 0; i < rows * columns && index < realItems.size(); i++)
             if (validSlotMap[i]) {
                 if (getSlotRect(i).contains(mousex, mousey))
                     return new ItemPanelSlot(index);
@@ -430,13 +442,13 @@ public class ItemPanel extends Widget {
         if (itemsPerPage != 0) {
             int oldIndex = firstIndex;
             firstIndex += i * itemsPerPage;
-            if (firstIndex >= items.size())
+            if (firstIndex >= realItems.size())
                 firstIndex = 0;
             if (firstIndex < 0)
                 if (oldIndex > 0)
                     firstIndex = 0;
                 else
-                    firstIndex = (items.size() - 1) / itemsPerPage * itemsPerPage;
+                    firstIndex = (realItems.size() - 1) / itemsPerPage * itemsPerPage;
 
             calculatePage();
         }

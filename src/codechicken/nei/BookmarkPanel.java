@@ -26,8 +26,13 @@ public class BookmarkPanel extends ItemPanel {
         super.init();
     }
 
+    @Override
+    protected void setItems() {
+        realItems = _items;
+    }
+
     public String getLabelText() {
-        return super.getLabelText() + " [" + items.size() + "]";
+        return super.getLabelText() + " [" + realItems.size() + "]";
     }
 
     public void addOrRemoveItem(ItemStack item) {
