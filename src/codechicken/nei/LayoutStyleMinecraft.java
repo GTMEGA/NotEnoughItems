@@ -61,7 +61,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
         //leftSize = ((gui.width - gui.xSize) / 2) - 3;
         leftSize = ItemPanels.bookmarkPanel.getWidth(gui);
-        numButtons = leftSize / 18;
+        numButtons = Math.max(leftSize / 18, 1);
 
         delete.state = 0x4;
         if (NEIController.getDeleteMode())
