@@ -35,6 +35,18 @@ public class RecipeItemInputHandler implements IContainerInputHandler
     public boolean mouseClicked(GuiContainer gui, int mousex, int mousey, int button)
     {
         ItemStack stackover = GuiContainerManager.getStackMouseOver(gui);
+
+        if(mousex < ItemPanels.bookmarkPanel.w && stackover != null) {
+            boolean cheat = NEIClientConfig.canCheatItem(stackover);
+            if(button == 0 && !cheat)
+                return GuiCraftingRecipe.openRecipeGui("item", stackover.copy());
+
+            if(button == 1 && !cheat)
+                return GuiUsageRecipe.openRecipeGui("item", stackover.copy());
+
+            NEIClientUtils.cheatItem(stackover, button, -1);
+        }
+
         if(stackover == null || !(gui instanceof GuiRecipe))
             return false;
         
