@@ -129,6 +129,10 @@ public class BookmarkPanel extends ItemPanel {
         return false;
     }
 
+    @Override
+    public int getX(GuiContainer gui) {
+        return 5;
+    }
 
     @Override
     public int getMarginLeft() {
@@ -162,7 +166,7 @@ public class BookmarkPanel extends ItemPanel {
     }
 
     public int getWidth(GuiContainer gui) {
-        return LayoutManager.getLeftSize(gui) - x;
+        return LayoutManager.getLeftSize(gui) - ( (gui.xSize + gui.width) / 2 + 3 );
 
     }
 

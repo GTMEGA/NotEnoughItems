@@ -39,17 +39,6 @@ public class RecipeItemInputHandler implements IContainerInputHandler
         if(stackover == null)
             return false;
 
-        if(mousex < ItemPanels.bookmarkPanel.w) {
-            if (NEIClientConfig.canCheatItem(stackover))
-                NEIClientUtils.cheatItem(stackover, button, -1);
-            else {
-                if (button == 0)
-                    return GuiCraftingRecipe.openRecipeGui("item", stackover.copy());
-                if (button == 1)
-                    return GuiUsageRecipe.openRecipeGui("item", stackover.copy());
-            }
-        }
-
         if (!(gui instanceof GuiRecipe))
             return false;
 

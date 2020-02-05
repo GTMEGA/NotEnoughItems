@@ -107,6 +107,10 @@ public class ItemPanel extends Widget {
         };
     }
 
+    public int getX(GuiContainer gui) {
+        return (gui.xSize + gui.width) / 2 + 3;
+    }
+
     public int getMarginLeft() {
         return x + (w % 18) / 2;
     }
@@ -177,7 +181,7 @@ public class ItemPanel extends Widget {
         pageLabel.text = getLabelText();
 
         y = prev.h + prev.y;
-        x = (gui.xSize + gui.width) / 2 + 3;
+        x = getX(gui);
         w = getWidth(gui);
         h = getHeight(gui);
 
