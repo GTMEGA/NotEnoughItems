@@ -143,7 +143,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
     }
 
     public void layoutButton(Button button) {
-        button.x = 6 + (buttonCount % numButtons) * 20;
+        button.x = 2 + (buttonCount % numButtons) * 20;
         button.y = 3 + (buttonCount / numButtons) * 18;
 
         button.h = 17;
