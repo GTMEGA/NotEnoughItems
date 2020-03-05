@@ -83,9 +83,13 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
          */
         public List<PositionedStack> getOtherStacks() {
             ArrayList<PositionedStack> stacks = new ArrayList<>();
-            PositionedStack stack = getOtherStack();
-            if (stack != null)
-                stacks.add(stack);
+            try {
+                PositionedStack stack = getOtherStack();
+                if (stack != null)
+                    stacks.add(stack);
+            } catch (NullPointerException npe) {
+                NEIClientConfig.logger.error("Error in getOtherStacks: " + npe);
+            }
             return stacks;
         }
 
