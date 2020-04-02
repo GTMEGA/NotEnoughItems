@@ -1,7 +1,5 @@
-build/build/*
-build/run/*
-build/.gradle/*
-*.ipr
-*.iml
-*.iws
-.idea/**
+.gradle/
+build/
+NotEnoughItems.iml
+NotEnoughItems.ipr
+NotEnoughItems.iws
