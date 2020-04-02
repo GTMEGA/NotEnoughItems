@@ -3,3 +3,4 @@ build/
 NotEnoughItems.iml
 NotEnoughItems.ipr
 NotEnoughItems.iws
+*.bat
