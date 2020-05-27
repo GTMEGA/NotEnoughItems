@@ -9,3 +9,4 @@ NotEnoughItems.iws
 run/*
 .gradle/
 
+*.bat
