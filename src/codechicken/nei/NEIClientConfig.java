@@ -242,21 +242,25 @@ public class NEIClientConfig
 
         configLoaded = true;
 
-        ClassDiscoverer classDiscoverer = new ClassDiscoverer(test -> test.startsWith("NEI") && test.endsWith("Config.class"), IConfigureNEI.class);
+        new Thread("NEI Plugin Loader") {
+            @Override
+            public void run() {
+                ClassDiscoverer classDiscoverer = new ClassDiscoverer(test -> test.startsWith("NEI") && test.endsWith("Config.class"), IConfigureNEI.class);
 
-        classDiscoverer.findClasses();
+                classDiscoverer.findClasses();
 
-        for (Class<?> clazz : classDiscoverer.classes) {
-            try {
-                IConfigureNEI config = (IConfigureNEI) clazz.newInstance();
-                config.loadConfig();
-                NEIModContainer.plugins.add(config);
-                logger.debug("Loaded " + clazz.getName());
-            } catch (Exception e) {
-                logger.error("Failed to Load " + clazz.getName(), e);
+                for (Class<?> clazz : classDiscoverer.classes) {
+                    try {
+                        IConfigureNEI config = (IConfigureNEI) clazz.newInstance();
+                        config.loadConfig();
+                        NEIModContainer.plugins.add(config);
+                        logger.debug("Loaded " + clazz.getName());
+                    } catch (Exception e) {
+                        logger.error("Failed to Load " + clazz.getName(), e);
+                    }
+                }
             }
-        }
-
+        }.start();
         ItemSorter.loadConfig();
     }
 
