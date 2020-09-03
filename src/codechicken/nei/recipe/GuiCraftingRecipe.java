@@ -4,6 +4,7 @@ import codechicken.core.TaskProfiler;
 import codechicken.nei.ItemList;
 import codechicken.nei.NEIClientUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class GuiCraftingRecipe extends GuiRecipe
 {
     public static boolean openRecipeGui(String outputId, Object... results) {
         Minecraft mc = NEIClientUtils.mc();
-        GuiContainer prevscreen = mc.currentScreen instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
+        GuiScreen prevscreen = mc.currentScreen;// instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
 
         ArrayList<ICraftingHandler> handlers;
         TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
@@ -38,7 +39,7 @@ public class GuiCraftingRecipe extends GuiRecipe
         return true;
     }
 
-    private GuiCraftingRecipe(GuiContainer prevgui, ArrayList<ICraftingHandler> handlers) {
+    private GuiCraftingRecipe(GuiScreen prevgui, ArrayList<ICraftingHandler> handlers) {
         super(prevgui);
         currenthandlers = handlers;
     }

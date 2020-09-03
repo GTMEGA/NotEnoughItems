@@ -15,6 +15,7 @@ import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.guihook.IGuiHandleMouseWheel;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -34,18 +35,20 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public int recipetype;
     public ContainerRecipe slotcontainer;
     public GuiContainer firstGui;
-    public GuiContainer prevGui;
+    public GuiScreen prevGui;
     public GuiButton nextpage;
     public GuiButton prevpage;
     public GuiButton overlay1;
     public GuiButton overlay2;
 
-    protected GuiRecipe(GuiContainer prevgui) {
+    protected GuiRecipe(GuiScreen prevgui) {
         super(new ContainerRecipe());
         slotcontainer = (ContainerRecipe) inventorySlots;
 
         this.prevGui = prevgui;
-        this.firstGui = prevgui;
+        if(prevgui instanceof GuiContainer)
+            this.firstGui = (GuiContainer)prevgui;
+
         if (prevgui instanceof IGuiContainerOverlay)
             this.firstGui = ((IGuiContainerOverlay) prevgui).getFirstScreen();
     }
