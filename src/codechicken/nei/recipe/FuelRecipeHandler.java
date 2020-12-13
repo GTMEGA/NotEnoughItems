@@ -65,7 +65,7 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler
 
     public void loadUsageRecipes(ItemStack ingredient) {
         for (FuelPair fuel : afuels)
-            if (fuel.stack.contains(ingredient))
+            if (fuel.stack != null && fuel.stack.contains(ingredient))
                 arecipes.add(new CachedFuelRecipe(fuel));
     }
 
