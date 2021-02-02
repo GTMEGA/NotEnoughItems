@@ -2,7 +2,8 @@ package codechicken.nei.asm;
 
 import static org.objectweb.asm.Opcodes.*;
 
-import codechicken.nei.NEIClientConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -49,6 +50,7 @@ import org.objectweb.asm.MethodVisitor;
  * </pre>
  */
 public class OreDictionaryVisitor extends ClassVisitor {
+	private static final Logger logger = LogManager.getLogger("OreDictionaryVisitor");
 	private static class GetOreIDVisitor extends MethodVisitor {
 		Label jumpEnd;
 		Label catchStart = new Label();
@@ -60,7 +62,7 @@ public class OreDictionaryVisitor extends ClassVisitor {
 		@Override
 		public void visitJumpInsn(int opcode, Label label) {
 			super.visitJumpInsn(opcode, label);
-			NEIClientConfig.logger.trace("Adding getOreID MONITERENTER");
+			logger.trace("Adding getOreID MONITERENTER");
 			jumpEnd = label;
 			mv.visitFieldInsn(GETSTATIC, "net/minecraftforge/oredict/OreDictionary", "emptyEntryCreationLock", "Ljava/lang/Object;");
 			mv.visitInsn(MONITORENTER);
@@ -77,7 +79,7 @@ public class OreDictionaryVisitor extends ClassVisitor {
 		@Override
 		public void visitLabel(Label label) {
 			if (label.equals(jumpEnd)) {
-				NEIClientConfig.logger.trace("Adding getOreID MONITEREXIT");
+				logger.trace("Adding getOreID MONITEREXIT");
 				// normal exit
 				mv.visitLabel(exitStart);
 				mv.visitFieldInsn(GETSTATIC, "net/minecraftforge/oredict/OreDictionary", "emptyEntryCreationLock", "Ljava/lang/Object;");
@@ -109,7 +111,7 @@ public class OreDictionaryVisitor extends ClassVisitor {
 		@Override
 		public void visitCode() {
 			super.visitCode();
-			NEIClientConfig.logger.trace("Adding emptyEntryCreationLock initializer");
+			logger.trace("Adding emptyEntryCreationLock initializer");
 			mv.visitTypeInsn(NEW, "java/lang/Object");
 			mv.visitInsn(DUP);
 			mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
@@ -127,7 +129,7 @@ public class OreDictionaryVisitor extends ClassVisitor {
 
 	@Override
 	public void visitEnd() {
-		NEIClientConfig.logger.debug("Adding emptyEntryCreationLock");
+		logger.debug("Adding emptyEntryCreationLock");
 		cv.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL, "emptyEntryCreationLock", "Ljava/lang/Object;", null, null);
 		super.visitEnd();
 	}
@@ -135,11 +137,11 @@ public class OreDictionaryVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		if (name.equals("getOreID") && desc.equals("(Ljava/lang/String;)I")) {
-			NEIClientConfig.logger.debug("Patching getOreID");
+			logger.debug("Patching getOreID");
 			return new GetOreIDVisitor(api, super.visitMethod(access, name, desc, signature, exceptions));
 		} else if (name.equals("<clinit>")) {
 			// some classes don't have clinit. not this one.
-			NEIClientConfig.logger.debug("Patching clinit");
+			logger.debug("Patching clinit");
 			return new ClassInitializerVisitor(api, super.visitMethod(access, name, desc, signature, exceptions));
 		}
 		return super.visitMethod(access, name, desc, signature, exceptions);
