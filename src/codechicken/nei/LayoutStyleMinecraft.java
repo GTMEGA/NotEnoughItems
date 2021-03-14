@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.LayoutManager.bookmarkPanel;
+import static codechicken.nei.LayoutManager.bookmarks;
 import static codechicken.nei.LayoutManager.delete;
 import static codechicken.nei.LayoutManager.dropDown;
 import static codechicken.nei.LayoutManager.gamemode;
@@ -126,6 +127,11 @@ public class LayoutStyleMinecraft extends LayoutStyle
         options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
         options.w = 80;
         options.h = 22;
+        
+        bookmarks.x = 82 + (isEnabled() ? 0 : 6);
+        bookmarks.y = isEnabled() ? gui.height - 22 : gui.height - 28;
+        bookmarks.w = 80;
+        bookmarks.h = 22;
 
         searchField.y = gui.height - searchField.h - 2;
 

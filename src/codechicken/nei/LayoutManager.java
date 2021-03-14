@@ -39,6 +39,7 @@ import static codechicken.nei.NEIClientConfig.getOptionList;
 import static codechicken.nei.NEIClientConfig.getSearchExpression;
 import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
 import static codechicken.nei.NEIClientConfig.invCreativeMode;
+import static codechicken.nei.NEIClientConfig.isBookmarkPanelHidden;
 import static codechicken.nei.NEIClientConfig.isEnabled;
 import static codechicken.nei.NEIClientConfig.isHidden;
 import static codechicken.nei.NEIClientConfig.showIDs;
@@ -198,6 +199,11 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             toggleBooleanSetting("inventory.hidden");
             return true;
         }
+        if (keyID == getKeyBinding("gui.hide_bookmarks")) {
+            toggleBooleanSetting("bookmarksEnabled");
+            return true;
+        }
+
         if (isEnabled() && !isHidden()) {
             for (Widget widget : controlWidgets)
                 if (inputFocused == null)
@@ -242,6 +248,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                     widget.draw(mousex, mousey);
             } else {
                 options.draw(mousex, mousey);
+                bookmarks.draw(mousex, mousey);
             }
 
             GL11.glEnable(GL11.GL_LIGHTING);
@@ -293,8 +300,13 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         VisiblityData visiblity = new VisiblityData();
         if (isHidden())
             visiblity.showNEI = false;
+        
+        if (isBookmarkPanelHidden())
+            visiblity.showBookmarkPanel = false;
+        
         if (gui.height - gui.ySize <= 40)
             visiblity.showSearchSection = false;
+        
         if (gui.guiLeft - 4 < 76)
             visiblity.showWidgets = false;
 
@@ -339,7 +351,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                return false;
+                NEIClientConfig.toggleBooleanSetting("bookmarksEnabled");
+                return true;
             }
 
             @Override
@@ -605,6 +618,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
 
         addWidget(options);
+        addWidget(bookmarks);
         if (visiblity.showItemPanel) {
             addWidget(itemPanel);
             itemPanel.setVisible();

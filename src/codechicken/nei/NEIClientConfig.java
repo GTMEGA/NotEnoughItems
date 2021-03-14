@@ -123,6 +123,8 @@ public class NEIClientConfig
         API.addOption(new OptionTextField("command.rain"));
         tag.getTag("command.heal").setDefaultValue("");
         API.addOption(new OptionTextField("command.heal"));
+        
+        tag.getTag("bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
 
         setDefaultKeyBindings();
     }
@@ -167,6 +169,7 @@ public class NEIClientConfig
         API.addKeyBind("gui.hide", Keyboard.KEY_O);
         API.addKeyBind("gui.search", Keyboard.KEY_F);
         API.addKeyBind("gui.bookmark", Keyboard.KEY_A);
+        API.addKeyBind("gui.hide_bookmarks", Keyboard.KEY_B);
         API.addKeyBind("world.chunkoverlay", Keyboard.KEY_F9);
         API.addKeyBind("world.moboverlay", Keyboard.KEY_F7);
         API.addKeyBind("world.highlight_tips", Keyboard.KEY_NUMPAD0);
@@ -281,7 +284,9 @@ public class NEIClientConfig
     public static boolean isHidden() {
         return !enabledOverride || getBooleanSetting("inventory.hidden");
     }
-
+    public static boolean isBookmarkPanelHidden() {
+        return !getBooleanSetting("bookmarksEnabled");
+    }
     public static boolean isEnabled() {
         return enabledOverride && getBooleanSetting("inventory.widgetsenabled");
     }
@@ -433,4 +438,5 @@ public class NEIClientConfig
             if (file.isDirectory() && !saveFileNames.contains(file.getName()))
                 ObfuscationRun.deleteDir(file, true);
     }
+    
 }
