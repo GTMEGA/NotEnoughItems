@@ -22,6 +22,8 @@ import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
@@ -82,8 +84,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static SubsetWidget dropDown;
     public static TextField searchField;
 
-    public static Button options;
-    public static Button bookmarks;
+    public static ButtonCycled options;
+    public static ButtonCycled bookmarks;
 
     public static Button more;
     public static Button less;
@@ -330,29 +332,52 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         dropDown = new SubsetWidget();
         searchField = new SearchField("search");
 
-        options = new Button("Options")
+        options = new ButtonCycled(3)
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
-                    getOptionList().openGui(getGuiContainer(), false);
+                    if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+                        NEIClientConfig.cycleSetting("inventory.cheatmode", 3);
+                    } else {
+                        getOptionList().openGui(getGuiContainer(), false);
+                    }
                     return true;
                 }
                 return false;
             }
-
+            
+            @Override
+            public void addTooltips(List<String> tooltip) {
+                tooltip.add(translate("inventory.options.tip"));
+                String modeColor = "";
+                final int cheatMode = NEIClientConfig.getCheatMode();
+                if (cheatMode == 1)
+                    modeColor = EnumChatFormatting.GOLD.toString();
+                else if (cheatMode == 2)
+                    modeColor = EnumChatFormatting.RED.toString();
+                String controlKeyLocalization = translate(Minecraft.isRunningOnMac ? "key.ctrl.mac" : "key.ctrl");
+                tooltip.add(modeColor + translate("inventory.options.tip.cheatmode." + cheatMode));
+                tooltip.add(modeColor + translate("inventory.options.tip.cheatmode.disable", controlKeyLocalization));
+                
+            }
+            
             @Override
             public String getRenderLabel() {
                 return translate("inventory.options");
             }
         };
 
-        bookmarks = new Button("Bookmarks")
+        bookmarks = new ButtonCycled(2)
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 NEIClientConfig.toggleBooleanSetting("bookmarksEnabled");
                 return true;
+            }
+
+            public String getButtonTip() {
+                return translate("bookmark.toggle.tip");
             }
 
             @Override
@@ -437,7 +462,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                     GuiDraw.drawTip(mousex + 9, mousey, translate("inventory.delete." + (shiftKey() ? "all" : "one"), GuiContainerManager.itemDisplayNameShort(getHeldItem())));
             }
         };
-        gamemode = new ButtonCycled()
+        gamemode = new ButtonCycled(3)
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
@@ -452,7 +477,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 return translate("inventory.gamemode." + getNextGamemode());
             }
         };
-        gamemode.icons = new Image[3];
         rain = new Button()
         {
             @Override
@@ -751,39 +775,39 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public static void drawButtonBackground(int x, int y, int w, int h, boolean edges, int type) {
-        int wtiles = 0;
+        int wTiles = 0;
         int ew = w;//end width
         if (w / 2 > 100) {
-            wtiles = (w - 200) / 50 + 1;
+            wTiles = (w - 200) / 50 + 1;
             ew = 200;
         }
 
-        int w1 = ew / 2;
-        int h1 = h / 2;
-        int w2 = (ew + 1) / 2;
-        int h2 = (h + 1) / 2;
+        final int w1 = ew / 2;
+        final int h1 = h / 2;
+        final int w2 = (ew + 1) / 2;
+        final int h2 = (h + 1) / 2;
 
-        int x2 = x + w - w2;
-        int y2 = y + h - h2;
+        final int x2 = x + w - w2;
+        final int y2 = y + h - h2;
 
-        int ty = 46 + type * 20;
-        int te = (edges ? 0 : 1);//tex edges
+        final int ty = 46 + type * 20;
+        final int te = (edges ? 0 : 1);//tex edges
 
-        int ty1 = ty + te;
-        int tx1 = te;
-        int tx3 = 75;
+        final int ty1 = ty + te;
+        final int tx1 = te;
+        final int tx3 = 75;
         //halfway the 1 is for odd number adjustment
-        int ty2 = ty + 20 - h2 - te;
-        int tx2 = 200 - w2 - te;
+        final int ty2 = ty + 20 - h2 - te;
+        final int tx2 = 200 - w2 - te;
 
         changeTexture("textures/gui/widgets.png");
         drawTexturedModalRect(x, y, tx1, ty1, w1, h1);//top left
         drawTexturedModalRect(x, y2, tx1, ty2, w1, h2);//bottom left
 
-        for (int tile = 0; tile < wtiles; tile++) {
-            int tilex = x + w1 + 50 * tile;
-            drawTexturedModalRect(tilex, y, tx3, ty1, 50, h1);//top
-            drawTexturedModalRect(tilex, y2, tx3, ty2, 50, h2);//bottom
+        for (int tile = 0; tile < wTiles; tile++) {
+            final int tileX = x + w1 + 50 * tile;
+            drawTexturedModalRect(tileX, y, tx3, ty1, 50, h1);//top
+            drawTexturedModalRect(tileX, y2, tx3, ty2, 50, h2);//bottom
         }
 
         drawTexturedModalRect(x2, y, tx2, ty1, w2, h1);//top right

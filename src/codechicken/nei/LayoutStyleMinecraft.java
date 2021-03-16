@@ -49,6 +49,11 @@ public class LayoutStyleMinecraft extends LayoutStyle
         timeButtons[2].icon = new Image(144, 24, 12, 12);
         timeButtons[3].icon = new Image(156, 24, 12, 12);
         heal.icon = new Image(168, 24, 12, 12);
+        bookmarks.icons[0] = new Image(0, 36, 16, 16);
+        bookmarks.icons[1] = new Image(16, 36, 16, 16);
+        options.icons[0] = new Image(32, 36, 16, 16);
+        options.icons[1] = new Image(48, 36, 16, 16);
+        options.icons[2] = new Image(64, 36, 16, 16);
     }
 
     @Override
@@ -60,7 +65,6 @@ public class LayoutStyleMinecraft extends LayoutStyle
     public void layout(GuiContainer gui, VisiblityData visiblity) {
         reset();
 
-        //leftSize = ((gui.width - gui.xSize) / 2) - 3;
         leftSize = ItemPanels.bookmarkPanel.getWidth(gui);
         numButtons = Math.max(leftSize / 18, 1);
 
@@ -88,6 +92,8 @@ public class LayoutStyleMinecraft extends LayoutStyle
             else if (NEIClientUtils.isValidGamemode("adventure"))
                 gamemode.index = 2;
         }
+        bookmarks.index = NEIClientConfig.isBookmarkPanelHidden() ? 0 : 1;
+        options.index = NEIClientConfig.getCheatMode();
 
         magnet.state = 0x4 | (getMagnetMode() ? 1 : 0);
 
@@ -125,12 +131,12 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
         options.x = isEnabled() ? 0 : 6;
         options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
-        options.w = 80;
+        options.w = 22;
         options.h = 22;
         
-        bookmarks.x = 82 + (isEnabled() ? 0 : 6);
+        bookmarks.x = 24 + (isEnabled() ? 0 : 6);
         bookmarks.y = isEnabled() ? gui.height - 22 : gui.height - 28;
-        bookmarks.w = 80;
+        bookmarks.w = 22;
         bookmarks.h = 22;
 
         searchField.y = gui.height - searchField.h - 2;
@@ -175,16 +181,15 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
         Image icon = b.getRenderIcon();
         if (icon == null) {
-            int colour = tex == 2 ? 0xffffa0 :
-                tex == 0 ? 0x601010 : 0xe0e0e0;
+            int colour = tex == 2 ? 0xffffa0 : tex == 0 ? 0x601010 : 0xe0e0e0;
 
             drawStringC(b.getRenderLabel(), b.x + b.w / 2, b.y + (b.h - 8) / 2, colour);
         } else {
             GL11.glColor4f(1, 1, 1, 1);
 
-            int iconx = b.x + (b.w - icon.width) / 2;
-            int icony = b.y + (b.h - icon.height) / 2;
-            LayoutManager.drawIcon(iconx, icony, icon);
+            final int iconX = b.x + (b.w - icon.width) / 2;
+            final int iconY = b.y + (b.h - icon.height) / 2;
+            LayoutManager.drawIcon(iconX, iconY, icon);
         }
     }
 

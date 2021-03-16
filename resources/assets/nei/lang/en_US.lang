@@ -1,6 +1,13 @@
 nei.load=Load
 nei.save=Save
+
+# PC/Linux Control Key
+nei.key.ctrl=CTRL
+# Mac Command Key
+nei.key.ctrl.mac=CMD
+
 nei.bookmark.toggle=Bookmarks
+nei.bookmark.toggle.tip=Toggle visibility of the Bookmark Panel
 
 nei.enchant=Enchant
 nei.enchant.level=Level
@@ -12,6 +19,11 @@ nei.potion.duration=Duration
 nei.potion.level=Level
 
 nei.inventory.options=Options
+nei.inventory.options.tip=NEI Config
+nei.inventory.options.tip.cheatmode.0=Recipe Mode
+nei.inventory.options.tip.cheatmode.1=Utility Mode
+nei.inventory.options.tip.cheatmode.2=Cheat Mode
+nei.inventory.options.tip.cheatmode.disable=%s-click here to cycle between Recipe, Utility, and Cheat Mode.
 nei.inventory.prev=Prev
 nei.inventory.next=Next
 nei.inventory.item_subsets=Item Subsets
