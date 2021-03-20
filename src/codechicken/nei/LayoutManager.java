@@ -53,6 +53,7 @@ import static codechicken.nei.NEIClientUtils.decreaseSlotStack;
 import static codechicken.nei.NEIClientUtils.deleteEverything;
 import static codechicken.nei.NEIClientUtils.deleteHeldItem;
 import static codechicken.nei.NEIClientUtils.deleteItemsOfType;
+import static codechicken.nei.NEIClientUtils.getGamemode;
 import static codechicken.nei.NEIClientUtils.getGuiContainer;
 import static codechicken.nei.NEIClientUtils.getHeldItem;
 import static codechicken.nei.NEIClientUtils.getNextGamemode;
@@ -139,7 +140,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         return gui.width - 3;
     }
     public static int getLeftSize(GuiContainer gui) {
-        return getSideWidth(gui) - (ftbUtilsLoaded ? 18 : 0);
+        return getSideWidth(gui) - ((ftbUtilsLoaded || getGamemode() == 2) ? 18 : 0);
     }
 
     @Override
@@ -476,6 +477,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             public String getButtonTip() {
                 return translate("inventory.gamemode." + getNextGamemode());
             }
+
         };
         rain = new Button()
         {
