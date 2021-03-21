@@ -373,7 +373,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                NEIClientConfig.toggleBooleanSetting("bookmarksEnabled");
+                NEIClientConfig.toggleBooleanSetting("inventory.bookmarksEnabled");
                 return true;
             }
 
