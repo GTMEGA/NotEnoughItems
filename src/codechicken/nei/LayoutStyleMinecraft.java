@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.LayoutManager.bookmarkPanel;
-import static codechicken.nei.LayoutManager.bookmarks;
+import static codechicken.nei.LayoutManager.bookmarksButton;
 import static codechicken.nei.LayoutManager.delete;
 import static codechicken.nei.LayoutManager.dropDown;
 import static codechicken.nei.LayoutManager.gamemode;
@@ -49,8 +49,8 @@ public class LayoutStyleMinecraft extends LayoutStyle
         timeButtons[2].icon = new Image(144, 24, 12, 12);
         timeButtons[3].icon = new Image(156, 24, 12, 12);
         heal.icon = new Image(168, 24, 12, 12);
-        bookmarks.icons[0] = new Image(0, 36, 16, 16);
-        bookmarks.icons[1] = new Image(16, 36, 16, 16);
+        bookmarksButton.icons[0] = new Image(0, 36, 16, 16);
+        bookmarksButton.icons[1] = new Image(16, 36, 16, 16);
         options.icons[0] = new Image(32, 36, 16, 16);
         options.icons[1] = new Image(48, 36, 16, 16);
         options.icons[2] = new Image(64, 36, 16, 16);
@@ -92,7 +92,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
             else if (NEIClientUtils.isValidGamemode("adventure"))
                 gamemode.index = 2;
         }
-        bookmarks.index = NEIClientConfig.isBookmarkPanelHidden() ? 0 : 1;
+        bookmarksButton.index = NEIClientConfig.isBookmarkPanelHidden() ? 0 : 1;
         options.index = NEIClientConfig.getCheatMode();
 
         magnet.state = 0x4 | (getMagnetMode() ? 1 : 0);
@@ -133,11 +133,11 @@ public class LayoutStyleMinecraft extends LayoutStyle
         options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
         options.w = 22;
         options.h = 22;
-        
-        bookmarks.x = 24 + (isEnabled() ? 0 : 6);
-        bookmarks.y = isEnabled() ? gui.height - 22 : gui.height - 28;
-        bookmarks.w = 22;
-        bookmarks.h = 22;
+
+        bookmarksButton.x = 24 + (isEnabled() ? 0 : 6);
+        bookmarksButton.y = isEnabled() ? gui.height - 22 : gui.height - 28;
+        bookmarksButton.w = 22;
+        bookmarksButton.h = 22;
 
         searchField.y = gui.height - searchField.h - 2;
 

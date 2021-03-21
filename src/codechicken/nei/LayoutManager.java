@@ -86,7 +86,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static TextField searchField;
 
     public static ButtonCycled options;
-    public static ButtonCycled bookmarks;
+    public static ButtonCycled bookmarksButton;
 
     public static Button more;
     public static Button less;
@@ -203,7 +203,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             return true;
         }
         if (keyID == getKeyBinding("gui.hide_bookmarks")) {
-            toggleBooleanSetting("bookmarksEnabled");
+            toggleBooleanSetting("inventory.bookmarksEnabled");
             return true;
         }
 
@@ -251,7 +251,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                     widget.draw(mousex, mousey);
             } else {
                 options.draw(mousex, mousey);
-                bookmarks.draw(mousex, mousey);
+                bookmarksButton.draw(mousex, mousey);
             }
 
             GL11.glEnable(GL11.GL_LIGHTING);
@@ -369,7 +369,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             }
         };
 
-        bookmarks = new ButtonCycled(2)
+        bookmarksButton = new ButtonCycled(2)
         {
             @Override
             public boolean onButtonPress(boolean rightclick) {
@@ -473,9 +473,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 }
                 return false;
             }
-
-            public String getButtonTip() {
-                return translate("inventory.gamemode." + getNextGamemode());
+            public void addTooltips(List<String> tooltip) {
+                tooltip.add(translate("inventory.current.gamemode." + getGamemode()));
+                tooltip.add(EnumChatFormatting.GRAY + translate("inventory.gamemode." + getNextGamemode()));
             }
 
         };
@@ -644,7 +644,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
 
         addWidget(options);
-        addWidget(bookmarks);
+        addWidget(bookmarksButton);
         if (visiblity.showItemPanel) {
             addWidget(itemPanel);
             itemPanel.setVisible();

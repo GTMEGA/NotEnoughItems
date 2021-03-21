@@ -22,6 +22,7 @@ import codechicken.nei.config.OptionList;
 import codechicken.nei.config.OptionOpenGui;
 import codechicken.nei.config.OptionTextField;
 import codechicken.nei.config.OptionToggleButton;
+import codechicken.nei.config.OptionToggleButtonBoubs;
 import codechicken.nei.config.OptionUtilities;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
@@ -124,8 +125,11 @@ public class NEIClientConfig
         tag.getTag("command.heal").setDefaultValue("");
         API.addOption(new OptionTextField("command.heal"));
         
-        tag.getTag("bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
-
+        tag.getTag("inventory.bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
+        API.addOption(new OptionToggleButton("inventory.bookmarksEnabled", true));
+        tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
+        API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
+        
         setDefaultKeyBindings();
     }
 
@@ -285,7 +289,10 @@ public class NEIClientConfig
         return !enabledOverride || getBooleanSetting("inventory.hidden");
     }
     public static boolean isBookmarkPanelHidden() {
-        return !getBooleanSetting("bookmarksEnabled");
+        return !getBooleanSetting("inventory.bookmarksEnabled");
+    }
+    public static boolean areJEIStyleTabsVisible() {
+        return getBooleanSetting("inventory.jei_style_tabs");
     }
     public static boolean isEnabled() {
         return enabledOverride && getBooleanSetting("inventory.widgetsenabled");

@@ -48,10 +48,15 @@ nei.inventory.dusk.set=Set time to dusk
 nei.inventory.midnight.enable=Enable midnight-dawn
 nei.inventory.midnight.set=Set time to midnight
 nei.inventory.heal=Heal the player
-nei.inventory.gamemode.0=Set gamemode to survival
-nei.inventory.gamemode.1=Set gamemode to creative
-nei.inventory.gamemode.2=Set gamemode to creative+
-nei.inventory.gamemode.3=Set gamemode to adventure
+nei.inventory.current.gamemode.0=Current gamemode: survival
+nei.inventory.current.gamemode.1=Current gamemode: creative
+nei.inventory.current.gamemode.2=Current gamemode: creative+
+nei.inventory.current.gamemode.3=Current gamemode: adventure
+
+nei.inventory.gamemode.0=Click: Set gamemode to survival
+nei.inventory.gamemode.1=Click: Set gamemode to creative
+nei.inventory.gamemode.2=Click: Set gamemode to creative+
+nei.inventory.gamemode.3=Click: Set gamemode to adventure
 
 nei.chat.gamemode.0=You are now playing survival
 nei.chat.gamemode.1=You are now playing creative
@@ -88,6 +93,7 @@ nei.options.keys.gui.next_machine=Next Machine
 nei.options.keys.gui.prev_machine=Prev Machine
 nei.options.keys.gui.search=Focus Search Bar
 nei.options.keys.gui.bookmark=Add Bookmark
+nei.options.keys.gui.hide_bookmarks=Toggle Bookmark Panel Visibility
 nei.options.keys.world=World
 nei.options.keys.world.chunkoverlay=Chunk Boundary Overlay
 nei.options.keys.world.moboverlay=Mob Spawn Overlay
@@ -102,6 +108,12 @@ nei.options.keys.world.creative=Gamemode
 nei.options.keys.world.creative.tip=Cycle Gamemode
 
 nei.options.inventory=Inventory
+nei.options.inventory.bookmarksEnabled=Bookmarks Panel Visibility
+nei.options.inventory.bookmarksEnabled.true=Visible
+nei.options.inventory.bookmarksEnabled.false=Hidden
+nei.options.inventory.jei_style_tabs=JEI Style Tabs
+nei.options.inventory.jei_style_tabs.true=Yes
+nei.options.inventory.jei_style_tabs.false=No [Weirdo]
 nei.options.inventory.widgetsenabled.true=NEI Enabled
 nei.options.inventory.widgetsenabled.false=NEI Disabled
 nei.options.inventory.cheatmode.0=Recipe Mode
@@ -178,9 +190,10 @@ nei.options.tools.dump.itempanel.mode.2=Json
 nei.options.tools.dump.itempanel.mode.3=PNG
 nei.options.tools.dump.itempanel.icon.dumped=Item Panel icons were dumped to %s
 nei.options.tools.dump.itempanel.icon.cancelled=Dump cancelled
-
-
-
+nei.options.tools.dump.handlers=NEI Handlers
+nei.options.tools.dump.handlers.dumped=handlers were dumped to %s
+nei.options.tools.dump.handlers.mode.0=CSV
+nei.options.tools.dump.handlers.mode.1=Json
 
 nei.recipe.page=Page %s/%s
 nei.recipe.tooltip=Recipes
