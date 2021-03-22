@@ -2,9 +2,9 @@ package codechicken.nei.recipe;
 
 
 import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.Button;
-import codechicken.nei.Image;
-import codechicken.nei.LayoutManager;
+import codechicken.nei.Widget;
+import codechicken.nei.drawable.DrawableBuilder;
+import codechicken.nei.drawable.DrawableResource;
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -18,14 +18,14 @@ import org.lwjgl.opengl.GL11;
 import java.util.HashMap;
 import java.util.List;
 
-public class GuiRecipeTab extends Button {
-    public static HashMap<String, ImmutablePair<String, Image>> iconMap = new HashMap<>();
+public class GuiRecipeTab extends Widget {
+    public static HashMap<String, ImmutablePair<String, DrawableResource>> imageMap = new HashMap<>();
     public static HashMap<String, ImmutablePair<String, ItemStack>> stackMap = new HashMap<>();
     
     public static final int TAB_WIDTH = 24;
     public static final int TAB_HEIGHT = 24;
-    private static final Image selectedIcon = new Image(0, 52, 24, 24);
-    private static final Image unselectedIcon = new Image(24, 52, 24, 24);
+    private static final DrawableResource selectedIcon = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 16, 24, 24).build();
+    private static final DrawableResource unselectedIcon = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 24, 16, 24, 24).build();
 
     private final GuiRecipe guiRecipe;
     private final IRecipeHandler handler;
@@ -61,14 +61,13 @@ public class GuiRecipeTab extends Button {
     public void drawBackground(int mouseX, int mouseY) {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glColor4f(1, 1, 1, 1);
+        final DrawableResource image;
+        if (selected)  image = selectedIcon;
+        else           image = unselectedIcon;
 
-        if (selected)  icon = selectedIcon;
-        else           icon = unselectedIcon;
-
-        final int iconX = x + (w - icon.width) / 2;
-        final int iconY = y + (h - icon.height) / 2;
-        LayoutManager.drawIcon(iconX, iconY, icon);
-        
+        final int iconX = x + (w - image.getWidth())  / 2;
+        final int iconY = y + (h - image.getHeight()) / 2;
+        image.draw(iconX, iconY);
     }
 
     public void drawForeground(int mouseX, int mouseY) {
@@ -76,13 +75,13 @@ public class GuiRecipeTab extends Button {
         final int iconY = y + 4;
 
         final FontRenderer fontRenderer = GuiDraw.fontRenderer;
-        final Image icon = getIcon(handlerName);
+        final DrawableResource icon = getImage(handlerName);
 
         final ItemStack itemStack = getItemStack(handlerName, handlerID);
-        
+       
         
         if (icon != null) {
-            LayoutManager.drawIcon(iconX + 1, iconY + 1, icon);
+            icon.draw(iconX + 1, iconY + 1);
         } else if (itemStack != null) {
             GuiContainerManager.drawItems.zLevel += 100;
             GuiContainerManager.drawItem(iconX, iconY, itemStack);
@@ -98,7 +97,6 @@ public class GuiRecipeTab extends Button {
         } 
     }
 
-    @Override
     public void addTooltips(List<String> tooltip) {
         tooltip.add(handler.getRecipeName().trim());
         
@@ -113,7 +111,6 @@ public class GuiRecipeTab extends Button {
 
     }
     
-    @Override
     public boolean onButtonPress(boolean rightclick) {
         int newIdx = guiRecipe.currenthandlers.indexOf(handler);
         if (newIdx == -1)
@@ -140,7 +137,7 @@ public class GuiRecipeTab extends Button {
         if (stackRes != null)
             return stackRes.getLeft();
         
-        Pair<String, Image> iconRes = iconMap.get(name);
+        Pair<String, DrawableResource> iconRes = imageMap.get(name);
         if (iconRes != null)
             return iconRes.getLeft();
 
@@ -154,8 +151,8 @@ public class GuiRecipeTab extends Button {
         return null;
     }
 
-    public static Image getIcon(String id) {
-        Pair<String, Image> res = iconMap.get(id);
+    public static DrawableResource getImage(String id) {
+        Pair<String, DrawableResource> res = imageMap.get(id);
         if (res != null)
             return res.getRight();
         return null;
@@ -169,8 +166,9 @@ public class GuiRecipeTab extends Button {
         addToStackMap("codechicken.nei.recipe.FurnaceRecipeHandler", "minecraft", "minecraft:furnace");
         addToStackMap("codechicken.nei.recipe.ShapedRecipeHandler", "minecraft", "minecraft:crafting_table");
         addToStackMap("codechicken.nei.recipe.ShapelessRecipeHandler", "minecraft", "minecraft:crafting_table");
-        addToIconMap("codechicken.nei.recipe.FuelRecipeHandler", "minecraft", new Image(80, 36, 14, 14));
-        
+        addToIconMap("codechicken.nei.recipe.FuelRecipeHandler", "minecraft", 
+                     new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 80, 0, 14, 14).build()); 
+
         // IC2
         if (Loader.isModLoaded("IC2")) {
             addToStackMap("ic2.neiIntegration.core.recipehandler.AdvRecipeHandler", "IC2", "IC2:blockreactorvessel");
@@ -561,7 +559,7 @@ public class GuiRecipeTab extends Button {
         else
             System.out.println("Couldn't find " + modname + " - " + item_id);
     }
-    private static void addToIconMap(String handler, String modid, Image image) {
-        iconMap.put(handler, new ImmutablePair<>(modid, image));
+    private static void addToIconMap(String handler, String modname, DrawableResource image) {
+        imageMap.put(handler, new ImmutablePair<>(modname, image));
     }
 }

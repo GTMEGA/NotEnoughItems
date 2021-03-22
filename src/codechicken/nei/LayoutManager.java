@@ -258,7 +258,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
     }
-
+    
     @Override
     public void postRenderObjects(GuiContainer gui, int mousex, int mousey) {
         if (!isHidden() && isEnabled()) {
