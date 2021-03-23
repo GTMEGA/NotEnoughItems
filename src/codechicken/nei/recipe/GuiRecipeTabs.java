@@ -14,23 +14,37 @@ public class GuiRecipeTabs {
     private final List<Button> buttons = new ArrayList<>();
 
     private final Rectangle area = new Rectangle();
+    private boolean creative_tab_style;
     
     private int pageCount = 1;
     private int pageNumber = 0;
     private int categoriesPerPage = 1;
     private int numHandlers = 1;
+    private int tabWidth;
+    private int tabHeight;
 
     public GuiRecipeTabs(GuiRecipe guiRecipe) {
         this.guiRecipe = guiRecipe;
     }
     
     public void initLayout() {
+        creative_tab_style = NEIClientConfig.useCreativeTabStyle(); 
+        if(creative_tab_style) {
+            tabWidth = GuiRecipeTabCreative.TAB_WIDTH;
+            tabHeight = GuiRecipeTabCreative.TAB_HEIGHT;
+        } else {
+            tabWidth = GuiRecipeTabJEI.TAB_WIDTH;
+            tabHeight = GuiRecipeTabJEI.TAB_HEIGHT;
+            
+        }
+        
         int totalWidth = 0;
         categoriesPerPage = 0;
         numHandlers = guiRecipe.currenthandlers.size();
+
         for (IRecipeHandler handler : guiRecipe.currenthandlers) {
-            if (totalWidth + GuiRecipeTab.TAB_WIDTH < (guiRecipe.xSize - 4)) {
-                totalWidth += GuiRecipeTab.TAB_WIDTH;
+            if (totalWidth + tabWidth < (guiRecipe.xSize - 4)) {
+                totalWidth += tabWidth;
                 categoriesPerPage++;
             } else {
                 break;
@@ -38,9 +52,9 @@ public class GuiRecipeTabs {
         }
 
         area.width = totalWidth;
-        area.height = GuiRecipeTab.TAB_HEIGHT;
+        area.height = tabHeight;
         area.x = guiRecipe.guiLeft + 4;
-        area.y = guiRecipe.guiTop - GuiRecipeTab.TAB_HEIGHT + 3;
+        area.y = guiRecipe.guiTop - tabHeight + 3;
 
         pageCount = (int) Math.ceil((float) numHandlers / categoriesPerPage);
         calcPageNumber();
@@ -62,20 +76,24 @@ public class GuiRecipeTabs {
             final int index = i + startIndex;
             if (index >= numHandlers) break;
             IRecipeHandler handler = guiRecipe.currenthandlers.get(index);
-            int tabX = area.x + (i * GuiRecipeTab.TAB_WIDTH);
-            tabs.add(new GuiRecipeTab(guiRecipe, handler, tabX, area.y));
+            int tabX = area.x + (i * tabWidth);
+            
+            if(NEIClientConfig.useCreativeTabStyle())
+                tabs.add(new GuiRecipeTabCreative(guiRecipe, handler, tabX, area.y));
+            else
+                tabs.add(new GuiRecipeTabJEI(guiRecipe, handler, tabX, area.y));
         }
         
         // Maybe add buttons
         if (numHandlers > categoriesPerPage) {
-
             Button prevTab = new Button("prevTab") {
                 @Override
                 public boolean onButtonPress(boolean rightClick) {
                     if (!rightClick) {
                         NEIClientUtils.playClickSound();
                         return previousPage();
-                    } else             return false;
+                    } else 
+                        return false;
                 }
                 @Override
                 public String getRenderLabel() {
@@ -83,9 +101,9 @@ public class GuiRecipeTabs {
                 }
             };
             prevTab.w = 8;
-            prevTab.h = GuiRecipeTab.TAB_HEIGHT - 4;
+            prevTab.h = tabHeight - 4;
             prevTab.x = area.x - prevTab.w;
-            prevTab.y = area.y + 4;
+            prevTab.y = area.y + 2;
             buttons.add(prevTab);
             
             Button nextTab = new Button("nextTab") {

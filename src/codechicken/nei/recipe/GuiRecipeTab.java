@@ -18,14 +18,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.HashMap;
 import java.util.List;
 
-public class GuiRecipeTab extends Widget {
+public abstract class GuiRecipeTab extends Widget {
     public static HashMap<String, ImmutablePair<String, DrawableResource>> imageMap = new HashMap<>();
     public static HashMap<String, ImmutablePair<String, ItemStack>> stackMap = new HashMap<>();
-    
-    public static final int TAB_WIDTH = 28;
-    public static final int TAB_HEIGHT = 31;
-    private static final DrawableResource selectedIcon = new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 32, 28, 32).build();
-    private static final DrawableResource unselectedIcon = new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 0, 28, 30).build();
 
     private final GuiRecipe guiRecipe;
     private final IRecipeHandler handler;
@@ -33,13 +28,23 @@ public class GuiRecipeTab extends Widget {
     private final String handlerID;
 
     private boolean selected;
+    
+    public abstract int getWidth();
+    public abstract int getHeight();
+    
+    public abstract DrawableResource getSelectedTabImage();
+    public abstract DrawableResource getUnselectedTabImage();
+
+    protected abstract int getForegroundIconX();
+    protected abstract int getForegroundIconY();
+
 
     public GuiRecipeTab(GuiRecipe guiRecipe, IRecipeHandler handler, int x, int y) {
         super();
         this.x = x;
         this.y = y;
-        this.w = TAB_WIDTH;
-        this.h = TAB_HEIGHT;
+        this.w = getWidth();
+        this.h = getHeight();
         this.handler = handler;
         this.handlerName = handler.toString().split("@")[0];
         this.guiRecipe = guiRecipe;
@@ -62,17 +67,17 @@ public class GuiRecipeTab extends Widget {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glColor4f(1, 1, 1, 1);
         final DrawableResource image;
-        if (selected)  image = selectedIcon;
-        else           image = unselectedIcon;
+        if (selected)  image = getSelectedTabImage();
+        else           image = getUnselectedTabImage();
 
         final int iconX = x + (w - image.getWidth())  / 2;
-        final int iconY = y;
+        final int iconY = y + (h - image.getHeight()) / 2;
         image.draw(iconX, iconY);
     }
 
     public void drawForeground(int mouseX, int mouseY) {
-        final int iconX = x + (w - 16) / 2;
-        final int iconY = y + h - 22;
+        final int iconX = getForegroundIconX();
+        final int iconY = getForegroundIconY();
 
         final FontRenderer fontRenderer = GuiDraw.fontRenderer;
         final DrawableResource icon = getImage(handlerName);
@@ -89,8 +94,8 @@ public class GuiRecipeTab extends Widget {
         } else {
             // Text fallback
             String text = handler.getRecipeName().substring(0, 2);
-            int textCenterX = x + (int) (TAB_WIDTH / 2f);
-            int textCenterY = y + (int) (TAB_HEIGHT / 2f) - 3;
+            int textCenterX = x + (int) (getWidth() / 2f);
+            int textCenterY = y + (int) (getHeight() / 2f) - 3;
             int color = selected ? 0xffffa0 : 0xe0e0e0;
             fontRenderer.drawStringWithShadow(text, textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f), textCenterY, color);
             GL11.glColor4f(1, 1, 1, 1);

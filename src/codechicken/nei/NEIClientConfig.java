@@ -78,7 +78,7 @@ public class NEIClientConfig
 
         tag.getTag("inventory.widgetsenabled").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.widgetsenabled"));
-
+        
         tag.getTag("inventory.hidden").getBooleanValue(false);
         tag.getTag("inventory.cheatmode").getIntValue(2);
         tag.getTag("inventory.lockmode").setComment("For those who can't help themselves.\nSet this to a mode and you will be unable to change it ingame").getIntValue(-1);
@@ -129,6 +129,9 @@ public class NEIClientConfig
         API.addOption(new OptionToggleButton("inventory.bookmarksEnabled", true));
         tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
+        
+        tag.getTag("inventory.creative_tab_style").setComment("Creative or JEI style tabs").getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.creative_tab_style", true));
         
         setDefaultKeyBindings();
     }
@@ -293,6 +296,9 @@ public class NEIClientConfig
     }
     public static boolean areJEIStyleTabsVisible() {
         return getBooleanSetting("inventory.jei_style_tabs");
+    }
+    public static boolean useCreativeTabStyle() {
+        return getBooleanSetting("inventory.creative_tab_style");
     }
     public static boolean isEnabled() {
         return enabledOverride && getBooleanSetting("inventory.widgetsenabled");
