@@ -196,17 +196,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     private void nextType() {
-        recipetype++;
-        if (recipetype >= currenthandlers.size())
-            recipetype = 0;
-        page = 0;
-        recipeTabs.calcPageNumber();
+        setRecipePage(++recipetype);
     }
 
     private void prevType() {
-        recipetype--;
+        setRecipePage(--recipetype);
+    }
+    
+    public void setRecipePage(int idx) {
+        recipetype = idx;
         if (recipetype < 0)
             recipetype = currenthandlers.size() - 1;
+        else if (recipetype >= currenthandlers.size())
+            recipetype = 0;
         page = 0;
         recipeTabs.calcPageNumber();
     }

@@ -120,8 +120,8 @@ public abstract class GuiRecipeTab extends Widget {
         int newIdx = guiRecipe.currenthandlers.indexOf(handler);
         if (newIdx == -1)
             return false;
-    
-        guiRecipe.recipetype = newIdx;
+
+        guiRecipe.setRecipePage(newIdx);
         return true;
     }
     
