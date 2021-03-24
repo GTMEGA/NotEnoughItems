@@ -6,6 +6,7 @@ public abstract class ButtonCycled extends Button
 
     public ButtonCycled(int num) {
         icons = new Image[num];
+        init();
     }
     @Override
     public Image getRenderIcon()
@@ -13,6 +14,7 @@ public abstract class ButtonCycled extends Button
         return icons[index];
     }
 
+    public void init() {}
     public int index;
     public Image[] icons;
 }

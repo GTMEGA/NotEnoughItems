@@ -1,5 +1,6 @@
 package codechicken.nei.config;
 
+import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
@@ -30,17 +31,8 @@ public class OptionToggleButtonBoubs extends OptionButton {
     public void drawButton(int mx, int my) {
         Rectangle b = buttonSize();
         LayoutManager.drawButtonBackground(b.x, b.y, b.width, b.height, true, getButtonTex(mx, my));
-        GL11.glColor4f(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-        if(state()) {
-            coolBoubs.draw(b.x + (b.width/2) - (coolBoubs.getWidth()/2), b.y);
-        }else {
-            angryBoubs.draw(b.x + (b.width/2) - (angryBoubs.getWidth()/2), b.y);
-        }
-        GL11.glDisable(GL11.GL_BLEND);
-
+        final Image image = state() ? coolBoubs : angryBoubs;
+        LayoutManager.drawIcon(b.x + (b.width/2) - (coolBoubs.getWidth()/2), b.y, image);
     }
     
     public String getButtonText() {

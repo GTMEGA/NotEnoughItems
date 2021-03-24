@@ -193,6 +193,10 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("ic2.neiIntegration.core.recipehandler.ScrapboxRecipeHandler", "IC2", "IC2:itemScrapbox");
             addToStackMap("ic2.neiIntegration.core.recipehandler.SolidCannerRecipeHandler", "IC2", "IC2:blockMachine2:9");
         }
+
+        if (Loader.isModLoaded("Ic2Nei")) {
+            addToStackMap("speiger.src.crops.prediction.NEIPlugin", "IC2CropsNEI", "IC2:blockCrop");
+        }
         
         // Gregtech 5u
         if (!Loader.isModLoaded("gregapi_post") && Loader.isModLoaded("gregtech")) {
@@ -268,30 +272,44 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("gt.recipe.vacuumfreezer", "gregtech", "gregtech:gt.blockmachines:1002");                  // gt.blockmachines.multimachine.vacuumfreezer
             addToStackMap("gt.recipe.wiremill", "gregtech", "gregtech:gt.blockmachines:351");                        // gt.blockmachines.basicmachine.wiremill.tier.01
             addToStackMap("ic.recipe.recycler", "gregtech", "gregtech:gt.blockmachines:331");                        // gt.blockmachines.basicmachine.recycler.tier.01
-
-//            // Maybe acid generator
-//            //tabItemIcon.put("null", stackDB("gt.blockmachines.acidgeneratormv"));
-//
-//            // Maybe not release
-//            tabItemIcon.put("gt.recipe.largenaquadahreactor", stackDB("gt.blockmachines.1nr.controller.single"));
-//            tabItemIcon.put("gt.recipe.fluidnaquadahreactor", stackDB("gt.blockmachines.1nr.controller.single"));
-//            tabItemIcon.put("gt.recipe.hugenaquadahreactor", stackDB("gt.blockmachines.1nr.controller.single"));
-//            tabItemIcon.put("gt.recipe.extrahugenaquadahreactor", stackDB("gt.blockmachines.1nr.controller.single"));
+            addToStackMap("gt.recipe.byproductlist", "gregtech", "");
+            addToStackMap("gt.recipe.cncmachine", "gregtech", "");
+            addToStackMap("gt.recipe.uuamplifier", "gregtech", "");
             
+            addToStackMap("gt.recipe.extremedieselgeneratorfuel", "gregtech", "gregtech:gt.blockmachines:1171");
+            addToStackMap("gt.recipe.largenaquadahreactor", "gregtech", "gregtech:gt.blockmachines:97");
+            addToStackMap("gt.recipe.fluidnaquadahreactor", "gregtech", "gregtech:gt.blockmachines:97");
+            addToStackMap("gt.recipe.hugenaquadahreactor", "gregtech", "gregtech:gt.blockmachines:97");
+            addToStackMap("gt.recipe.extrahugenaquadahreactor", "gregtech", "gregtech:gt.blockmachines:97");
+            addToStackMap("gt.recipe.rocketenginefuel", "gregtech", "GalaxySpace:item.Tier8Rocket");
+            addToStackMap("gt.recipe.RTGgenerators", "gregtech", "IC2:itemRTGPellet");
+            addToStackMap("gt.recipe.componentassembler", "gregtech", "gregtech:gt.blockmachines:211");
+            addToStackMap("bw.fuels.acidgens", "gregtech", "gregtech:gt.blockmachines:12726");
+            addToStackMap("bw.recipe.cal", "gregtech", "gregtech:gt.blockmachines:12735");
+
         }
 
         if (Loader.isModLoaded("appliedenergistics2")) {
-
             addToStackMap("appeng.integration.modules.NEIHelpers.NEIAEShapedRecipeHandler", "AppliedEnergistics2","appliedenergistics2:item.ItemMultiPart:380");
             addToStackMap("appeng.integration.modules.NEIHelpers.NEIAEShapelessRecipeHandler","AppliedEnergistics2", "appliedenergistics2:item.ItemMultiPart:380");
             addToStackMap("appeng.integration.modules.NEIHelpers.NEIFacadeRecipeHandler", "AppliedEnergistics2", "appliedenergistics2:item.ItemFacade:192");
+            addToStackMap("appeng.integration.modules.NEIHelpers.NEIGrinderRecipeHandler", "AppliedEnergistics2","appliedenergistics2:item.ItemMultiMaterial:8");
             addToStackMap("appeng.integration.modules.NEIHelpers.NEIInscriberRecipeHandler", "AppliedEnergistics2", "appliedenergistics2:tile.BlockInscriber");
             addToStackMap("appeng.integration.modules.NEIHelpers.NEIWorldCraftingHandler", "AppliedEnergistics2", "appliedenergistics2:item.ItemMultiMaterial:9");
-
+        }
+        
+        if (Loader.isModLoaded("OpenComputers")) {
+            addToStackMap("li.cil.oc.integration.nei.ManualUsageHandler", "OpenComputers", "OpenComputers:item:98");
+            addToStackMap("li.cil.oc.integration.nei.CallbackDocHandler", "OpenComputers", "");
         }
 
         if (Loader.isModLoaded("AdvancedSolarPanel")) {
             addToStackMap("advsolar.client.nei.MTRecipeHandler", "AdvancedSolarPanel", "AdvancedSolarPanel:BlockMolecularTransformer");
+        }
+        
+        if (Loader.isModLoaded("AromaBackup")) {
+            addToStackMap("aroma1997.core.recipes.nei.ShapedAromicRecipeHandler", "AromaBackup", "minecraft:crafting_table");
+            addToStackMap("aroma1997.core.recipes.nei.ShapelessAromicRecipeHandler", "AromaBackup", "minecraft:crafting_table");
         }
         
         if (Loader.isModLoaded("WitcheryExtras")) {
@@ -311,6 +329,7 @@ public abstract class GuiRecipeTab extends Widget {
         }
 
         if (Loader.isModLoaded("Thaumcraft")) {
+            addToStackMap("com.djgiannuzz.thaumcraftneiplugin.nei.recipehandler.ArcaneShapedRecipeHandler", "Thaumcraft", "Thaumcraft:blockTable:15");
             addToStackMap("com.djgiannuzz.thaumcraftneiplugin.nei.recipehandler.ArcaneShapelessRecipeHandler", "Thaumcraft", "Thaumcraft:blockTable:15");
             addToStackMap("com.djgiannuzz.thaumcraftneiplugin.nei.recipehandler.CrucibleRecipeHandler", "Thaumcraft", "Thaumcraft:blockMetalDevice");
             addToStackMap("com.djgiannuzz.thaumcraftneiplugin.nei.recipehandler.InfusionRecipeHandler", "Thaumcraft", "Thaumcraft:blockStoneDevice:2");
@@ -476,7 +495,7 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("tconstruct.plugins.nei.RecipeHandlerCastingTable", "Tinker's Construct", "TConstruct:SearedBlock");
             addToStackMap("tconstruct.plugins.nei.RecipeHandlerDryingRack", "Tinker's Construct", "TConstruct:Armor.DryingRack");
             addToStackMap("tconstruct.plugins.nei.RecipeHandlerMelting", "Tinker's Construct", "TConstruct:LavaTank:2");
-            addToStackMap("tconstruct.plugins.nei.RecipeHandlerToolMaterials", "Tinker's Construct", "TConstruct:pickaxe");
+            addToStackMap("tconstruct.plugins.nei.RecipeHandlerToolMaterials", "Tinker's Construct", "TConstruct:ToolStationBlock");
         }
         if (Loader.isModLoaded("chisel")) {
             addToStackMap("team.chisel.compat.nei.RecipeHandlerChisel", "Chisel", "chisel:chisel");
@@ -494,7 +513,7 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("tonius.neiintegration.mods.mcforge.RecipeHandlerOreDictionary", "Minecraft", "minecraft:iron_ore");
         }
 
-        if (Loader.isModLoaded("GalacticraftCoRailcraftre")) {
+        if (Loader.isModLoaded("Railcraft")) {
             addToStackMap("tonius.neiintegration.mods.railcraft.RecipeHandlerBlastFurnace", "Railcraft", "Railcraft:machine.alpha:12");
             addToStackMap("tonius.neiintegration.mods.railcraft.RecipeHandlerCokeOven", "Railcraft", "Railcraft:machine.alpha:7");
             addToStackMap("tonius.neiintegration.mods.railcraft.RecipeHandlerRockCrusher", "Railcraft", "Railcraft:machine.alpha:15");

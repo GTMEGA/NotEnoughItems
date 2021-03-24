@@ -8,6 +8,8 @@ import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.drawable.DrawableBuilder;
+import codechicken.nei.drawable.DrawableResource;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerDrawHandler;
 import codechicken.nei.guihook.IContainerInputHandler;
@@ -336,6 +338,13 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         options = new ButtonCycled(3)
         {
             @Override
+            public void init() {
+                this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 32, 0, 16, 16).build();
+                this.icons[1] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 48, 0, 16, 16).build();
+                this.icons[2] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 64, 0, 16, 16).build();
+            }
+            
+            @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
                     if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
@@ -371,6 +380,12 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
         bookmarksButton = new ButtonCycled(2)
         {
+            @Override
+            public void init() {
+                this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 0, 16, 16).build();
+                this.icons[1] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 16, 0, 16, 16).build();
+            }
+            
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 NEIClientConfig.toggleBooleanSetting("inventory.bookmarksEnabled");
@@ -768,11 +783,18 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public static void drawIcon(int x, int y, Image image) {
-        changeTexture("nei:textures/nei_sprites.png");
+        final boolean isDrawableResource = image instanceof DrawableResource;
+        
+        if (!isDrawableResource)
+            changeTexture("nei:textures/nei_sprites.png");
+        
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        drawTexturedModalRect(x, y, image.x, image.y, image.width, image.height);
+        if(!isDrawableResource)
+            drawTexturedModalRect(x, y, image.x, image.y, image.width, image.height);
+        else 
+            ((DrawableResource)image).draw(x, y);
         GL11.glDisable(GL11.GL_BLEND);
     }
 

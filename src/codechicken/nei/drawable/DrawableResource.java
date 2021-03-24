@@ -1,34 +1,27 @@
 package codechicken.nei.drawable;
 
+import codechicken.nei.Image;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 
-public class DrawableResource  {
+public class DrawableResource extends Image {
 
     private final ResourceLocation resourceLocation;
     private final int textureWidth;
     private final int textureHeight;
 
-    private final int u;
-    private final int v;
-    private final int width;
-    private final int height;
     private final int paddingTop;
     private final int paddingBottom;
     private final int paddingLeft;
     private final int paddingRight;
 
     public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
+        super(u, v, width, height);
         this.resourceLocation = resourceLocation;
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
-
-        this.u = u;
-        this.v = v;
-        this.width = width;
-        this.height = height;
-
+        
         this.paddingTop = paddingTop;
         this.paddingBottom = paddingBottom;
         this.paddingLeft = paddingLeft;
@@ -52,8 +45,8 @@ public class DrawableResource  {
 
         int x = xOffset + this.paddingLeft + maskLeft;
         int y = yOffset + this.paddingTop + maskTop;
-        int u = this.u + maskLeft;
-        int v = this.v + maskTop;
+        int u = this.x + maskLeft;
+        int v = this.y + maskTop;
         int width = this.width - maskRight - maskLeft;
         int height = this.height - maskBottom - maskTop;
         // drawModalRectWithCustomSizedTexture

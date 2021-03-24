@@ -49,11 +49,6 @@ public class LayoutStyleMinecraft extends LayoutStyle
         timeButtons[2].icon = new Image(144, 24, 12, 12);
         timeButtons[3].icon = new Image(156, 24, 12, 12);
         heal.icon = new Image(168, 24, 12, 12);
-        bookmarksButton.icons[0] = new Image(0, 36, 16, 16);
-        bookmarksButton.icons[1] = new Image(16, 36, 16, 16);
-        options.icons[0] = new Image(32, 36, 16, 16);
-        options.icons[1] = new Image(48, 36, 16, 16);
-        options.icons[2] = new Image(64, 36, 16, 16);
     }
 
     @Override
@@ -189,6 +184,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
             final int iconX = b.x + (b.w - icon.width) / 2;
             final int iconY = b.y + (b.h - icon.height) / 2;
+
             LayoutManager.drawIcon(iconX, iconY, icon);
         }
     }
