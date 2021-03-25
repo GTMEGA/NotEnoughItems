@@ -2,6 +2,7 @@ package codechicken.nei.recipe;
 
 
 import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientConfig;
 import codechicken.nei.Widget;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
@@ -272,9 +273,9 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("gt.recipe.vacuumfreezer", "gregtech", "gregtech:gt.blockmachines:1002");                  // gt.blockmachines.multimachine.vacuumfreezer
             addToStackMap("gt.recipe.wiremill", "gregtech", "gregtech:gt.blockmachines:351");                        // gt.blockmachines.basicmachine.wiremill.tier.01
             addToStackMap("ic.recipe.recycler", "gregtech", "gregtech:gt.blockmachines:331");                        // gt.blockmachines.basicmachine.recycler.tier.01
-            addToStackMap("gt.recipe.byproductlist", "gregtech", "");
-            addToStackMap("gt.recipe.cncmachine", "gregtech", "");
-            addToStackMap("gt.recipe.uuamplifier", "gregtech", "");
+            addToStackMap("gt.recipe.byproductlist", "gregtech", "gregtech:gt.metaitem.01:2019");
+            addToStackMap("gt.recipe.cncmachine", "gregtech", "gregtech:gt.metaitem.01:23305");
+            addToStackMap("gt.recipe.uuamplifier", "gregtech", "gregtech:gt.metaitem.02:32512");
             
             addToStackMap("gt.recipe.extremedieselgeneratorfuel", "gregtech", "gregtech:gt.blockmachines:1171");
             addToStackMap("gt.recipe.largenaquadahreactor", "gregtech", "gregtech:gt.blockmachines:97");
@@ -300,7 +301,7 @@ public abstract class GuiRecipeTab extends Widget {
         
         if (Loader.isModLoaded("OpenComputers")) {
             addToStackMap("li.cil.oc.integration.nei.ManualUsageHandler", "OpenComputers", "OpenComputers:item:98");
-            addToStackMap("li.cil.oc.integration.nei.CallbackDocHandler", "OpenComputers", "");
+            addToStackMap("li.cil.oc.integration.nei.CallbackDocHandler", "OpenComputers", "OpenComputers:item:98");
         }
 
         if (Loader.isModLoaded("AdvancedSolarPanel")) {
@@ -534,7 +535,7 @@ public abstract class GuiRecipeTab extends Widget {
             addToStackMap("witchinggadgets.client.nei.NEISpinningWheelHandler", "WitchingGadgets", "WitchingGadgets:WG_WoodenDevice");
         }
         /* Witchery */
-        {
+        if (Loader.isModLoaded("witchery")) {
             addToStackMap("com.emoniph.witchery.integration.NEICauldronRecipeHandler", "witchery", "witchery:cauldron");
             addToStackMap("com.emoniph.witchery.integration.NEISpinningWheelRecipeHandler", "witchery", "witchery:spinningwheel");
             addToStackMap("com.emoniph.witchery.integration.NEIWitchesOvenRecipeHandler", "witchery", "witchery:witchesovenidle");
@@ -557,7 +558,8 @@ public abstract class GuiRecipeTab extends Widget {
         final ItemStack itemStack;
         int meta = -1;
         if (!item_id.contains(":")) {
-            throw new IllegalArgumentException("Item ID missing colon");
+            NEIClientConfig.logger.info("Item ID missing colon for handler " + handler + " - " + modname);
+            return;
         }
         final String[] split = item_id.split(":");
         item_id = split[0] + ":" + split[1];
@@ -581,7 +583,7 @@ public abstract class GuiRecipeTab extends Widget {
         if (itemStack != null)
             stackMap.put(handler, new ImmutablePair<>(modname, itemStack));
         else
-            System.out.println("Couldn't find " + modname + " - " + item_id);
+            NEIClientConfig.logger.info("Couldn't find " + modname + " - " + item_id);
     }
     private static void addToIconMap(String handler, String modname, DrawableResource image) {
         imageMap.put(handler, new ImmutablePair<>(modname, image));
