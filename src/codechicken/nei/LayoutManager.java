@@ -105,12 +105,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
     public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<>();
 
-    public static boolean ftbUtilsLoaded = false;
     public static boolean itemsLoaded = false;
 
     public static void load() {
-        ftbUtilsLoaded = Loader.isModLoaded("FTBU");
-
         API.addLayoutStyle(0, new LayoutStyleMinecraft());
 
         instance = new LayoutManager();
@@ -142,7 +139,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         return gui.width - 3;
     }
     public static int getLeftSize(GuiContainer gui) {
-        return getSideWidth(gui) - ((ftbUtilsLoaded || getGamemode() == 2) ? 18 : 0);
+        return getSideWidth(gui);
     }
 
     @Override
