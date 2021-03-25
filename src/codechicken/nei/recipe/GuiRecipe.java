@@ -36,7 +36,20 @@ import java.util.List;
 
 public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOverlay, IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler, INEIGuiHandler
 {
+    private static final int borderPadding = 6;
+    private static final int buttonWidth = 13;
+    private static final int buttonHeight = 12;
+    
     public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
+    private static Class gregtechHandler;
+
+    static {
+        try {
+            gregtechHandler = Class.forName("gregtech.nei.GT_NEI_DefaultHandler");
+        } catch (ClassNotFoundException e) {
+            gregtechHandler = null;
+        }
+    }
 
     public int page;
     public int recipetype;
@@ -47,8 +60,12 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public GuiButton prevpage;
     public GuiButton overlay1;
     public GuiButton overlay2;
+    private GuiButton nexttype;
+    private GuiButton prevtype;
     private final Rectangle area = new Rectangle();
     private final GuiRecipeTabs recipeTabs;
+    
+    private int yShift = 0;
 
     protected GuiRecipe(GuiScreen prevgui) {
         super(new ContainerRecipe());
@@ -70,12 +87,17 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         super.initGui();
 
         currenthandlers = getCurrentRecipeHandlers(); // Probably don't comment me out
-        GuiButton nexttype = new GuiNEIButton(0, width / 2 - 70, (height - ySize) / 2 + 3, 13, 12, "<");
-        GuiButton prevtype = new GuiNEIButton(1, width / 2 + 57, (height - ySize) / 2 + 3, 13, 12, ">");
-        nextpage = new GuiNEIButton(2, width / 2 - 70, (height + ySize) / 2 - 18, 13, 12, "<");
-        prevpage = new GuiNEIButton(3, width / 2 + 57, (height + ySize) / 2 - 18, 13, 12, ">");
-        overlay1 = new GuiNEIButton(4, width / 2 + 65, (height - ySize) / 2 + 63, 13, 12, "?");
-        overlay2 = new GuiNEIButton(5, width / 2 + 65, (height - ySize) / 2 + 128, 13, 12, "?");
+        final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
+        final int leftButtonX = guiLeft + borderPadding;
+
+        nexttype = new GuiNEIButton(0, leftButtonX, (height - ySize) / 2 + 3, buttonWidth, buttonHeight, "<");
+        prevtype = new GuiNEIButton(1, rightButtonX, (height - ySize) / 2 + 3, buttonWidth, buttonHeight, ">");
+        
+        nextpage = new GuiNEIButton(2, leftButtonX, (height - ySize) / 2 + 17, buttonWidth, buttonHeight, "<");
+        prevpage = new GuiNEIButton(3, rightButtonX, (height - ySize) / 2 + 17, buttonWidth, buttonHeight, ">");
+        
+        overlay1 = new GuiNEIButton(4, width / 2 + 65, (height - ySize) / 2 + 63, buttonWidth, buttonHeight, "?");
+        overlay2 = new GuiNEIButton(5, width / 2 + 65, (height - ySize) / 2 + 128, buttonWidth, buttonHeight, "?");
         
         buttonList.addAll(Arrays.asList(nexttype, prevtype, nextpage, prevpage, overlay1, overlay2));
 
@@ -83,8 +105,18 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             nexttype.visible = false;
             prevtype.visible = false;
         }
+        checkGregTech();
         recipeTabs.initLayout();
         refreshPage();
+    }
+    private void checkGregTech() {
+        IRecipeHandler handler = currenthandlers.get(recipetype);
+        if (gregtechHandler != null && gregtechHandler.isInstance(handler)) {
+            // Gregtech decided to shift their handler by -8 and draw over shit...
+            yShift = 6;
+        } else {
+            yShift = 0;
+        }
     }
     
     @Override
@@ -211,6 +243,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             recipetype = 0;
         page = 0;
         recipeTabs.calcPageNumber();
+        checkGregTech();
     }
 
     private void overlayRecipe(int recipe) {
@@ -235,19 +268,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         area.x = guiLeft - 2;
         area.y = guiTop  - 4;
 
-        final boolean avarita = handler.getClass().toString().contains("fox.spiteful.avaritia.compat.nei.");
-        if (avarita) {
-            area.width  = 256;
-            area.height = 208;
-        }
-
+        calcArea(handler);
+        checkGregTech();
 
         boolean multiplepages = handler.numRecipes() > handler.recipiesPerPage();
-        nextpage.visible = multiplepages;
-        prevpage.visible = multiplepages;
+        nextpage.enabled = prevpage.enabled = multiplepages;
 
         if(firstGui != null) {
-            overlay1.yPosition = (height - ySize) / 2 + (handler.recipiesPerPage() == 2 ? 63 : 128);
+            overlay1.yPosition = (height - ySize) / 2 + 17 + (handler.recipiesPerPage() == 2 ? 63 : 128);
             overlay1.visible = handler.hasOverlay(firstGui, firstGui.inventorySlots, page * handler.recipiesPerPage());
             overlay2.visible = handler.recipiesPerPage() == 2 && page * handler.recipiesPerPage() + 1 < handler.numRecipes() &&
                     handler.hasOverlay(firstGui, firstGui.inventorySlots, page * handler.recipiesPerPage() + 1);
@@ -256,6 +284,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         }
         
         recipeTabs.refreshPage();
+    }
+
+    private void calcArea(IRecipeHandler handler) {
+        if ( handler.getClass().toString().contains("fox.spiteful.avaritia.compat.nei.")) {
+            // Handle avarita's oversized handler area
+            area.width  = 256;
+            area.height = 208;
+        }
     }
 
     private void refreshSlots() {
@@ -284,12 +320,12 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         IRecipeHandler recipehandler = currenthandlers.get(recipetype);
         String s = recipehandler.getRecipeName();
-        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0x404040);
+        fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0xffffff);
         s = NEIClientUtils.translate("recipe.page", page + 1, (currenthandlers.get(recipetype).numRecipes() - 1) / recipehandler.recipiesPerPage() + 1);
-        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, ySize - 16, 0x404040);
+        fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 19, 0xffffff);
 
         GL11.glPushMatrix();
-        GL11.glTranslatef(5, 16, 0);
+        GL11.glTranslatef(5, 32 + yShift, 0);
         for (int i = page * recipehandler.recipiesPerPage(); i < recipehandler.numRecipes() && i < (page + 1) * recipehandler.recipiesPerPage(); i++) {
             recipehandler.drawForeground(i);
             GL11.glTranslatef(0, 65, 0);
@@ -305,6 +341,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         int k = (height - ySize) / 2;
         drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
+        drawRect(guiLeft + borderPadding + buttonWidth - 1,
+                 nexttype.yPosition,
+                 guiLeft + xSize - borderPadding - buttonWidth,
+                 nexttype.yPosition + buttonHeight,
+                 0x30000000);
+        drawRect(guiLeft + borderPadding + buttonWidth - 1,
+                 nextpage.yPosition,
+                 guiLeft + xSize - borderPadding - buttonWidth,
+                 nextpage.yPosition + buttonHeight,
+                 0x30000000);        
+        
+        
+        
         if (NEIClientConfig.areJEIStyleTabsVisible()) {
             RenderHelper.enableGUIStandardItemLighting();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
@@ -313,7 +362,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         }
 
         GL11.glPushMatrix();
-        GL11.glTranslatef(j + 5, k + 16, 0);
+        GL11.glTranslatef(j + 5, k + 32 + yShift, 0);
         IRecipeHandler recipehandler = currenthandlers.get(recipetype);
         for (int i = page * recipehandler.recipiesPerPage(); i < recipehandler.numRecipes() && i < (page + 1) * recipehandler.recipiesPerPage(); i++) {
             recipehandler.drawBackground(i);
@@ -336,7 +385,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     public Point getRecipePosition(int recipe) {
-        return new Point(5, 16 + (recipe % currenthandlers.get(recipetype).recipiesPerPage()) * 65);
+        return new Point(5, 32 + yShift + (recipe % currenthandlers.get(recipetype).recipiesPerPage()) * 65);
     }
 
     @Override

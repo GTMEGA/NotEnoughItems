@@ -102,7 +102,7 @@ public class GuiRecipeTabs {
             };
             prevTab.w = 8;
             prevTab.h = tabHeight - 4;
-            prevTab.x = area.x - prevTab.w;
+            prevTab.x = area.x - prevTab.w + 1;
             prevTab.y = area.y + 2;
             buttons.add(prevTab);
             
@@ -121,7 +121,7 @@ public class GuiRecipeTabs {
             };
             nextTab.w = prevTab.w;
             nextTab.h = prevTab.h;
-            nextTab.x = area.x + area.width;
+            nextTab.x = area.x + area.width - 1;
             nextTab.y = prevTab.y;
             buttons.add(nextTab);
         }
