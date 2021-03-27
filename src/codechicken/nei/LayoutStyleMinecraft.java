@@ -136,7 +136,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
         searchField.y = gui.height - searchField.h - 2;
 
-        dropDown.x = itemPanel.x - 150;
+        dropDown.x = gui.guiLeft;
         dropDown.h = 20;
         dropDown.w = Math.min(itemPanel.prev.x - dropDown.x - 3, 100);
         searchField.h = 20;

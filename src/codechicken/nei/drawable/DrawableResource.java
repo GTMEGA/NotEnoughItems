@@ -43,14 +43,14 @@ public class DrawableResource extends Image {
     public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(this.resourceLocation);
 
-        int x = xOffset + this.paddingLeft + maskLeft;
-        int y = yOffset + this.paddingTop + maskTop;
-        int u = this.x + maskLeft;
-        int v = this.y + maskTop;
-        int width = this.width - maskRight - maskLeft;
-        int height = this.height - maskBottom - maskTop;
+        final int x = xOffset + this.paddingLeft + maskLeft;
+        final int y = yOffset + this.paddingTop + maskTop;
+        final int textureX = this.x + maskLeft;
+        final int textureY = this.y + maskTop;
+        final int width = this.width - maskRight - maskLeft;
+        final int height = this.height - maskBottom - maskTop;
         // drawModalRectWithCustomSizedTexture
-        Gui.func_146110_a(x, y, u, v, width, height, textureWidth, textureHeight);
+        Gui.func_146110_a(x, y, textureX, textureY, width, height, textureWidth, textureHeight);
     }
 }
 
