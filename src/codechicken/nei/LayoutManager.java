@@ -15,6 +15,7 @@ import codechicken.nei.guihook.IContainerDrawHandler;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
+import codechicken.nei.recipe.GuiRecipeTab;
 import cpw.mods.fml.common.Loader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -347,6 +348,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                     if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
                         NEIClientConfig.cycleSetting("inventory.cheatmode", 3);
                     } else {
+                        if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT)) {
+                            GuiRecipeTab.loadHandlerInfo();
+                        }
                         getOptionList().openGui(getGuiContainer(), false);
                     }
                     return true;

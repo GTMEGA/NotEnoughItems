@@ -3,6 +3,7 @@ package codechicken.nei.config;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.GuiUsageRecipe;
+import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import codechicken.nei.util.NBTJson;
@@ -37,14 +38,14 @@ public class HandlerDumper extends DataDumper
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String handlerName = handler.toString().split("@")[0];
             final String handlerId = Objects.firstNonNull(handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler)handler).getOverlayIdentifier() : null, "null");
-            Pair<String, ItemStack> stackMapEntry = GuiRecipeTab.lookupStackMap(handlerName, handlerId);
-                
+            HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
+
             list.add(new String[] {
                 handler.getRecipeName(),
                 handlerName,
                 handlerId,
-                stackMapEntry != null ? stackMapEntry.getLeft() : "Unknown",
-                stackMapEntry != null ? stackMapEntry.getRight().toString() : "Unknown"
+                info != null ? info.getModName() : "Unknown",
+                info != null ? info.getItemStack().toString() : "Unknown"
             });
         }
         return list;

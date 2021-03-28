@@ -24,6 +24,7 @@ import codechicken.nei.config.OptionTextField;
 import codechicken.nei.config.OptionToggleButton;
 import codechicken.nei.config.OptionToggleButtonBoubs;
 import codechicken.nei.config.OptionUtilities;
+import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
 import net.minecraft.client.Minecraft;
@@ -52,6 +53,7 @@ public class NEIClientConfig
             new ConfigFile(new File(configDir, "client.cfg")));
     public static ConfigSet world;
     public static final File bookmarkFile = new File(configDir, "bookmarks.ini");
+    public static final File handlerFile = new File(configDir, "handlers.csv");
 
     public static ItemStack[] creativeInv;
 
@@ -132,7 +134,16 @@ public class NEIClientConfig
         
         tag.getTag("inventory.creative_tab_style").setComment("Creative or JEI style tabs").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.creative_tab_style", true));
-        
+
+        tag.getTag("tools.handler_load_from_config").setComment("ADVANCED: Load handlers from config").getBooleanValue(false);
+        API.addOption(new OptionToggleButton("tools.handler_load_from_config", true) {
+            @Override
+            public boolean onClick(int button) {
+                super.onClick(button);
+                GuiRecipeTab.loadHandlerInfo();
+                return true;
+            }
+        });
         setDefaultKeyBindings();
     }
 
@@ -302,6 +313,9 @@ public class NEIClientConfig
     }
     public static boolean isEnabled() {
         return enabledOverride && getBooleanSetting("inventory.widgetsenabled");
+    }
+    public static boolean loadHandlersFromJar() {
+        return !getBooleanSetting("tools.handler_load_from_config"); 
     }
 
     public static void setEnabled(boolean flag) {

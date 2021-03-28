@@ -96,7 +96,7 @@ public class NEIModContainer extends DummyModContainer
     @Subscribe
     public void postInit(FMLPostInitializationEvent event) {
         if (CommonUtils.isClient())
-            GuiRecipeTab.initStackMap();
+            GuiRecipeTab.loadHandlerInfo();
     }
     @Override
     public VersionRange acceptableMinecraftVersionRange() {
