@@ -51,6 +51,8 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         public final int burnTime;
     }
 
+    public static List<TemplateFuelPair> afuels;
+
 
     @Override
     public void loadTransferRects() {

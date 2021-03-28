@@ -62,13 +62,11 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         public final int burnTime;
     }
 
-    public static List<TemplateFuelPair> afuels;
-
     public static void findFuelsOnce() {
         // Ensure we only find fuels once, even if threaded
         lock.lock();
         try {
-            if (afuels == null || afuels.isEmpty())
+            if (FurnaceRecipeHandler.afuels == null || FurnaceRecipeHandler.afuels.isEmpty())
                 findFuels(false);
         } finally {
             lock.unlock();
@@ -79,7 +77,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         // Ensure we only find fuels once, even if threaded
         lock.lock();
         try {
-            if (afuels == null || afuels.isEmpty())
+            if (FurnaceRecipeHandler.afuels == null || FurnaceRecipeHandler.afuels.isEmpty())
                 findFuels(true);
         } finally {
             lock.unlock();
@@ -100,13 +98,13 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         Stopwatch stopwatch = Stopwatch.createStarted();
         if (parallel) {
             try {
-                afuels = ItemList.forkJoinPool.submit(() -> ItemList.items.parallelStream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList())).get();
+                FurnaceRecipeHandler.afuels = ItemList.forkJoinPool.submit(() -> ItemList.items.parallelStream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList())).get();
             } catch (InterruptedException | ExecutionException e) {
-                afuels = new ArrayList<>();
+                FurnaceRecipeHandler.afuels = new ArrayList<>();
                 e.printStackTrace();
             }
         } else {
-            afuels = ItemList.items.stream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList());
+            FurnaceRecipeHandler.afuels = ItemList.items.stream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
         NEIClientConfig.logger.info("FindFuels took " + stopwatch.stop() );
