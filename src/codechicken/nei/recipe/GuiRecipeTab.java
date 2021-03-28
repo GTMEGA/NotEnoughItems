@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class GuiRecipeTab extends Widget {
+    public static HandlerInfo DEFAULT_HANDLER_INFO = getDefaultHandlerInfo();
     public static HashMap<String, HandlerInfo> handlerMap = new HashMap<>();
 
     private final GuiRecipe guiRecipe;
@@ -248,6 +249,12 @@ public abstract class GuiRecipeTab extends Widget {
             
         }
 
+    }
+    
+    private static HandlerInfo getDefaultHandlerInfo() {
+        final HandlerInfo info = new HandlerInfo("Unknown", "Unknown", "Unknown", false, "");
+        info.setHandlerDimensions(HandlerInfo.DEFAULT_HEIGHT, HandlerInfo.DEFAULT_WIDTH, HandlerInfo.DEFAULT_MAX_PER_PAGE);
+        return info;
     }
 
     private static int intOrDefault(String str, int defaultValue) {

@@ -261,7 +261,12 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         } else {
             handlerID = null;
         }
-        return GuiRecipeTab.getHandlerInfo(handlerName, handlerID);
+        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerID);
+        
+        if (info == null)
+            return GuiRecipeTab.DEFAULT_HANDLER_INFO;
+        
+        return info;
     }
 
     
