@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         final PositionedStack ingred;
         final PositionedStack result;
     }
-
-    @Deprecated
+    
     public static class FuelPair {
         public FuelPair(ItemStack ingred, int burnTime) {
             this.stack = new PositionedStack(ingred, 51, 42, false);
@@ -51,7 +51,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         public final int burnTime;
     }
 
-    public static List<TemplateFuelPair> afuels;
+    public static ArrayList<FuelPair> afuels;
 
 
     @Override

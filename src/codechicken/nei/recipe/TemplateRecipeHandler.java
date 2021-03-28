@@ -51,16 +51,6 @@ import static codechicken.lib.gui.GuiDraw.getMousePosition;
 public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageHandler
 {
     protected static ReentrantLock lock = new ReentrantLock();
-    public static class TemplateFuelPair
-    {
-        public TemplateFuelPair(ItemStack ingred, int burnTime) {
-            this.stack = new PositionedStack(ingred, 51, 42, false);
-            this.burnTime = burnTime;
-        }
-
-        public final PositionedStack stack;
-        public final int burnTime;
-    }
 
     public static void findFuelsOnce() {
         // Ensure we only find fuels once, even if threaded
@@ -98,23 +88,23 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         Stopwatch stopwatch = Stopwatch.createStarted();
         if (parallel) {
             try {
-                FurnaceRecipeHandler.afuels = ItemList.forkJoinPool.submit(() -> ItemList.items.parallelStream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList())).get();
+                FurnaceRecipeHandler.afuels = ItemList.forkJoinPool.submit(() -> ItemList.items.parallelStream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new))).get();
             } catch (InterruptedException | ExecutionException e) {
                 FurnaceRecipeHandler.afuels = new ArrayList<>();
                 e.printStackTrace();
             }
         } else {
-            FurnaceRecipeHandler.afuels = ItemList.items.stream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toList());
+            FurnaceRecipeHandler.afuels = ItemList.items.stream().map(TemplateRecipeHandler::identifyFuel).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new));
         }
 
         NEIClientConfig.logger.info("FindFuels took " + stopwatch.stop() );
     }
     
-    private static TemplateFuelPair identifyFuel(final ItemStack itemStack) {
+    private static FurnaceRecipeHandler.FuelPair identifyFuel(final ItemStack itemStack) {
         if (efuels.contains(itemStack.getItem())) return null;
         final int burnTime = TileEntityFurnace.getItemBurnTime(itemStack);
         if (burnTime <= 0) return null;
-        return new TemplateFuelPair(itemStack.copy(), burnTime);
+        return new FurnaceRecipeHandler.FuelPair(itemStack.copy(), burnTime);
     }
 
     /**
