@@ -2,12 +2,15 @@ package codechicken.nei.recipe;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.GuiNEIButton;
+import codechicken.nei.LayoutManager;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.IGuiContainerOverlay;
 import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.api.TaggedInventoryArea;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
@@ -53,15 +56,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     final DrawableResource bgBottom = new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_BOTTOM_Y, 176, BG_BOTTOM_HEIGHT).build();
     
     public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
-    private static Class gregtechHandler;
-
-    static {
-        try {
-            gregtechHandler = Class.forName("gregtech.nei.GT_NEI_DefaultHandler");
-        } catch (ClassNotFoundException e) {
-            gregtechHandler = null;
-        }
-    }
 
     public int page;
     public int recipetype;
@@ -72,7 +66,10 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public GuiButton prevpage;
     private GuiButton nexttype;
     private GuiButton prevtype;
-
+    
+    private int OVERLAY_BUTTON_ID_START = 4;
+    private GuiButton[] overlayButtons;
+    
     private final Rectangle area = new Rectangle();
     private final GuiRecipeTabs recipeTabs;
     private IRecipeHandler handler;
@@ -97,12 +94,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
    
     @Override
     public void initGui() {
-        this.xSize = 176;
-        this.ySize = Math.min(Math.max(this.height - 68, 166), 370);
+        xSize = 176;
+        ySize = Math.min(Math.max(height - 68, 166), 370);
         super.initGui();
-        this.guiTop = (this.height - this.ySize) / 2 + 10;
-        
+        guiTop = (height - ySize) / 2 + 10;
         currenthandlers = getCurrentRecipeHandlers(); // Probably don't comment me out
+        
+        if(handler == null) 
+            setRecipePage(recipetype);
+        else
+            initOverlayButtons();
+        
+        checkYShift();
+        
         final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
         final int leftButtonX = guiLeft + borderPadding;
 
@@ -118,19 +122,51 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             nexttype.visible = false;
             prevtype.visible = false;
         }
-        if(handler == null) setRecipePage(recipetype);
         
-        checkYShift();
         recipeTabs.initLayout();
         refreshPage();
+
+
     }
-    private void checkYShift() {
-        if (handlerInfo != null) {
-            yShift = handlerInfo.getYShift();
-        } else {
-            yShift = 0;
+    
+    private void initOverlayButtons() {
+        if (overlayButtons != null) {
+            buttonList.removeIf(Arrays.asList(overlayButtons)::contains);
         }
+        
+        final int recipesPerPage = getRecipesPerPage();
+        overlayButtons = new GuiButton[recipesPerPage];
+        for (int i = 0 ; i < recipesPerPage ; i++) {
+            overlayButtons[i] = new GuiNEIButton(
+                OVERLAY_BUTTON_ID_START + i,
+                 (width / 2) + 65,
+                 guiTop + 16 + (handlerInfo.getHeight() * (i+1)) - 2,
+                 buttonWidth,
+                 buttonHeight,
+                 "?");
+        }
+        Collections.addAll(buttonList, overlayButtons);
+
     }
+    
+    private void checkYShift() {
+        yShift = handlerInfo == null ? 0 : handlerInfo.getYShift();
+    }
+
+
+    public void setRecipePage(int idx) {
+        recipetype = idx;
+        if (recipetype < 0) recipetype = currenthandlers.size() - 1;
+        else if (recipetype >= currenthandlers.size()) recipetype = 0;
+
+        handler = currenthandlers.get(recipetype);
+        handlerInfo = getHandlerInfo(handler);
+        page = 0;
+        recipeTabs.calcPageNumber();
+        checkYShift();
+        initOverlayButtons();
+    }
+
 
     @Override
     public void keyTyped(char c, int i) {
@@ -180,16 +216,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         switch (guibutton.id) {
             case 0:
                 prevType();
-                break;
+                return;
             case 1:
                 nextType();
-                break;
+                return;
             case 2:
                 prevPage();
-                break;
+                return;
             case 3:
                 nextPage();
-                break;
+                return;
+        }
+        if (overlayButtons != null && guibutton.id >= OVERLAY_BUTTON_ID_START && guibutton.id < OVERLAY_BUTTON_ID_START + overlayButtons.length) {
+            overlayRecipe(page * recipesPerPage + guibutton.id - OVERLAY_BUTTON_ID_START);
         }
     }
 
@@ -240,17 +279,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     private void prevType() {
         setRecipePage(--recipetype);
     }
-    
-    public void setRecipePage(int idx) {
-        recipetype = idx;
-        if (recipetype < 0) recipetype = currenthandlers.size() - 1;
-        else if (recipetype >= currenthandlers.size()) recipetype = 0;
-        handler = currenthandlers.get(recipetype);
-        handlerInfo = getHandlerInfo(handler);
-        page = 0;
-        recipeTabs.calcPageNumber();
-        checkYShift();
-    }
 
 
     public HandlerInfo getHandlerInfo(IRecipeHandler handler) {
@@ -269,6 +297,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         return info;
     }
 
+    private void overlayRecipe(int recipe) {
+        final IRecipeOverlayRenderer renderer = handler.getOverlayRenderer(firstGui, recipe);
+        final IOverlayHandler overlayHandler = handler.getOverlayHandler(firstGui, recipe);
+        final boolean shift = NEIClientUtils.shiftKey();
+
+        if (handler != null && (renderer == null || shift)) {
+            mc.displayGuiScreen(firstGui);
+            overlayHandler.overlayRecipe(firstGui, currenthandlers.get(recipetype), recipe, shift);
+        } else if (renderer != null) {
+            mc.displayGuiScreen(firstGui);
+            LayoutManager.overlayRenderer = renderer;
+        }
+    }
     
     public void refreshPage() {
         refreshSlots();
@@ -279,9 +320,25 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         checkYShift();
 
         final int recipesPerPage = getRecipesPerPage();
-        boolean multiplepages = handler.numRecipes() > recipesPerPage;
+        final boolean multiplepages = handler.numRecipes() > recipesPerPage;
         nextpage.enabled = prevpage.enabled = multiplepages;
         
+        if(firstGui == null) {
+            for (GuiButton overlay : overlayButtons) {
+                overlay.visible = false;
+            }
+        } else {
+            final int numRecipes = Math.min(handler.numRecipes() - (page * recipesPerPage), recipesPerPage);  
+            for(int i = 0 ; i < overlayButtons.length ; i ++) {
+                if (i >= numRecipes) {
+                    overlayButtons[i].visible = false;
+                } else {
+                    final int curRecipe = page * recipesPerPage + i;
+                    overlayButtons[i].visible = handler.hasOverlay(firstGui, firstGui.inventorySlots, curRecipe);
+                }
+            }
+        }
+
         recipeTabs.refreshPage();
     }
 
@@ -399,7 +456,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     
     private int getRecipesPerPage() {
         if(handlerInfo != null) 
-            return Math.max(Math.min(((ySize - (prevtype.height*3)) / handlerInfo.getHeight()), handlerInfo.getMaxRecipesPerPage()), 1);
+            return Math.max(Math.min(((ySize - (buttonHeight*3)) / handlerInfo.getHeight()), handlerInfo.getMaxRecipesPerPage()), 1);
         else
             return (handler.recipiesPerPage());
     }
