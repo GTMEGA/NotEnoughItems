@@ -6,13 +6,13 @@ codechicken.nei.recipe.ShapedRecipeHandler,minecraft,minecraft:crafting_table,,m
 codechicken.nei.recipe.ShapelessRecipeHandler,minecraft,minecraft:crafting_table,,minecraft,FALSE,,,65,166,5,,,,,,
 codechicken.nei.recipe.FuelRecipeHandler,minecraft,,,minecraft,FALSE,,,65,166,5,nei:textures/nei_tabbed_sprites.png,80,0,14,14,
 advsolar.client.nei.MTRecipeHandler,AdvancedSolarPanel,AdvancedSolarPanel:BlockMolecularTransformer,,AdvancedSolarPanel,TRUE,,,68,,5,,,,,,
-appeng.integration.modules.NEIHelpers.NEIAEShapedRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiPart:380,,appliedenergistics2,TRUE,,,,,,,,,,,
-appeng.integration.modules.NEIHelpers.NEIAEShapelessRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiPart:380,,appliedenergistics2,TRUE,,,,,,,,,,,
+appeng.integration.modules.NEIHelpers.NEIAEShapedRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiPart:380,,appliedenergistics2,TRUE,,,65,,5,,,,,,
+appeng.integration.modules.NEIHelpers.NEIAEShapelessRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiPart:380,,appliedenergistics2,TRUE,,,65,,5,,,,,,
 appeng.integration.modules.NEIHelpers.NEIFacadeRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemFacade:192,,appliedenergistics2,TRUE,,,65,,5,,,,,,
 appeng.integration.modules.NEIHelpers.NEIGrinderRecipeHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiMaterial:8,,appliedenergistics2,TRUE,,,,,,,,,,,
 appeng.integration.modules.NEIHelpers.NEIInscriberRecipeHandler,AppliedEnergistics2,appliedenergistics2:tile.BlockInscriber,,appliedenergistics2,TRUE,,,70,,5,,,,,,
 appeng.integration.modules.NEIHelpers.NEIWorldCraftingHandler,AppliedEnergistics2,appliedenergistics2:item.ItemMultiMaterial:9,,appliedenergistics2,TRUE,,,85,,5,,,,,,There's only some explanatory text for fluix crystals and QEDs
-aroma1997.core.recipes.nei.ShapedAromicRecipeHandler,AromaBackup,minecraft:crafting_table,,AromaBackup,TRUE,,,,,,,,,,,
+aroma1997.core.recipes.nei.ShapedAromicRecipeHandler,AromaBackup,minecraft:crafting_table,,AromaBackup,TRUE,,,65,,5,,,,,,
 aroma1997.core.recipes.nei.ShapelessAromicRecipeHandler,AromaBackup,minecraft:crafting_table,,AromaBackup,TRUE,,,,,,,,,,,
 fox.spiteful.avaritia.compat.nei.CompressionHandler,Avaritia,Avaritia:Neutronium_Compressor,,Avaritia,TRUE,,,50,,6,,,,,,
 fox.spiteful.avaritia.compat.nei.ExtremeShapedRecipeHandler,Avaritia,Avaritia:Dire_Crafting,,Avaritia,TRUE,,,208,256,1,,,,,,Part of it even goes off the left side (included)
@@ -180,29 +180,29 @@ ic2.neiIntegration.core.recipehandler.SolidCannerRecipeHandler,IC2,IC2:blockMach
 speiger.src.crops.prediction.NEIPlugin,IC2CropsNEI,IC2:blockCrop,,Ic2Nei,TRUE,,,135,,2,,,,,,"Not actual recipes, just info"
 tonius.neiintegration.mods.mcforge.RecipeHandlerFluidRegistry,Minecraft,minecraft:water,,minecraft,FALSE,,,,,,,,,,,
 tonius.neiintegration.mods.mcforge.RecipeHandlerOreDictionary,Minecraft,minecraft:iron_ore,,minecraft,FALSE,,,,,,,,,,,
-gt.recipe.alloyblastsmelter,GT++,gregtech:gt.blockmachines:810,,miscutils,TRUE,,,,,,,,,,,ABS
-gt.recipe.rocketenginefuel,GT++,gregtech:gt.blockmachines:793,,miscutils,TRUE,,,,,,,,,,,Basic (EV) rocket fuel gen
-gt.recipe.cyclotron,GT++,gregtech:gt.blockmachines:828,,miscutils,TRUE,,,,,,,,,,,Cyclotron
-gt.recipe.chemicaldehydrator,GT++,gregtech:gt.blockmachines:911,,miscutils,TRUE,,,,,,,,,,,Dehydrator
-gt.recipe.slowfusionreactor,GT++,gregtech:gt.blockmachines:31015,,miscutils,TRUE,,,,,,,,,,,gt.blockmachines.gtplusplus.fusion.single
-gt.recipe.RTGgenerators,GT++,gregtech:gt.blockmachines:869,,miscutils,TRUE,,,,,,,,,,,GT++ version of the RTG
-gt.recipe.cokeoven,GT++,gregtech:gt.blockmachines:791,,miscutils,TRUE,,,,,,,,,,,ICO
-gt.recipe.semifluidgeneratorfuels,GT++,gregtech:gt.blockmachines:837,,miscutils,TRUE,,,,,,,,,,,Semifluid gen
-gt.recipe.fishpond,GT++,gregtech:gt.blockmachines:829,,miscutils,TRUE,,,,,,,,,,,Zhuhai
-gt.recipe.advanced.mixer,GT++,gregtech:gt.blockmachines:811,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.cryogenicfreezer,GT++,gregtech:gt.blockmachines:910,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.fissionfuel,GT++,gregtech:gt.blockmachines:835,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.geothermalfuel,GT++,gregtech:gt.blockmachines:830,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.lftr,GT++,gregtech:gt.blockmachines:751,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.lftr.2,GT++,gregtech:gt.blockmachines:751,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.matterfab2,GT++,gregtech:gt.blockmachines:799,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.multicentrifuge,GT++,gregtech:gt.blockmachines:790,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.multielectro,GT++,gregtech:gt.blockmachines:796,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.simplewasher,GT++,gregtech:gt.blockmachines:767,,miscutils,TRUE,,,,,,,,,,,
-gt.recipe.vacfurnace,GT++,gregtech:gt.blockmachines:995,,miscutils,TRUE,,,,,,,,,,,
+gt.recipe.alloyblastsmelter,GT++,gregtech:gt.blockmachines:810,,miscutils,TRUE,,6,135,166,2,,,,,,ABS
+gt.recipe.rocketenginefuel,GT++,gregtech:gt.blockmachines:793,,miscutils,TRUE,,6,135,166,2,,,,,,Basic (EV) rocket fuel gen
+gt.recipe.cyclotron,GT++,gregtech:gt.blockmachines:828,,miscutils,TRUE,,6,135,166,2,,,,,,Cyclotron
+gt.recipe.chemicaldehydrator,GT++,gregtech:gt.blockmachines:911,,miscutils,TRUE,,6,135,166,2,,,,,,Dehydrator
+gt.recipe.slowfusionreactor,GT++,gregtech:gt.blockmachines:31015,,miscutils,TRUE,,6,135,166,2,,,,,,gt.blockmachines.gtplusplus.fusion.single
+gt.recipe.RTGgenerators,GT++,gregtech:gt.blockmachines:869,,miscutils,TRUE,,6,135,166,2,,,,,,GT++ version of the RTG
+gt.recipe.cokeoven,GT++,gregtech:gt.blockmachines:791,,miscutils,TRUE,,6,135,166,2,,,,,,ICO
+gt.recipe.semifluidgeneratorfuels,GT++,gregtech:gt.blockmachines:837,,miscutils,TRUE,,6,135,166,2,,,,,,Semifluid gen
+gt.recipe.fishpond,GT++,gregtech:gt.blockmachines:829,,miscutils,TRUE,,6,135,166,2,,,,,,Zhuhai
+gt.recipe.advanced.mixer,GT++,gregtech:gt.blockmachines:811,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.cryogenicfreezer,GT++,gregtech:gt.blockmachines:910,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.fissionfuel,GT++,gregtech:gt.blockmachines:835,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.geothermalfuel,GT++,gregtech:gt.blockmachines:830,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.lftr,GT++,gregtech:gt.blockmachines:751,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.lftr.2,GT++,gregtech:gt.blockmachines:751,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.matterfab2,GT++,gregtech:gt.blockmachines:799,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.multicentrifuge,GT++,gregtech:gt.blockmachines:790,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.multielectro,GT++,gregtech:gt.blockmachines:796,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.simplewasher,GT++,gregtech:gt.blockmachines:767,,miscutils,TRUE,,6,135,166,2,,,,,,
+gt.recipe.vacfurnace,GT++,gregtech:gt.blockmachines:995,,miscutils,TRUE,,6,135,166,2,,,,,,
 gtPlusPlus.nei.DecayableRecipeHandler,GT++,miscutils:dustRadium226,,miscutils,TRUE,,,75,,4,,,,,,
 gtPlusPlus.nei.GT_NEI_FlotationCell,GT++,gregtech:gt.blockmachines:31028,,miscutils,TRUE,,,120,,2,,,,,,
-gtPlusPlus.nei.GT_NEI_FluidReactor,GT++,gregtech:gt.blockmachines:998,,miscutils,TRUE,,,,,,,,,,,
+gtPlusPlus.nei.GT_NEI_FluidReactor,GT++,gregtech:gt.blockmachines:998,,miscutils,TRUE,,,120,,2,,,,,,
 gtPlusPlus.nei.GT_NEI_MillingMachine,GT++,gregtech:gt.blockmachines:31027,,miscutils,TRUE,,,120,,2,,,,,,
 li.cil.oc.integration.nei.CallbackDocHandler,OpenComputers,OpenComputers:item:98,,OpenComputers,TRUE,,,,,,,,,,,
 li.cil.oc.integration.nei.ManualUsageHandler,OpenComputers,OpenComputers:item:98,,OpenComputers,TRUE,,,,,,,,,,,
@@ -338,3 +338,5 @@ gt.recipe.unboxinator,Gregtech 6,gregtech:gt.multitileentity:20591,,gregapi_post
 gt.recipe.welder,Gregtech 6,gregtech:gt.multitileentity:20331,,gregapi_post,TRUE,,15,145,166,2,,,,,,
 gt.recipe.well,Gregtech 6,gregtech:gt.multitileentity:17124,,gregapi_post,TRUE,,15,145,166,2,,,,,,
 gt.recipe.wiremill,Gregtech 6,gregtech:gt.multitileentity:20151,,gregapi_post,TRUE,,15,145,166,2,,,,,,
+mc.recipe.smelting,Gregtech 6,gregtech:gt.multitileentity:20001,,gregapi_post,TRUE,,15,145,166,2,,,,,,
+gt.recipe.trees,Gregtech 6,minecraft:sapling,,gregapi_post,TRUE,,15,145,166,2,,,,,,
