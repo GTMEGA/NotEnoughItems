@@ -675,10 +675,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         if (visiblity.showBookmarkPanel) {
             addWidget(bookmarkPanel);
             bookmarkPanel.setVisible();
-        }
+        } 
 
         if (visiblity.showSearchSection) {
-            addWidget(dropDown);
             addWidget(searchField);
         }
 
@@ -699,6 +698,11 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 addWidget(gamemode);
             if (canPerformAction("delete"))
                 addWidget(delete);
+        }
+        
+        if (!visiblity.showBookmarkPanel) {
+            // Bookmarks or Subset/dropdown
+            addWidget(dropDown);
         }
     }
 
