@@ -242,9 +242,23 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
         final int recipesPerPage = getRecipesPerPage();
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++)
+        /* 
+         * Several mods try to figure out the relative mouse position for fluid tooltips.  This worked fine
+         * when it was a static 166.. however now that we're scaling it this no longer works.  Rather than
+         * patching the individual mods (so that we can be as compatible as possible), we'll just fake
+         * the height for their tooltip rendering.
+         */
+        
+        // Begin Hax
+        final int oldHeight = this.height;
+        this.height = 166 + handlerInfo.getHeight() + 18 + (guiTop - 44) * 2;
+        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
             currenttip = handler.handleTooltip(this, currenttip, i);
+        }
         recipeTabs.handleTooltip(mousex, mousey, currenttip);
+        this.height = oldHeight;
+        // End Hax
+        
         return currenttip;
     }
 
