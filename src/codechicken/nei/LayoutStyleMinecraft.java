@@ -30,7 +30,6 @@ public class LayoutStyleMinecraft extends LayoutStyle
     public int buttonCount;
     public int leftSize;
     public int numButtons;
-    public int startingButtonY;
 
     @Override
     public String getName() {
@@ -61,8 +60,6 @@ public class LayoutStyleMinecraft extends LayoutStyle
     public void layout(GuiContainer gui, VisiblityData visiblity) {
         reset();
 
-        startingButtonY = visiblity.showBookmarkPanel ? 3 : 23;
-        
         leftSize = ItemPanels.bookmarkPanel.getWidth(gui);
         numButtons = Math.max(leftSize / 18, 1);
 
@@ -139,7 +136,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
         searchField.y = gui.height - searchField.h - 2;
 
-        dropDown.x = 2;
+        dropDown.x = Math.min(numButtons, buttonCount) * 20 + 3;
         dropDown.h = 20;
         dropDown.w = itemPanel.x - dropDown.x - 3;
         
@@ -155,7 +152,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
     public void layoutButton(Button button) {
         button.x = 2 + (buttonCount % numButtons) * 20;
-        button.y = startingButtonY + (buttonCount / numButtons) * 18;
+        button.y = (buttonCount / numButtons) * 18;
 
         button.h = 17;
         button.w = button.contentWidth() + 6;
