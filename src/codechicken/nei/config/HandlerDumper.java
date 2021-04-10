@@ -45,7 +45,7 @@ public class HandlerDumper extends DataDumper
                 handlerName,
                 handlerId,
                 info != null ? info.getModName() : "Unknown",
-                info != null ? info.getItemStack().toString() : "Unknown"
+                info != null && info.getItemStack() != null ? info.getItemStack().toString() : "Unknown"
             });
         }
         return list;
