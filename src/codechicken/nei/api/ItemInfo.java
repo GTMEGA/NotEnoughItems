@@ -265,6 +265,7 @@ public class ItemInfo
         API.addOption(new HandlerDumper("tools.dump.handlers"));
     }
 
+    @SuppressWarnings("unchecked")
     private static void parseModItems() {
         HashMap<String, ItemStackSet> modSubsets = new HashMap<>();
         for (Item item : (Iterable<Item>) Item.itemRegistry) {
@@ -330,6 +331,7 @@ public class ItemInfo
         API.addSubset("Blocks.MobSpawners", ItemStackSet.of(Blocks.mob_spawner));
     }
 
+    @SuppressWarnings("unchecked")
     private static void searchItems() {
         ItemStackSet tools = new ItemStackSet();
         ItemStackSet picks = new ItemStackSet();
@@ -452,6 +454,7 @@ public class ItemInfo
         addEntityEgg(EntityIronGolem.class, 0xC5C2C1, 0xffe1cc);
     }
 
+    @SuppressWarnings("unchecked")
     private static void addEntityEgg(Class<?> entity, int i, int j) {
         int id = (Integer)EntityList.classToIDMapping.get(entity);
         EntityList.entityEggs.put(id, new EntityEggInfo(id, i, j));

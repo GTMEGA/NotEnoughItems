@@ -182,6 +182,7 @@ public class ItemList
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void execute() {
             // System.out.println("Executing NEI Item Loading");
             ThreadOperationTimer timer = getTimer(500);

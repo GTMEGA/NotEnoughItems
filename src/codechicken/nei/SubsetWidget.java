@@ -217,7 +217,18 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             for(SubsetTag tag : sorted)
                 tag.cacheState();
         }
+        public void addFiltersWithItem(List<ItemFilter> filters, String itemSearch) {
+            if(itemSearch == null) {
+                addFilters(filters);
+            } else {
+                if(filter != null)
+                    filters.add(new DoubleFilteredFilter(filter, itemSearch));
 
+                for(SubsetTag child : sorted)
+                    child.addFiltersWithItem(filters, itemSearch);
+                
+            }
+        }
         public void addFilters(List<ItemFilter> filters) {
             if(filter != null)
                 filters.add(filter);
@@ -826,20 +837,32 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             return null;
 
         searchText = searchText.substring(1);
+        String itemSearch = null;
+        if(searchText.contains("->")) {
+            String[] split = searchText.split("->");
+            searchText = split[0];
+            if(split.length > 1) itemSearch = split[1];
+        }
+        
         AnyMultiItemFilter filter = new AnyMultiItemFilter();
         SubsetTag tag = getTag(searchText);
-        if(tag != null)
-            tag.addFilters(filter.filters);
+        if(tag != null) {
+            // We've got an exact match
+            tag.addFiltersWithItem(filter.filters, itemSearch);
+        }
         else {
+            // Try searching for a substring
             Pattern p = SearchField.getPattern(searchText);
             if(p == null) return null;
 
             List<SubsetTag> matching = new LinkedList<>();
             root.search(matching, p);
             if(matching.isEmpty()) return null;
-            for(SubsetTag tag2 : matching)
-                tag2.addFilters(filter.filters);
+            for(SubsetTag tag2 : matching) {
+                tag2.addFiltersWithItem(filter.filters, itemSearch);
+            }
         }
+        
         return filter;
     }
 
