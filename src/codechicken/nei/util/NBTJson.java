@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagFloat;
@@ -19,11 +20,13 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class NBTJson {
     private static final Pattern numberPattern = Pattern.compile("^([-+]?[\\d]+\\.?[0-9]*)([bBsSlLfFdD]?)$");
@@ -62,6 +65,13 @@ public class NBTJson {
             // Int Array
             JsonArray arr = new JsonArray();
             for(int i : ((NBTTagIntArray) nbt).func_150302_c()) {
+                arr.add(new JsonPrimitive(i));
+            }
+            return arr;
+        } else if (nbt instanceof NBTTagByteArray) {
+            // Byte Array
+            JsonArray arr = new JsonArray();
+            for(int i : ((NBTTagByteArray) nbt).func_150292_c()) {
                 arr.add(new JsonPrimitive(i));
             }
             return arr;
@@ -119,6 +129,8 @@ public class NBTJson {
             
             if (nbtList.stream().allMatch(n -> n instanceof NBTTagInt)) {
                 return new NBTTagIntArray(nbtList.stream().mapToInt(i -> ((NBTTagInt)i).func_150287_d() ).toArray());
+            } else if (nbtList.stream().allMatch(n -> n instanceof NBTTagByte)) {
+                return new NBTTagByteArray(toByteArray(nbtList.stream().mapToInt(i -> ((NBTTagInt)i).func_150287_d() )));
             } else {
                 NBTTagList nbtTagList = new NBTTagList();
                 nbtList.forEach(nbtTagList::appendTag);
@@ -137,6 +149,10 @@ public class NBTJson {
         }
         
         throw new IllegalArgumentException("Unhandled element " + jsonElement);
+    }
+    public static byte[] toByteArray(IntStream stream) {
+        return stream.collect(ByteArrayOutputStream::new, (baos, i) -> baos.write((byte) i), (baos1, baos2) -> baos1.write(baos2.toByteArray(), 0, baos2.size()))
+            .toByteArray();
     }
     
 }
