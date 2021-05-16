@@ -105,7 +105,15 @@ public abstract class GuiRecipeTab extends Widget {
             GuiContainerManager.drawItems.zLevel -= 100;
         } else {
             // Text fallback
-            String text = handler.getRecipeName().substring(0, 2);
+            String text = handler.getRecipeName();
+            if (text != null && text.length() > 0) {
+                if (text.length() > 2) {
+                    text = text.substring(0, 2);
+                }
+            } else {
+                text = "??";
+            }
+            
             int textCenterX = x + (int) (getWidth() / 2f);
             int textCenterY = y + (int) (getHeight() / 2f) - 3;
             int color = selected ? 0xffffa0 : 0xe0e0e0;
