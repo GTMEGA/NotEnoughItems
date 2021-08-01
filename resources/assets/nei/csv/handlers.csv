@@ -179,7 +179,7 @@ ic2.neiIntegration.core.recipehandler.MetalFormerRecipeHandlerRolling,Industrial
 ic2.neiIntegration.core.recipehandler.OreWashingRecipeHandler,IndustrialCraft 2,IC2:blockMachine2:5,,IC2,TRUE,,,,,,,,,,,
 ic2.neiIntegration.core.recipehandler.ScrapboxRecipeHandler,IndustrialCraft 2,IC2:itemScrapbox,,IC2,TRUE,,,50,,6,,,,,,
 ic2.neiIntegration.core.recipehandler.SolidCannerRecipeHandler,IndustrialCraft 2,IC2:blockMachine2:9,,IC2,TRUE,,,,,,,,,,,
-speiger.src.crops.prediction.NEIPlugin,IC2CropsNEI,IC2:blockCrop,,Ic2Nei,TRUE,,,135,,2,,,,,,Not actual recipes, just info
+speiger.src.crops.prediction.NEIPlugin,IC2CropsNEI,IC2:blockCrop,,Ic2Nei,TRUE,,,135,,2,,,,,,"Not actual recipes, just info"
 tonius.neiintegration.mods.mcforge.RecipeHandlerFluidRegistry,Minecraft,minecraft:water,,minecraft,FALSE,,,,,,,,,,,
 tonius.neiintegration.mods.mcforge.RecipeHandlerOreDictionary,Minecraft,minecraft:iron_ore,,minecraft,FALSE,,,,,,,,,,,
 gt.recipe.alloyblastsmelter,GT++,gregtech:gt.blockmachines:810,,miscutils,TRUE,,6,135,166,2,,,,,,ABS
