@@ -22,8 +22,7 @@ public class PositionedStack
     
     private boolean permutated = false;
     
-    public PositionedStack(Object object, int x, int y, boolean genPerms)
-    {
+    public PositionedStack(Object object, int x, int y, boolean genPerms) {
         items = NEIServerUtils.extractRecipeItems(object);
         relx = x;
         rely = y;
@@ -39,27 +38,22 @@ public class PositionedStack
         this(object, x, y, true);
     }
 
-    public void generatePermutations()
-    {
+    public void generatePermutations() {
         if(permutated)
             return;
         
         ArrayList<ItemStack> stacks = new ArrayList<>();
-        for(ItemStack item : items)
-        {
+        for(ItemStack item : items) {
             if(item == null || item.getItem() == null)
                 continue;
             
-            if(item.getItemDamage() == Short.MAX_VALUE)
-            {
+            if(item.getItemDamage() == Short.MAX_VALUE) {
                 List<ItemStack> permutations = ItemList.itemMap.get(item.getItem());
-                if(!permutations.isEmpty())
-                {
+                if(!permutations.isEmpty()) {
                     for(ItemStack stack : permutations)
                         stacks.add(stack.copy());
                 }
-                else
-                {
+                else {
                     ItemStack base = new ItemStack(item.getItem(), item.stackSize);
                     base.stackTagCompound = item.stackTagCompound;
                     stacks.add(base);
@@ -78,20 +72,17 @@ public class PositionedStack
         setPermutationToRender(0);
     }
 
-    public void setMaxSize(int i)
-    {
+    public void setMaxSize(int i) {
         for(ItemStack item : items)
             if(item.stackSize > i)
                 item.stackSize = i;
     }
     
-    public PositionedStack copy()
-    {
+    public PositionedStack copy() {
         return new PositionedStack(items, relx, rely);
     }
     
-    public void setPermutationToRender(int index)
-    {
+    public void setPermutationToRender(int index) {
         item = items[index].copy();
         if(item.getItem() == null)
             item = new ItemStack(Blocks.fire);
@@ -99,8 +90,7 @@ public class PositionedStack
             item.setItemDamage(0);
     }
 
-    public boolean contains(ItemStack ingredient)
-    {
+    public boolean contains(ItemStack ingredient) {
         for(ItemStack item : items)
             if(NEIServerUtils.areStacksSameTypeCrafting(item, ingredient))
                 return true;
@@ -108,12 +98,16 @@ public class PositionedStack
         return false;
     }
 
-    public boolean contains(Item ingred)
-    {
+    public boolean contains(Item ingred) {
         for(ItemStack item : items)
             if(item.getItem() == ingred)
                 return true;
         
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return "PositionedStack(output='" + item.toString() + "')";
     }
 }
