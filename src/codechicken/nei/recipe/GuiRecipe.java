@@ -299,16 +299,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         setRecipePage(--recipetype);
     }
 
-
     public HandlerInfo getHandlerInfo(IRecipeHandler handler) {
-        final String handlerName = handler.toString().split("@")[0];
         final String handlerID;
         if(handler instanceof TemplateRecipeHandler) {
             handlerID = (((TemplateRecipeHandler)handler).getOverlayIdentifier());
         } else {
             handlerID = null;
         }
-        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerID);
+        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handler.getClass().getName(), handlerID);
         
         if (info == null)
             return GuiRecipeTab.DEFAULT_HANDLER_INFO;

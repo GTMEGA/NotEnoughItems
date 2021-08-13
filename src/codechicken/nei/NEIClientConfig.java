@@ -24,6 +24,7 @@ import codechicken.nei.config.OptionTextField;
 import codechicken.nei.config.OptionToggleButton;
 import codechicken.nei.config.OptionToggleButtonBoubs;
 import codechicken.nei.config.OptionUtilities;
+import codechicken.nei.event.NEIConfigsLoadedEvent;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
@@ -33,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -297,6 +299,8 @@ public class NEIClientConfig {
                         logger.error("Failed to Load " + clazz.getName(), e);
                     }
                 }
+
+                MinecraftForge.EVENT_BUS.post(new NEIConfigsLoadedEvent());
             }
         }.start();
         ItemSorter.loadConfig();
