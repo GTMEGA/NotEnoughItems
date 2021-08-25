@@ -160,9 +160,13 @@ public class HandlerInfo {
     public static class Builder {
         private final HandlerInfo info;
 
-        public Builder(Class<?> handlerClazz, String modName, String modId) {
-            this.info = new HandlerInfo(handlerClazz.getName(), modName, modId, true, null);
+        public Builder(String handlerName, String modName, String modId) {
+            this.info = new HandlerInfo(handlerName, modName, modId, true, null);
             setMaxRecipesPerPage(Integer.MAX_VALUE);
+        }
+
+        public Builder(Class<? extends IRecipeHandler> handlerClazz, String modName, String modId) {
+            this(handlerClazz.getName(), modName, modId);
         }
 
         public Builder setDisplayStack(ItemStack stack) {
