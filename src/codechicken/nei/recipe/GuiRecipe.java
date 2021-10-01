@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOverlay, IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler, INEIGuiHandler {
     // Background image calculations
@@ -172,6 +173,18 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         initOverlayButtons();
     }
 
+    public IRecipeHandler getHandler() {
+        return handler;
+    }
+
+    public List<Integer> getRecipeIndices() {
+        final int recipesPerPage = getRecipesPerPage();
+        int minIndex = page * recipesPerPage;
+        int maxIndex = Math.min(handler.numRecipes(), (page + 1) * recipesPerPage);
+
+        return IntStream.range(minIndex, maxIndex).boxed().collect(Collectors.toList());
+    }
+
 
     @Override
     public void keyTyped(char c, int i) {
@@ -183,8 +196,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         if (GuiContainerManager.getManager(this).lastKeyTyped(i, c))
             return;
 
-        final int recipesPerPage = getRecipesPerPage();
-        for (int recipe = page * recipesPerPage; recipe < handler.numRecipes() && recipe < (page + 1) * recipesPerPage; recipe++)
+        for (int recipe : getRecipeIndices())
             if (handler.keyTyped(this, c, i, recipe))
                 return;
 
@@ -205,8 +217,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     protected void mouseClicked(int x, int y, int button) {
-        final int recipesPerPage = getRecipesPerPage();
-        for (int recipe = page * recipesPerPage; recipe < handler.numRecipes() && recipe < (page + 1) * recipesPerPage; recipe++)
+        for (int recipe : getRecipeIndices())
             if (handler.mouseClicked(this, button, recipe))
                 return;
         if (recipeTabs.mouseClicked(x, y, button))
@@ -215,9 +226,20 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     @Override
+    public void mouseScrolled(int i) {
+        for (int recipe : getRecipeIndices())
+            if (handler.mouseScrolled(this, i, recipe))
+                return;
+
+        if (new Rectangle(guiLeft, guiTop, xSize, ySize).contains(GuiDraw.getMousePosition())) {
+            if (i > 0) prevPage();
+            else       nextPage();
+        }
+    }
+
+    @Override
     protected void actionPerformed(GuiButton guibutton) {
         super.actionPerformed(guibutton);
-        final int recipesPerPage = getRecipesPerPage();
         switch (guibutton.id) {
             case 0:
                 prevType();
@@ -233,7 +255,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                 return;
         }
         if (overlayButtons != null && guibutton.id >= OVERLAY_BUTTON_ID_START && guibutton.id < OVERLAY_BUTTON_ID_START + overlayButtons.length) {
-            overlayRecipe(page * recipesPerPage + guibutton.id - OVERLAY_BUTTON_ID_START);
+            overlayRecipe(page * getRecipesPerPage() + guibutton.id - OVERLAY_BUTTON_ID_START);
         }
     }
 
@@ -246,8 +268,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
-        final int recipesPerPage = getRecipesPerPage();
-        /* 
+        /*
          * Several mods try to figure out the relative mouse position for fluid tooltips.  This worked fine
          * when it was a static 166.. however now that we're scaling it this no longer works.  Rather than
          * patching the individual mods (so that we can be as compatible as possible), we'll just fake
@@ -257,9 +278,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         // Begin Hax
         final int oldHeight = this.height;
         this.height = 166 + handlerInfo.getHeight() + 18 + (guiTop - 44) * 2;
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
+        for (int i : getRecipeIndices())
             currenttip = handler.handleTooltip(this, currenttip, i);
-        }
         recipeTabs.handleTooltip(mousex, mousey, currenttip);
         this.height = oldHeight;
         // End Hax
@@ -269,8 +289,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mousex, int mousey, List<String> currenttip) {
-        final int recipesPerPage = getRecipesPerPage();
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++)
+        for (int i : getRecipeIndices())
             currenttip = handler.handleItemTooltip(this, stack, currenttip, i);
 
         return currenttip;
@@ -530,14 +549,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     public Point getRecipePosition(int recipe) {
         return new Point(5, 32 + yShift + ((recipe % getRecipesPerPage()) * handlerInfo.getHeight()));
-    }
-
-    @Override
-    public void mouseScrolled(int i) {
-        if (new Rectangle(guiLeft, guiTop, xSize, ySize).contains(GuiDraw.getMousePosition())) {
-            if (i > 0) prevPage();
-            else       nextPage();
-        }
     }
 
     public abstract ArrayList<? extends IRecipeHandler> getCurrentRecipeHandlers();
