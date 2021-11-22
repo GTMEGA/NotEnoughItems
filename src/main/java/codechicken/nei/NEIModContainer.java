@@ -34,8 +34,16 @@ public class NEIModContainer extends DummyModContainer
     public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     public NEIModContainer() {
-        super(MetadataCollection.from(MetadataCollection.class.getResourceAsStream("/neimod.info"), "NotEnoughItems").getMetadataForId("NotEnoughItems", null));
+        super(getModMetadata());
         loadMetadata();
+    }
+
+    private static ModMetadata getModMetadata() {
+        final ModMetadata modMetadata = new ModMetadata();
+        modMetadata.name = "GRADLETOKEN_MODNAME";
+        modMetadata.modId = "GRADLETOKEN_MODID";
+        modMetadata.version = "GRADLETOKEN_VERSION";
+        return modMetadata;
     }
 
     @Override
