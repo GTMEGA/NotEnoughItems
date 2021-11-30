@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Level;
 public class HandlerInfo {
     public static int DEFAULT_HEIGHT = 65;
     public static int DEFAULT_WIDTH = 166;
-    public static int DEFAULT_MAX_PER_PAGE = 2;
+    public static int DEFAULT_MAX_PER_PAGE = 1;
     
     private String handlerName;
     

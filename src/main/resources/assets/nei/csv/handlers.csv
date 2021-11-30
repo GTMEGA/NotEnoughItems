@@ -449,3 +449,4 @@ neresources.nei.NEIEnchantmentHandler,Not Enough Resources,minecraft:anvil,,nere
 neresources.nei.NEIMobHandler,Not Enough Resources,minecraft:skull:4,,neresources,TRUE,,,130,166,2,,,,,,
 neresources.nei.NEIOreHandler,Not Enough Resources,minecraft:diamond_ore,,neresources,TRUE,,,65,166,5,,,,,,
 neresources.nei.NEIPlantHandler,Not Enough Resources,minecraft:wheat,,neresources,TRUE,,,130,166,2,,,,,,
+wanion.biggercraftingtables.nei.BigShapedRecipeHandler,Bigger Crafting Tables,minecraft:crafting_table,,biggercraftingtables,TRUE,,,130,,2,,,,,,,,
