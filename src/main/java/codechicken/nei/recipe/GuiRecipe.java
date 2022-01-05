@@ -692,9 +692,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
         // Because some of the handlers *cough avaritia* are oversized
-        Rectangle rect = new Rectangle(area);
-
-        return rect.contains(x, y, w, h);
+        return area.intersects(x, y, w, h);
     }
 
 }

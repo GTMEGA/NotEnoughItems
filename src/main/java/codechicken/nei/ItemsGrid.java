@@ -153,9 +153,9 @@ public class ItemsGrid
             validColumn = true;
 
             for (int r = 0; r < rows; r++) {
-
-                if (!slotValid(gui, r, c) && !invalidSlotMap[columns * r + c]) {
-                    invalidSlotMap[columns * r + c] = true;
+                final int idx = columns * r + c;
+                if (!slotValid(gui, r, c) && idx >= 0 && idx < invalidSlotMap.length && !invalidSlotMap[idx]) {
+                    invalidSlotMap[idx] = true;
                     validColumn = false;
                     perPage--;
                 }
@@ -194,7 +194,7 @@ public class ItemsGrid
 
     public boolean isInvalidSlot(int idx)
     {
-        return invalidSlotMap[idx] == true;
+        return invalidSlotMap[idx];
     }
 
     public void draw(int mousex, int mousey)
