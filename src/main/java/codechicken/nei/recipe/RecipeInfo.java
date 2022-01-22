@@ -10,6 +10,9 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
 
@@ -119,6 +122,13 @@ public class RecipeInfo
         
         API.registerRecipeHandler(new ProfilerRecipeHandler(true));
         API.registerUsageHandler(new ProfilerRecipeHandler(false));
+
+        API.addRecipeCatalyst(new ItemStack(Blocks.crafting_table), ShapedRecipeHandler.class);
+        API.addRecipeCatalyst(new ItemStack(Blocks.crafting_table), ShapelessRecipeHandler.class);
+        API.addRecipeCatalyst(new ItemStack(Blocks.crafting_table), FireworkRecipeHandler.class);
+        API.addRecipeCatalyst(new ItemStack(Blocks.furnace), FurnaceRecipeHandler.class);
+        API.addRecipeCatalyst(new ItemStack(Items.brewing_stand), BrewingRecipeHandler.class);
+        API.addRecipeCatalyst(new ItemStack(Blocks.furnace), FuelRecipeHandler.class);
     }
 
 }

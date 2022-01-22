@@ -28,11 +28,18 @@ public class GuiUsageRecipe extends GuiRecipe
             handlers = serialUsageHandlers.stream().map(h -> h.getUsageHandler(inputId, ingredients))
                 .filter(h -> h.numRecipes() > 0)
                 .collect(Collectors.toCollection(ArrayList::new));
-            
-            handlers.addAll(ItemList.forkJoinPool.submit(() -> usagehandlers.parallelStream()
-                .map(h -> h.getUsageHandler(inputId, ingredients))
-                .filter(h -> h.numRecipes() > 0)
-                .collect(Collectors.toCollection(ArrayList::new))).get());
+
+            if (NEIClientConfig.areJEIStyleRecipeCatalystsVisible()) {
+                handlers.addAll(ItemList.forkJoinPool.submit(() -> usagehandlers.parallelStream()
+                        .map(h -> h.getUsageAndCatalystHandler(inputId, ingredients))
+                        .filter(h -> h.numRecipes() > 0)
+                        .collect(Collectors.toCollection(ArrayList::new))).get());
+            } else {
+                handlers.addAll(ItemList.forkJoinPool.submit(() -> usagehandlers.parallelStream()
+                        .map(h -> h.getUsageHandler(inputId, ingredients))
+                        .filter(h -> h.numRecipes() > 0)
+                        .collect(Collectors.toCollection(ArrayList::new))).get());
+            }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return false;

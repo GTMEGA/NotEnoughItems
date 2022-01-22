@@ -76,6 +76,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     
     private final Rectangle area = new Rectangle();
     private final GuiRecipeTabs recipeTabs;
+    private final GuiRecipeCatalyst guiRecipeCatalyst;
     private IRecipeHandler handler;
     private HandlerInfo handlerInfo;
     
@@ -84,6 +85,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     protected GuiRecipe(GuiScreen prevgui) {
         super(new ContainerRecipe());
         recipeTabs = new GuiRecipeTabs(this);
+        guiRecipeCatalyst = new GuiRecipeCatalyst(this);
         slotcontainer = (ContainerRecipe) inventorySlots;
 
         this.prevGui = prevgui;
@@ -267,7 +269,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                 return handler.getIngredientStacks(idx);
             }
         }
-        
+
         return null;
     }
 
@@ -454,6 +456,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
     
     public void refreshPage() {
+        RecipeCatalysts.updatePosition(ySize - BG_TOP_HEIGHT - (GuiRecipeCatalyst.fullBorder * 2));
         refreshSlots();
         final int recipesPerPage = getRecipesPerPage();
         final boolean multiplepages = handler.numRecipes() > recipesPerPage;
@@ -503,6 +506,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             PositionedStack result = handler.getResultStack(i);
             if (result != null)
                 slotcontainer.addSlot(result, p.x, p.y);
+
+            List<PositionedStack> catalysts = RecipeCatalysts.getRecipeCatalysts(handler.getClass());
+            for (PositionedStack catalyst : catalysts) {
+                int xOffset = -GuiRecipeCatalyst.ingredientSize + 1;
+                int yOffset = BG_TOP_Y + GuiRecipeCatalyst.fullBorder;
+                slotcontainer.addSlot(catalyst, xOffset, yOffset);
+            }
         }
     }
 
@@ -587,6 +597,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             RenderHelper.enableGUIStandardItemLighting();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
             recipeTabs.draw(mouseX, mouseY);
+            if (NEIClientConfig.areJEIStyleRecipeCatalystsVisible()) {
+                guiRecipeCatalyst.draw();
+            }
             RenderHelper.disableStandardItemLighting();
         }
 

@@ -202,6 +202,8 @@ public class NEIClientConfig {
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
         tag.getTag("inventory.jei_style_item_presence_overlay").setComment("Enable/disable JEI Style item presence overlay on ?-hover").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.jei_style_item_presence_overlay", true));
+        tag.getTag("inventory.jei_style_recipe_catalyst").setComment("Enable/disable JEI Style Recipe Catalysts [experimental]").getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.jei_style_recipe_catalyst", true));
 
 
         tag.getTag("inventory.creative_tab_style").setComment("Creative or JEI style tabs").getBooleanValue(false);
@@ -404,6 +406,9 @@ public class NEIClientConfig {
     }
     public static boolean isJEIStyleItemPresenceOverlayVisible() {
         return getBooleanSetting("inventory.jei_style_item_presence_overlay");
+    }
+    public static boolean areJEIStyleRecipeCatalystsVisible() {
+        return getBooleanSetting("inventory.jei_style_recipe_catalyst");
     }
     public static boolean useCreativeTabStyle() {
         return getBooleanSetting("inventory.creative_tab_style");
