@@ -1,4 +1,4 @@
-//version: 1642484596
+//version: 1642784244
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -38,6 +38,7 @@ buildscript {
 
 plugins {
     id 'idea'
+    id 'eclipse'
     id 'scala'
     id("org.ajoberstar.grgit") version("3.1.1")
     id("com.github.johnrengelman.shadow") version("4.0.4")
@@ -498,7 +499,10 @@ artifacts {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact source: usesShadowedDependencies.toBoolean() ? shadowJar : jar, classifier: ""
+            from components.java
+            if(usesShadowedDependencies.toBoolean()) {
+                artifact source: shadowJar, classifier: ""
+            }
             if(!noPublishedSources) {
                 artifact source: sourcesJar, classifier: "src"
             }
