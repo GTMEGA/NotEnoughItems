@@ -15,6 +15,7 @@ import codechicken.nei.SubsetWidget.SubsetTag;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.config.Option;
 import codechicken.nei.config.OptionKeyBind;
+import codechicken.nei.recipe.CatalystInfo;
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import codechicken.nei.recipe.ICraftingHandler;
@@ -299,45 +300,59 @@ public class API
      * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
      * @param stack the ingredient that can craft recipes (like a furnace or crafting table)
      * @param handler the recipe category handled by the ingredient
+     * @param priority higher priority comes first, default to 0
      */
-    public static void addRecipeCatalyst(ItemStack stack, IRecipeHandler handler) {
-        addRecipeCatalyst(Collections.singletonList(stack), handler);
+    public static void addRecipeCatalyst(ItemStack stack, IRecipeHandler handler, int priority) {
+        String handlerID = RecipeCatalysts.getRecipeID(handler);
+        addRecipeCatalyst(stack, handlerID, priority);
     }
 
     /**
-     * Adds an association between an ingredient and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
-     * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
-     * @param stacks the ingredients that can craft recipes (like a furnace or crafting table)
-     * @param handler the recipe category handled by the ingredient
+     * See {@link API#addRecipeCatalyst(ItemStack, IRecipeHandler, int)}
      */
-    public static void addRecipeCatalyst(List<ItemStack> stacks, IRecipeHandler handler) {
-        String handlerID = handler.getOverlayIdentifier();
-        if (handlerID != null) {
-            addRecipeCatalyst(stacks, handler.getOverlayIdentifier());
-        }
-        else {
-            NEIClientConfig.logger.warn(String.format("failed to add recipe catalyst, implement IRecipeHandler#getOverlayIdentifier for your handler %s", handler.getClass().getName()));
-        }
+    public static void addRecipeCatalyst(ItemStack stack, IRecipeHandler handler) {
+        addRecipeCatalyst(stack, handler, 0);
     }
 
     /**
      * Adds an association between an ingredient and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
      * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
      * @param stack the ingredient that can craft recipes (like a furnace or crafting table)
-     * @param handlerID recipe category identifier (see {@link IRecipeHandler#getOverlayIdentifier()})
+     * @param handlerID recipe category identifier (see also {@link RecipeCatalysts#getRecipeID(IRecipeHandler)})
+     * @param priority higher priority comes first, default to 0
      */
-    public static void addRecipeCatalyst(ItemStack stack, String handlerID) {
-        addRecipeCatalyst(Collections.singletonList(stack), handlerID);
+    public static void addRecipeCatalyst(ItemStack stack, String handlerID, int priority) {
+        RecipeCatalysts.addRecipeCatalyst(handlerID, new CatalystInfo(stack, priority));
     }
 
     /**
-     * Adds an association between an ingredient and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
-     * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
-     * @param stacks the ingredients that can craft recipes (like a furnace or crafting table)
-     * @param handlerID recipe category identifier (see {@link IRecipeHandler#getOverlayIdentifier()})
+     * See {@link API#addRecipeCatalyst(ItemStack, String, int)}
      */
+    public static void addRecipeCatalyst(ItemStack stack, String handlerID) {
+        addRecipeCatalyst(stack, handlerID, 0);
+    }
+
+    public static void removeRecipeCatalyst(ItemStack stack, IRecipeHandler handler) {
+        String handlerID = RecipeCatalysts.getRecipeID(handler);
+        removeRecipeCatalyst(stack, handlerID);
+    }
+
+    public static void removeRecipeCatalyst(ItemStack stack, String handlerID) {
+        RecipeCatalysts.removeRecipeCatalyst(handlerID, stack);
+    }
+
+    @Deprecated
+    public static void addRecipeCatalyst(List<ItemStack> stacks, IRecipeHandler handler) {
+        for (ItemStack stack : stacks) {
+            addRecipeCatalyst(stack, handler);
+        }
+    }
+
+    @Deprecated
     public static void addRecipeCatalyst(List<ItemStack> stacks, String handlerID) {
-        RecipeCatalysts.addRecipeCatalyst(stacks, handlerID);
+        for (ItemStack stack : stacks) {
+            addRecipeCatalyst(stack, handlerID);
+        }
     }
 
     @Deprecated
