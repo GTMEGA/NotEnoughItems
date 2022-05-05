@@ -8,7 +8,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static codechicken.nei.NEIClientUtils.translate;

@@ -4,7 +4,6 @@ import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.Rectangle;
 
