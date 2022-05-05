@@ -1,4 +1,4 @@
-//version: 1641429628falsepattern15
+//version: 1641429628falsepattern16
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -551,9 +551,10 @@ def getCredentials = {
         String username = System.getenv("MAVEN_DEPLOY_USER")
         String password = System.getenv("MAVEN_DEPLOY_PASSWORD")
         if (username == null || password == null) {
-            throw new GradleException("Could not retrieve deployment authentication information neither from ~/.m2/settings.xml, nor from the environment variables!")
+            return [username: null, password: null]
+        } else {
+            return [username: username, password: password]
         }
-        return [username: username, password: password]
     }
 }
 
