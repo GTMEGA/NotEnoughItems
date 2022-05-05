@@ -34,7 +34,7 @@ public class NEIServerConfig
 {
     private static MinecraftServer server;
 
-    public static Logger logger = LogManager.getLogger("NotEnoughItems");
+    public static Logger logger = LogManager.getLogger(Tags.MODID);
     public static File saveDir;
     public static ConfigFile serverConfig;
     public static Map<Integer, NBTTagCompound> dimTags = new HashMap<>();

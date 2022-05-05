@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 import codechicken.core.CommonUtils;
+import codechicken.core.ResourceUtil;
 import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.asm.NEICorePlugin;
@@ -37,7 +38,7 @@ public class NEIModContainer extends DummyModContainer
     public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     public NEIModContainer() {
-        super(MetadataCollection.from(MetadataCollection.class.getResourceAsStream("/neimod.info"), "NotEnoughItems").getMetadataForId("NotEnoughItems", null));
+        super(MetadataCollection.from(ResourceUtil.getResourceFromJar("/mcmod.info", NEIModContainer.class), Tags.MODID).getMetadataForId(Tags.MODID, null));
         loadMetadata();
     }
 
@@ -113,7 +114,7 @@ public class NEIModContainer extends DummyModContainer
              */
             Field modMessagesField = FMLInterModComms.class.getDeclaredField("modMessages");
             modMessagesField.setAccessible(true);
-            IMCHandler.processIMC(ImmutableList.copyOf(((ArrayListMultimap<String, FMLInterModComms.IMCMessage>)modMessagesField.get(FMLInterModComms.class)).removeAll("NotEnoughItems")));
+            IMCHandler.processIMC(ImmutableList.copyOf(((ArrayListMultimap<String, FMLInterModComms.IMCMessage>)modMessagesField.get(FMLInterModComms.class)).removeAll(Tags.MODID)));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -45,7 +45,7 @@ public class NEIClientConfig {
     private static boolean configLoaded;
     private static boolean enabledOverride;
 
-    public static Logger logger = LogManager.getLogger("NotEnoughItems");
+    public static Logger logger = LogManager.getLogger(Tags.MODID);
     public static File configDir = new File(CommonUtils.getMinecraftDir(), "config/NEI/");
     public static ConfigSet global = new ConfigSet(
             new File("saves/NEI/client.dat"),
@@ -70,7 +70,7 @@ public class NEIClientConfig {
 
     static {
         if (global.config.getTag("checkUpdates").getBooleanValue(true))
-            CCUpdateChecker.updateCheck("NotEnoughItems");
+            CCUpdateChecker.updateCheck(Tags.MODID);
         linkOptionList();
         setDefaults();
     }
