@@ -16,6 +16,7 @@ import codechicken.nei.config.ConfigSet;
 import codechicken.nei.config.GuiHighlightTips;
 import codechicken.nei.config.GuiNEIOptionList;
 import codechicken.nei.config.GuiOptionList;
+import codechicken.nei.config.GuiPanelSettings;
 import codechicken.nei.config.OptionCycled;
 import codechicken.nei.config.OptionGamemodes;
 import codechicken.nei.config.OptionList;
@@ -154,6 +155,20 @@ public class NEIClientConfig {
         tag.getTag("world.highlight_tips.y").getIntValue(100);
         API.addOption(new OptionOpenGui("world.highlight_tips", GuiHighlightTips.class));
 
+
+        tag.getTag("world.panels.bookmarks.left").getIntValue(0);
+        tag.getTag("world.panels.bookmarks.right").getIntValue(0);
+        tag.getTag("world.panels.bookmarks.top").getIntValue(0);
+        tag.getTag("world.panels.bookmarks.bottom").getIntValue(0);
+
+        tag.getTag("world.panels.items.left").getIntValue(0);
+        tag.getTag("world.panels.items.right").getIntValue(0);
+        tag.getTag("world.panels.items.top").getIntValue(0);
+        tag.getTag("world.panels.items.bottom").getIntValue(0);
+
+        API.addOption(new OptionOpenGui("world.panels", GuiPanelSettings.class));
+
+
         tag.getTag("inventory.profileRecipes").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.profileRecipes", true));
 
@@ -207,6 +222,8 @@ public class NEIClientConfig {
         API.addOption(new OptionToggleButton("inventory.saveCurrentRecipeInBookmarksEnabled", true));
         tag.getTag("inventory.useNBTInBookmarks").setComment("Use NBT in Bookmarks").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.useNBTInBookmarks", true));
+        tag.getTag("inventory.showRecipeMarker").setComment("Show Recipe Marker").getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.showRecipeMarker", true));
 
         tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
@@ -325,7 +342,7 @@ public class NEIClientConfig {
         setWorldDefaults();
         creativeInv = new ItemStack[54];
         LayoutManager.searchField.setText(getSearchExpression());
-        LayoutManager.quantity.setText(Integer.toString(getItemQuantity()));
+        ItemPanels.itemPanel.quantity.setText(Integer.toString(getItemQuantity()));
         SubsetWidget.loadHidden();
 
         if (newWorld && Minecraft.getMinecraft().isSingleplayer())
@@ -433,6 +450,9 @@ public class NEIClientConfig {
     }
     public static boolean useNBTInBookmarks() {
         return getBooleanSetting("inventory.useNBTInBookmarks");
+    }
+    public static boolean showRecipeMarker() {
+        return getBooleanSetting("inventory.showRecipeMarker");
     }
     public static boolean areJEIStyleTabsVisible() {
         return getBooleanSetting("inventory.jei_style_tabs");
