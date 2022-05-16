@@ -446,16 +446,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         setRecipePage(--recipetype);
     }
 
-    private void overlayRecipe(int recipe) {
+    protected void overlayRecipe(int recipe) {
+        if (handler == null || !handler.hasOverlay(firstGui, firstGui.inventorySlots, recipe)) {
+            mc.displayGuiScreen(firstGui);
+            return;
+        }
         final IRecipeOverlayRenderer renderer = handler.getOverlayRenderer(firstGui, recipe);
         final IOverlayHandler overlayHandler = handler.getOverlayHandler(firstGui, recipe);
         final boolean shift = NEIClientUtils.shiftKey();
 
-        if (handler != null && (renderer == null || shift)) {
-            mc.displayGuiScreen(firstGui);
+        mc.displayGuiScreen(firstGui);
+        if (renderer == null || shift) {
             overlayHandler.overlayRecipe(firstGui, currenthandlers.get(recipetype), recipe, shift);
-        } else if (renderer != null) {
-            mc.displayGuiScreen(firstGui);
+        } else {
             LayoutManager.overlayRenderer = renderer;
         }
     }

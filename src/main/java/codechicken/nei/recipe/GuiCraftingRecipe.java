@@ -2,6 +2,7 @@ package codechicken.nei.recipe;
 
 import codechicken.core.TaskProfiler;
 import codechicken.nei.ItemList;
+import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
@@ -9,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import codechicken.nei.ItemPanels;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
@@ -19,28 +19,32 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class GuiCraftingRecipe extends GuiRecipe
-{
+public class GuiCraftingRecipe extends GuiRecipe {
     public static boolean openRecipeGui(String outputId, Object... results) {
+        return openRecipeGui(outputId, false, results);
+    }
+
+
+    public static boolean openRecipeGui(String outputId, Boolean overlay, Object... results) {
         Minecraft mc = NEIClientUtils.mc();
         GuiScreen prevscreen = mc.currentScreen;// instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
 
         ArrayList<ICraftingHandler> handlers;
         TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
         profiler.start("recipe.concurrent.crafting");
-       
+
         // Pre-find the fuels so we're not fighting over it
         FuelRecipeHandler.findFuelsOnceParallel();
 
         try {
             handlers = serialCraftingHandlers.stream().map(h -> h.getRecipeHandler(outputId, results))
-                .filter(h -> h.numRecipes() > 0)
-                .collect(Collectors.toCollection(ArrayList::new));
+                    .filter(h -> h.numRecipes() > 0)
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             handlers.addAll(ItemList.forkJoinPool.submit(() -> craftinghandlers.parallelStream()
-                .map(h -> h.getRecipeHandler(outputId, results))
-                .filter(h -> h.numRecipes() > 0)
-                .collect(Collectors.toCollection(ArrayList::new))).get());
+                    .map(h -> h.getRecipeHandler(outputId, results))
+                    .filter(h -> h.numRecipes() > 0)
+                    .collect(Collectors.toCollection(ArrayList::new))).get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
@@ -62,22 +66,30 @@ public class GuiCraftingRecipe extends GuiRecipe
         BookmarkRecipeId recipeId = null;
 
         if ("item".equals(outputId)) {
-            recipeId = getRecipeId(prevscreen, (ItemStack)results[0]);
+            recipeId = getRecipeId(prevscreen, (ItemStack) results[0]);
         }
 
         GuiCraftingRecipe gui = new GuiCraftingRecipe(prevscreen, handlers, recipeId);
-        
+
         mc.displayGuiScreen(gui);
 
-        if (NEIClientConfig.saveCurrentRecipeInBookmarksEnabled() && !NEIClientUtils.shiftKey()) {
-            gui.openTargetRecipe(gui.recipeId);
+        if (NEIClientConfig.saveCurrentRecipeInBookmarksEnabled())
+            if (!NEIClientUtils.shiftKey() || overlay) {
+                gui.openTargetRecipe(gui.recipeId);
+            }
+
+        if (overlay) {
+            if (!NEIClientConfig.saveCurrentRecipeInBookmarksEnabled() || gui.recipeId == null) {
+                mc.displayGuiScreen(prevscreen);
+                return false;
+            }
+            gui.overlayRecipe(gui.recipeId.position);
         }
 
         return true;
     }
 
-    protected static BookmarkRecipeId getRecipeId(GuiScreen gui, ItemStack stackover)
-    {
+    protected static BookmarkRecipeId getRecipeId(GuiScreen gui, ItemStack stackover) {
 
         if (gui instanceof GuiRecipe) {
             final List<PositionedStack> ingredients = ((GuiRecipe) gui).getFocusedRecipeIngredients();
@@ -91,8 +103,7 @@ public class GuiCraftingRecipe extends GuiRecipe
         return ItemPanels.bookmarkPanel.getBookmarkRecipeId(stackover);
     }
 
-    private GuiCraftingRecipe(GuiScreen prevgui, ArrayList<ICraftingHandler> handlers, BookmarkRecipeId recipeId)
-    {
+    private GuiCraftingRecipe(GuiScreen prevgui, ArrayList<ICraftingHandler> handlers, BookmarkRecipeId recipeId) {
         this(prevgui, handlers);
         this.recipeId = recipeId;
     }
@@ -104,10 +115,10 @@ public class GuiCraftingRecipe extends GuiRecipe
 
     public static void registerRecipeHandler(ICraftingHandler handler) {
         final String handlerId = handler.getHandlerId();
-        if(craftinghandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)) || serialCraftingHandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)))
+        if (craftinghandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)) || serialCraftingHandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)))
             return;
 
-        if(NEIClientConfig.serialHandlers.contains(handlerId))
+        if (NEIClientConfig.serialHandlers.contains(handlerId))
             serialCraftingHandlers.add(handler);
         else
             craftinghandlers.add(handler);
