@@ -5,10 +5,18 @@ import codechicken.nei.api.GuiInfo;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.StackInfo;
 import codechicken.nei.ItemPanel.ItemPanelSlot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static codechicken.lib.gui.GuiDraw.drawRect;
 
@@ -37,6 +45,10 @@ public class ItemsGrid
 
     protected boolean[] validSlotMap;
     protected boolean[] invalidSlotMap;
+
+    @Nullable
+    private Framebuffer framebuffer = null;
+    protected boolean refreshBuffer = true;
 
     public ArrayList<ItemStack> getItems()
     {
@@ -92,6 +104,8 @@ public class ItemsGrid
 
     public void setGridSize(int mleft, int mtop, int w, int h)
     {
+        if(width != w || height != h || mleft != marginLeft || mtop != marginTop)
+            refreshBuffer = true;
 
         marginLeft = mleft;
         marginTop = mtop;
@@ -126,6 +140,8 @@ public class ItemsGrid
         }
 
         page = Math.max(0, Math.min(page, numPages - 1));
+        if(shift != 0)
+            refreshBuffer = true;
     }
 
     public void refresh(GuiContainer gui)
@@ -136,12 +152,15 @@ public class ItemsGrid
 
     private void updateGuiOverlapSlots(GuiContainer gui)
     {
+        boolean[] oldSlotMap = invalidSlotMap;
         invalidSlotMap = new boolean[rows * columns];
         perPage = columns * rows;
 
         checkGuiOverlap(gui, 0, columns - 2, 1);
         checkGuiOverlap(gui, columns - 1, 1, -1);
-
+        if(NEIClientConfig.shouldCacheItemRendering() && !Arrays.equals(oldSlotMap, invalidSlotMap)) {
+            refreshBuffer = true;
+        }
     }
 
     private void checkGuiOverlap(GuiContainer gui, int start, int end, int dir)
@@ -180,36 +199,95 @@ public class ItemsGrid
         return invalidSlotMap[idx];
     }
 
+    private void drawSlotOutlines(int mousex, int mousey)
+    {
+        ItemPanelSlot focused = getSlotMouseOver(mousex, mousey);
+        int idx = page * perPage;
+        for (int i = 0; i < rows * columns && idx < size(); i++) {
+            if(!invalidSlotMap[i]) {
+                drawSlotOutline(focused, idx, getSlotRect(i));
+                idx++;
+            }
+        }
+    }
+
+    protected void drawSlotOutline(@Nullable ItemPanelSlot focused, int slotIdx, Rectangle4i rect) {
+        if(focused != null && focused.slotIndex == slotIdx)
+            drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
+    }
+
+    private void blitExistingBuffer() {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        framebuffer.bindFramebufferTexture();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        ScaledResolution res = new ScaledResolution(minecraft, minecraft.displayWidth, minecraft.displayHeight);
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV(0, res.getScaledHeight_double(), 0.0, 0, 0);
+        tessellator.addVertexWithUV(res.getScaledWidth_double(), res.getScaledHeight_double(), 0.0, 1, 0);
+        tessellator.addVertexWithUV(res.getScaledWidth_double(), 0, 0.0, 1, 1);
+        tessellator.addVertexWithUV(0, 0, 0, 0, 1);
+        tessellator.draw();
+        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+    }
+
     public void draw(int mousex, int mousey)
     {
         if (getPerPage() == 0) {
             return;
         }
 
-        ItemPanelSlot slot = getSlotMouseOver(mousex, mousey);
+        boolean shouldCache = NEIClientConfig.shouldCacheItemRendering() && !PresetsWidget.inEditMode();
+        if(shouldCache) {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (framebuffer == null) {
+                framebuffer = new Framebuffer(minecraft.displayWidth, minecraft.displayHeight, true);
+                framebuffer.framebufferColor[0] = 0.0F;
+                framebuffer.framebufferColor[1] = 0.0F;
+                framebuffer.framebufferColor[2] = 0.0F;
+            }
+            drawSlotOutlines(mousex, mousey);
+            if (refreshBuffer) {
+                framebuffer.createBindFramebuffer(minecraft.displayWidth, minecraft.displayHeight);
+                framebuffer.framebufferClear();
+                framebuffer.bindFramebuffer(false);
+                /* Set up some rendering state needed for items to work correctly */
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glDepthMask(true);
+                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            } else {
+                blitExistingBuffer();
+                return;
+            }
+        } else {
+            drawSlotOutlines(mousex, mousey);
+        }
 
         GuiContainerManager.enableMatrixStackLogging();
 
         int idx = page * perPage;
         for (int i = 0; i < rows * columns && idx < size(); i++) {
-
             if (!invalidSlotMap[i]) {
-                drawItem(getSlotRect(i), idx, slot);
+                drawItem(getSlotRect(i), idx);
                 idx ++;
             }
-
         }
 
         GuiContainerManager.disableMatrixStackLogging();
+
+        if (refreshBuffer && shouldCache) {
+            refreshBuffer = false;
+            Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
+            blitExistingBuffer();
+        }
     }
 
-    protected void drawItem(Rectangle4i rect, int idx, ItemPanelSlot focus)
+    protected void drawItem(Rectangle4i rect, int idx)
     {
-
-        if (focus != null && focus.slotIndex == idx) {
-            drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
-        }
-
         GuiContainerManager.drawItem(rect.x + 1, rect.y + 1, getItem(idx));
     }
 

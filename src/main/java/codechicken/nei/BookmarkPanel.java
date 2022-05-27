@@ -19,6 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
+
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.lib.gui.GuiDraw.drawRect;
 
@@ -98,11 +100,13 @@ public class BookmarkPanel extends PanelWidget
         {
             realItems.add(stackA);
             metadata.add(meta);
+            refreshBuffer = true;
         }
 
         public void replaceItem(int idx, ItemStack stack)
         {
             realItems.set(idx, stack);
+            refreshBuffer = true;
         }
 
         public void removeRecipe(int idx, boolean removeFullRecipe)
@@ -136,6 +140,7 @@ public class BookmarkPanel extends PanelWidget
         {
             realItems.remove(idx);
             metadata.remove(idx);
+            refreshBuffer = true;
             return true;
         }
 
@@ -161,40 +166,45 @@ public class BookmarkPanel extends PanelWidget
         {
             realItems.add(dst, realItems.remove(src));
             metadata.add(dst, metadata.remove(src));
+            refreshBuffer = true;
+        }
+
+        private boolean isPartOfFocusedRecipe(ItemPanelSlot focused, int myIdx) {
+            return (NEIClientUtils.shiftKey()
+                && LayoutManager.bookmarkPanel.sortedStackIndex == -1
+                && focused != null
+                && getRecipeId(focused.slotIndex) != null
+                && getRecipeId(myIdx) != null
+                && getRecipeId(focused.slotIndex).equals(getRecipeId(myIdx)));
         }
 
         @Override
-        protected void drawItem(Rectangle4i rect, int idx, ItemPanelSlot focus)
-        {
-
-            if (LayoutManager.bookmarkPanel.sortedNamespaceIndex == LayoutManager.bookmarkPanel.activeNamespaceIndex && LayoutManager.bookmarkPanel.sortedStackIndex == idx) {
+        protected void drawSlotOutline(@Nullable ItemPanelSlot focus, int idx, Rectangle4i rect) {
+            if(LayoutManager.bookmarkPanel.sortedNamespaceIndex == LayoutManager.bookmarkPanel.activeNamespaceIndex && LayoutManager.bookmarkPanel.sortedStackIndex == idx) {
                 drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
-            } else {
+            } else if(focus != null) {
+                BookmarkStackMeta meta = getMetadata(idx);
+                if (isPartOfFocusedRecipe(focus, idx)) {
+                    drawRect(rect.x, rect.y, rect.w, rect.h, meta.ingredient? 0x88b3b300: 0x88009933);//highlight recipe
+                } else if(focus.slotIndex == idx) {
+                    drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
+                }
+            }
+        }
+
+        @Override
+        protected void drawItem(Rectangle4i rect, int idx)
+        {
+            if (LayoutManager.bookmarkPanel.sortedNamespaceIndex != LayoutManager.bookmarkPanel.activeNamespaceIndex || LayoutManager.bookmarkPanel.sortedStackIndex != idx) {
                 final ItemStack stack = getItem(idx);
                 final BookmarkStackMeta meta = getMetadata(idx);
-
-                if (focus != null) {
-
-                    if (
-                            LayoutManager.bookmarkPanel.sortedStackIndex == -1 && //disabled when sorting
-                            NEIClientUtils.shiftKey() &&  //show only with shift key
-                            getRecipeId(focus.slotIndex) != null && getRecipeId(idx) != null && getRecipeId(focus.slotIndex).equals(getRecipeId(idx))//is some recipeId
-                    ) {
-                        drawRect(rect.x, rect.y, rect.w, rect.h, meta.ingredient? 0x88b3b300: 0x88009933);//highlight recipe
-                    } else if (focus.slotIndex == idx) {
-                        drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);//highlight
-                    }
-
-                }
 
                 GuiContainerManager.drawItem(rect.x + 1, rect.y + 1, stack, true, meta.factor < 0 || meta.fluidDisplay? "": String.valueOf(stack.stackSize));
 
                 if (meta.recipeId != null && !meta.ingredient && NEIClientConfig.showRecipeMarker()) {
                     drawRecipeMarker(rect.x, rect.y, GuiContainerManager.getFontRenderer(stack));
                 }
-
             }
-
         }
 
         protected void drawRecipeMarker(int offsetX, int offsetY, FontRenderer fontRenderer )
@@ -757,6 +767,7 @@ public class BookmarkPanel extends PanelWidget
                 if (stack != null && (mouseOverSlot == null || mouseOverSlot.slotIndex != mouseDownSlot || heldTime > 250)) {
                     sortedNamespaceIndex = activeNamespaceIndex;
                     sortedStackIndex = mouseDownSlot;
+                    grid.refreshBuffer = true;
                 }
 
             } else {
@@ -837,6 +848,7 @@ public class BookmarkPanel extends PanelWidget
             sortedNamespaceIndex = -1;
             sortedStackIndex = -1;
             mouseDownSlot = -1;
+            grid.refreshBuffer = true; /* make sure grid redraws the new item */
             saveBookmarks();
         } else {
             super.mouseUp(mousex, mousey, button);
