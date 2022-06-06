@@ -299,6 +299,10 @@ public class ClientHandler
                 lastworld = null;
             else if (gui instanceof GuiSelectWorld)
                 NEIClientConfig.reloadSaves();
+            else if(gui == null) {
+                /* prevent WorldClient reference being held in the Gui */
+                NEIController.manager = null;
+            }
         }
         lastGui = gui;
     }
@@ -328,6 +332,8 @@ public class ClientHandler
 
                 if (!Minecraft.getMinecraft().isSingleplayer())//wait for server to initiate in singleplayer
                     NEIClientConfig.loadWorld("remote/" + ClientUtils.getServerIP().replace(':', '~'));
+
+                ItemMobSpawner.clearEntityReferences(world);
             }
 
             lastworld = world;
