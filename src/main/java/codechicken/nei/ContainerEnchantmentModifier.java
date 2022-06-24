@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 import codechicken.lib.render.CCRenderState;
+import java.util.ArrayList;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,15 +15,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-
 /**
  * This is crap code, don't ever do this.
  */
-public class ContainerEnchantmentModifier extends ContainerEnchantment
-{
-    public static class EnchantmentHash
-    {
+public class ContainerEnchantmentModifier extends ContainerEnchantment {
+    public static class EnchantmentHash {
         public EnchantmentHash(Enchantment e, int i, int l) {
             enchantment = e;
             state = i;
@@ -104,10 +101,13 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
         int barempty = height - getScrollBarHeight();
         int sbary = rely + (int) (barempty * percentscrolled + 0.5);
 
-        if (button == 0 &&
-                getScrollBarHeight() < height && //the scroll bar can move (not full length)
-                mousex >= relx + cwidth && mousex < relx + cwidth + getScrollBarWidth() &&
-                mousey >= rely && mousey < rely + height)//in the scroll pane
+        if (button == 0
+                && getScrollBarHeight() < height
+                && // the scroll bar can move (not full length)
+                mousex >= relx + cwidth
+                && mousex < relx + cwidth + getScrollBarWidth()
+                && mousey >= rely
+                && mousey < rely + height) // in the scroll pane
         {
             if (mousey < sbary) {
                 percentscrolled = (mousey - rely) / (float) barempty;
@@ -126,7 +126,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
     }
 
     public void mouseUp(int mousex, int mousey, int button) {
-        if (scrollclicky >= 0 && button == 0)//we were scrolling and we released mouse
+        if (scrollclicky >= 0 && button == 0) // we were scrolling and we released mouse
         {
             scrollclicky = -1;
         }
@@ -135,8 +135,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
     public boolean clickButton(int mousex, int mousey, int button) {
         mousex -= parentscreen.guiLeft;
         mousey -= parentscreen.guiTop;
-        if (mousex >= relx && mousex < relx + cwidth &&
-                mousey >= rely && mousey <= rely + height)//in the box
+        if (mousex >= relx && mousex < relx + cwidth && mousey >= rely && mousey <= rely + height) // in the box
         {
             int slot = getClickedSlot(mousey);
             if (slot >= getNumSlots()) return false;
@@ -176,10 +175,8 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
                 int ID = nbttaglist.getCompoundTagAt(i).getShort("id");
                 if (ID == e) {
                     nbttaglist.removeTag(i);
-                    if (nbttaglist.tagCount() == 0)
-                        stack.getTagCompound().removeTag("ench");
-                    if (stack.getTagCompound().hasNoTags())
-                        stack.setTagCompound(null);
+                    if (nbttaglist.tagCount() == 0) stack.getTagCompound().removeTag("ench");
+                    if (stack.getTagCompound().hasNoTags()) stack.setTagCompound(null);
                     return;
                 }
             }
@@ -191,8 +188,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
     }
 
     public void onCraftMatrixChanged(IInventory iinventory) {
-        if (parentscreen != null)
-            updateEnchantmentOptions(GuiEnchantmentModifier.validateEnchantments());
+        if (parentscreen != null) updateEnchantmentOptions(GuiEnchantmentModifier.validateEnchantments());
     }
 
     public void updateEnchantmentOptions(boolean validate) {
@@ -221,7 +217,8 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
             if (NEIServerUtils.stackHasEnchantment(toolstack, e.effectId)) {
                 state = 2;
                 level = NEIServerUtils.getEnchantmentLevel(toolstack, e.effectId);
-            } else if (NEIServerUtils.doesEnchantmentConflict(NEIServerUtils.getEnchantments(toolstack), e) && validate) {
+            } else if (NEIServerUtils.doesEnchantmentConflict(NEIServerUtils.getEnchantments(toolstack), e)
+                    && validate) {
                 state = 1;
             }
             slotEnchantment.add(new EnchantmentHash(e, state, level));
@@ -257,10 +254,18 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
             CCRenderState.changeTexture("textures/gui/container/enchanting_table.png");
             GL11.glColor3f(1, 1, 1);
             if (hasScrollBar()) {
-                gui.drawTexturedModalRect(relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth - 30, slotheight);
-                gui.drawTexturedModalRect(relx + cwidth - 30, rely + slot * slotheight, cwidth - 23, gui.ySize + slotheight * shade, 30, slotheight);
+                gui.drawTexturedModalRect(
+                        relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth - 30, slotheight);
+                gui.drawTexturedModalRect(
+                        relx + cwidth - 30,
+                        rely + slot * slotheight,
+                        cwidth - 23,
+                        gui.ySize + slotheight * shade,
+                        30,
+                        slotheight);
             } else {
-                gui.drawTexturedModalRect(relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth + 7, slotheight);
+                gui.drawTexturedModalRect(
+                        relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth + 7, slotheight);
             }
 
             gui.getFontRenderer().drawString(text, relx + 4, rely + slot * slotheight + 5, textColourFromState(shade));
@@ -277,18 +282,36 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment
         int sbary = rely + (int) ((height - getScrollBarHeight()) * percentscrolled + 0.5);
         int sbarx = relx + cwidth;
 
-        Gui.drawRect(sbarx, rely, sbarx + getScrollBarWidth(), rely + height, 0xFF202020);//background
-        Gui.drawRect(sbarx, sbary, sbarx + getScrollBarWidth(), sbary + getScrollBarHeight(), 0xFF8B8B8B);//corners
-        Gui.drawRect(sbarx, sbary, sbarx + getScrollBarWidth() - 1, sbary + getScrollBarHeight() - 1, 0xFFF0F0F0);//topleft up
-        Gui.drawRect(sbarx + 1, sbary + 1, sbarx + getScrollBarWidth() - 1, sbary + getScrollBarHeight() - 1, 0xFF555555);//bottom right down
-        Gui.drawRect(sbarx + 1, sbary + 1, sbarx + getScrollBarWidth() - 2, sbary + getScrollBarHeight() - 2, 0xFFC6C6C6);//scrollbar
+        Gui.drawRect(sbarx, rely, sbarx + getScrollBarWidth(), rely + height, 0xFF202020); // background
+        Gui.drawRect(sbarx, sbary, sbarx + getScrollBarWidth(), sbary + getScrollBarHeight(), 0xFF8B8B8B); // corners
+        Gui.drawRect(
+                sbarx,
+                sbary,
+                sbarx + getScrollBarWidth() - 1,
+                sbary + getScrollBarHeight() - 1,
+                0xFFF0F0F0); // topleft up
+        Gui.drawRect(
+                sbarx + 1,
+                sbary + 1,
+                sbarx + getScrollBarWidth() - 1,
+                sbary + getScrollBarHeight() - 1,
+                0xFF555555); // bottom right down
+        Gui.drawRect(
+                sbarx + 1,
+                sbary + 1,
+                sbarx + getScrollBarWidth() - 2,
+                sbary + getScrollBarHeight() - 2,
+                0xFFC6C6C6); // scrollbar
     }
 
     private int textColourFromState(int shade) {
-        switch(shade) {
-            case 0: return 0x685e4a;
-            case 1: return 0x407f10;
-            default: return 0xffff80;
+        switch (shade) {
+            case 0:
+                return 0x685e4a;
+            case 1:
+                return 0x407f10;
+            default:
+                return 0xffff80;
         }
     }
 

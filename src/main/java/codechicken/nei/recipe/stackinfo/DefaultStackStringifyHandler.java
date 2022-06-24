@@ -9,11 +9,9 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
-public class DefaultStackStringifyHandler implements IStackStringifyHandler
-{
+public class DefaultStackStringifyHandler implements IStackStringifyHandler {
 
-    public NBTTagCompound convertItemStackToNBT(ItemStack stack, boolean saveStackSize)
-    {
+    public NBTTagCompound convertItemStackToNBT(ItemStack stack, boolean saveStackSize) {
         final String strId = Item.itemRegistry.getNameForObject(stack.getItem());
 
         if (strId == null) {
@@ -22,9 +20,9 @@ public class DefaultStackStringifyHandler implements IStackStringifyHandler
 
         final NBTTagCompound nbTag = new NBTTagCompound();
         nbTag.setString("strId", strId);
-        nbTag.setInteger("Count", Math.max(saveStackSize? stack.stackSize: 1, 1));
-        nbTag.setShort("Damage", (short)stack.getItemDamage());
-      
+        nbTag.setInteger("Count", Math.max(saveStackSize ? stack.stackSize : 1, 1));
+        nbTag.setShort("Damage", (short) stack.getItemDamage());
+
         if (stack.hasTagCompound()) {
             nbTag.setTag("tag", stack.getTagCompound());
         }
@@ -32,12 +30,11 @@ public class DefaultStackStringifyHandler implements IStackStringifyHandler
         return nbTag;
     }
 
-    public ItemStack convertNBTToItemStack(NBTTagCompound nbtTag)
-    {
+    public ItemStack convertNBTToItemStack(NBTTagCompound nbtTag) {
         final String strId = nbtTag.getString("strId");
 
-        nbtTag = (NBTTagCompound)nbtTag.copy();
-        nbtTag.setInteger("id", GameData.getItemRegistry().getId(strId)); //getObject
+        nbtTag = (NBTTagCompound) nbtTag.copy();
+        nbtTag.setInteger("id", GameData.getItemRegistry().getId(strId)); // getObject
 
         final ItemStack stack = ItemStack.loadItemStackFromNBT(nbtTag);
 
@@ -48,8 +45,7 @@ public class DefaultStackStringifyHandler implements IStackStringifyHandler
         return stack;
     }
 
-    public FluidStack getFluid(ItemStack stack)
-    {
+    public FluidStack getFluid(ItemStack stack) {
         FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
 
         if (fluidStack == null && stack.getItem() instanceof IFluidContainerItem) {
@@ -58,5 +54,4 @@ public class DefaultStackStringifyHandler implements IStackStringifyHandler
 
         return fluidStack;
     }
-    
 }

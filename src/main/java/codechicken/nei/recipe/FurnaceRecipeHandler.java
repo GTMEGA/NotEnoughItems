@@ -3,22 +3,19 @@ package codechicken.nei.recipe;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 
-public class FurnaceRecipeHandler extends TemplateRecipeHandler
-{
-    public class SmeltingPair extends CachedRecipe
-    {
+public class FurnaceRecipeHandler extends TemplateRecipeHandler {
+    public class SmeltingPair extends CachedRecipe {
         public SmeltingPair(ItemStack ingred, ItemStack result) {
             ingred.stackSize = 1;
             this.ingred = new PositionedStack(ingred, 51, 6);
@@ -40,7 +37,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         final PositionedStack ingred;
         final PositionedStack result;
     }
-    
+
     public static class FuelPair {
         public FuelPair(ItemStack ingred, int burnTime) {
             this.stack = new PositionedStack(ingred, 51, 42, false);
@@ -52,7 +49,6 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
     }
 
     public static ArrayList<FuelPair> afuels;
-
 
     @Override
     public void loadTransferRects() {
@@ -72,7 +68,8 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
 
     @Override
     public TemplateRecipeHandler newInstance() {
-        // Use the non parallel version since we might already be using the forkJoinPool and might have no threads available
+        // Use the non parallel version since we might already be using the forkJoinPool and might have no threads
+        // available
         // This will ideally have been pre-cached elsewhere and will be a NOOP
         findFuelsOnce();
         return super.newInstance();
@@ -80,17 +77,19 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
 
     @Override
     public void loadCraftingRecipes(String outputId, Object... results) {
-        if (outputId.equals("smelting") && getClass() == FurnaceRecipeHandler.class) {//don't want subclasses getting a hold of this
-            Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        if (outputId.equals("smelting")
+                && getClass() == FurnaceRecipeHandler.class) { // don't want subclasses getting a hold of this
+            Map<ItemStack, ItemStack> recipes =
+                    (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
             for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
                 arecipes.add(new SmeltingPair(recipe.getKey(), recipe.getValue()));
-        } else
-            super.loadCraftingRecipes(outputId, results);
+        } else super.loadCraftingRecipes(outputId, results);
     }
 
     @Override
     public void loadCraftingRecipes(ItemStack result) {
-        Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        Map<ItemStack, ItemStack> recipes =
+                (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
         for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
             if (NEIServerUtils.areStacksSameType(recipe.getValue(), result))
                 arecipes.add(new SmeltingPair(recipe.getKey(), recipe.getValue()));
@@ -98,15 +97,16 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
 
     @Override
     public void loadUsageRecipes(String inputId, Object... ingredients) {
-        if (inputId.equals("fuel") && getClass() == FurnaceRecipeHandler.class)//don't want subclasses getting a hold of this
-            loadCraftingRecipes("smelting");
-        else
-            super.loadUsageRecipes(inputId, ingredients);
+        if (inputId.equals("fuel")
+                && getClass() == FurnaceRecipeHandler.class) // don't want subclasses getting a hold of this
+        loadCraftingRecipes("smelting");
+        else super.loadUsageRecipes(inputId, ingredients);
     }
 
     @Override
     public void loadUsageRecipes(ItemStack ingredient) {
-        Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        Map<ItemStack, ItemStack> recipes =
+                (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
         for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
             if (NEIServerUtils.areStacksSameTypeCrafting(recipe.getKey(), ingredient)) {
                 SmeltingPair arecipe = new SmeltingPair(recipe.getKey(), recipe.getValue());
@@ -130,7 +130,6 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler
         drawProgressBar(51, 25, 176, 0, 14, 14, 48, 7);
         drawProgressBar(74, 23, 176, 14, 24, 16, 48, 0);
     }
-
 
     @Override
     public String getOverlayIdentifier() {

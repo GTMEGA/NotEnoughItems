@@ -6,6 +6,10 @@ import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,20 +18,14 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
 public class GuiCraftingRecipe extends GuiRecipe {
     public static boolean openRecipeGui(String outputId, Object... results) {
         return openRecipeGui(outputId, false, results);
     }
 
-
     public static boolean openRecipeGui(String outputId, Boolean overlay, Object... results) {
         Minecraft mc = NEIClientUtils.mc();
-        GuiScreen prevscreen = mc.currentScreen;// instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
+        GuiScreen prevscreen = mc.currentScreen; // instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
 
         ArrayList<ICraftingHandler> handlers;
         TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
@@ -37,14 +35,17 @@ public class GuiCraftingRecipe extends GuiRecipe {
         FuelRecipeHandler.findFuelsOnceParallel();
 
         try {
-            handlers = serialCraftingHandlers.stream().map(h -> h.getRecipeHandler(outputId, results))
+            handlers = serialCraftingHandlers.stream()
+                    .map(h -> h.getRecipeHandler(outputId, results))
                     .filter(h -> h.numRecipes() > 0)
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            handlers.addAll(ItemList.forkJoinPool.submit(() -> craftinghandlers.parallelStream()
-                    .map(h -> h.getRecipeHandler(outputId, results))
-                    .filter(h -> h.numRecipes() > 0)
-                    .collect(Collectors.toCollection(ArrayList::new))).get());
+            handlers.addAll(ItemList.forkJoinPool
+                    .submit(() -> craftinghandlers.parallelStream()
+                            .map(h -> h.getRecipeHandler(outputId, results))
+                            .filter(h -> h.numRecipes() > 0)
+                            .collect(Collectors.toCollection(ArrayList::new)))
+                    .get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
@@ -58,8 +59,7 @@ public class GuiCraftingRecipe extends GuiRecipe {
             profiler.end();
         }
 
-        if (handlers.isEmpty())
-            return false;
+        if (handlers.isEmpty()) return false;
 
         handlers.sort(NEIClientConfig.HANDLER_COMPARATOR);
 
@@ -115,13 +115,12 @@ public class GuiCraftingRecipe extends GuiRecipe {
 
     public static void registerRecipeHandler(ICraftingHandler handler) {
         final String handlerId = handler.getHandlerId();
-        if (craftinghandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)) || serialCraftingHandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)))
-            return;
+        if (craftinghandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId))
+                || serialCraftingHandlers.stream()
+                        .anyMatch(h -> h.getHandlerId().equals(handlerId))) return;
 
-        if (NEIClientConfig.serialHandlers.contains(handlerId))
-            serialCraftingHandlers.add(handler);
-        else
-            craftinghandlers.add(handler);
+        if (NEIClientConfig.serialHandlers.contains(handlerId)) serialCraftingHandlers.add(handler);
+        else craftinghandlers.add(handler);
     }
 
     public ArrayList<? extends IRecipeHandler> getCurrentRecipeHandlers() {

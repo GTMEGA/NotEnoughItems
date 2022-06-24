@@ -46,7 +46,17 @@ public class DrawableBuilder {
     }
 
     public DrawableResource build() {
-        return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, textureWidth, textureHeight);
+        return new DrawableResource(
+                resourceLocation,
+                u,
+                v,
+                width,
+                height,
+                paddingTop,
+                paddingBottom,
+                paddingLeft,
+                paddingRight,
+                textureWidth,
+                textureHeight);
     }
-
 }

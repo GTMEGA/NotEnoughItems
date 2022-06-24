@@ -5,11 +5,6 @@ import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
 import com.google.common.base.Objects;
 import cpw.mods.fml.common.Loader;
-import net.minecraft.item.ItemStack;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.item.ItemStack;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 public class RecipeCatalysts {
     private static final Map<String, CatalystInfoList> catalystsAdderFromAPI = new HashMap<>();
@@ -90,7 +89,8 @@ public class RecipeCatalysts {
                 ItemStack catalyst = catalysts.get(index).getStack();
                 int column = index / rowCount;
                 int row = index % rowCount;
-                newStacks.add(new PositionedStack(catalyst, -column * GuiRecipeCatalyst.ingredientSize, row * GuiRecipeCatalyst.ingredientSize));
+                newStacks.add(new PositionedStack(
+                        catalyst, -column * GuiRecipeCatalyst.ingredientSize, row * GuiRecipeCatalyst.ingredientSize));
             }
             newMap.put(entry.getKey(), newStacks);
         }
@@ -131,7 +131,7 @@ public class RecipeCatalysts {
             }
         } else {
             File catalystFile = NEIClientConfig.catalystFile;
-            if(!catalystFile.exists()) {
+            if (!catalystFile.exists()) {
                 NEIClientConfig.logger.info("Config file doesn't exist, creating");
                 try {
                     assert handlerUrl != null;
@@ -247,9 +247,7 @@ public class RecipeCatalysts {
         if (forceClassNameList.stream().anyMatch(s -> s.equals(handler.getHandlerId()))) {
             return handler.getHandlerId();
         }
-        return Objects.firstNonNull(
-                handler.getOverlayIdentifier(),
-                handler.getHandlerId());
+        return Objects.firstNonNull(handler.getOverlayIdentifier(), handler.getHandlerId());
     }
 
     public static void addOrPut(Map<String, CatalystInfoList> map, String handlerID, CatalystInfo catalyst) {
@@ -270,8 +268,7 @@ public class RecipeCatalysts {
     }
 
     @Deprecated
-    public static void addRecipeCatalyst(List<ItemStack> stacks, Class<? extends IRecipeHandler> handler) {
-    }
+    public static void addRecipeCatalyst(List<ItemStack> stacks, Class<? extends IRecipeHandler> handler) {}
 
     @Deprecated
     public static List<PositionedStack> getRecipeCatalysts(Class<? extends IRecipeHandler> handler) {

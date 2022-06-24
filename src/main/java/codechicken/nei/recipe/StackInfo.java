@@ -4,13 +4,6 @@ import codechicken.nei.NEIClientConfig;
 import codechicken.nei.api.IStackStringifyHandler;
 import codechicken.nei.recipe.stackinfo.DefaultStackStringifyHandler;
 import codechicken.nei.recipe.stackinfo.GTFluidStackStringifyHandler;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.io.IOUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,27 +14,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.io.IOUtils;
 
-public class StackInfo
-{
-
+public class StackInfo {
 
     public static final ArrayList<IStackStringifyHandler> stackStringifyHandlers = new ArrayList<>();
     private static final HashMap<String, HashMap<String, String[]>> guidfilters = new HashMap<>();
     private static final WeakHashMap<ItemStack, String> guidcache = new WeakHashMap<>();
-    
+
     static {
         stackStringifyHandlers.add(new DefaultStackStringifyHandler());
         stackStringifyHandlers.add(new GTFluidStackStringifyHandler());
     }
 
-    public static NBTTagCompound itemStackToNBT(ItemStack stack)
-    {
+    public static NBTTagCompound itemStackToNBT(ItemStack stack) {
         return itemStackToNBT(stack, true);
     }
 
-    public static NBTTagCompound itemStackToNBT(ItemStack stack, boolean saveStackSize)
-    {
+    public static NBTTagCompound itemStackToNBT(ItemStack stack, boolean saveStackSize) {
         NBTTagCompound nbTag = null;
 
         for (int i = stackStringifyHandlers.size() - 1; i >= 0 && nbTag == null; i--) {
@@ -51,8 +46,7 @@ public class StackInfo
         return nbTag;
     }
 
-    public static ItemStack loadFromNBT(NBTTagCompound nbtTag)
-    {
+    public static ItemStack loadFromNBT(NBTTagCompound nbtTag) {
         ItemStack stack = null;
 
         for (int i = stackStringifyHandlers.size() - 1; i >= 0 && nbtTag != null && stack == null; i--) {
@@ -62,8 +56,7 @@ public class StackInfo
         return stack;
     }
 
-    public static boolean equalItemAndNBT(ItemStack stackA, ItemStack stackB, boolean useNBT) 
-    {
+    public static boolean equalItemAndNBT(ItemStack stackA, ItemStack stackB, boolean useNBT) {
         if (!stackA.isItemEqual(stackB)) {
             return false;
         }
@@ -72,14 +65,14 @@ public class StackInfo
             NBTTagCompound tagCompoundA = itemStackToNBT(stackA, false);
             NBTTagCompound tagCompoundB = itemStackToNBT(stackB, false);
 
-            return tagCompoundA == null && tagCompoundB == null || tagCompoundA != null && tagCompoundB != null && tagCompoundA.equals(tagCompoundB);
+            return tagCompoundA == null && tagCompoundB == null
+                    || tagCompoundA != null && tagCompoundB != null && tagCompoundA.equals(tagCompoundB);
         }
 
         return true;
     }
 
-    public static FluidStack getFluid(ItemStack stack)
-    {
+    public static FluidStack getFluid(ItemStack stack) {
         FluidStack fluid = null;
 
         for (int i = stackStringifyHandlers.size() - 1; i >= 0 && fluid == null; i--) {
@@ -89,8 +82,7 @@ public class StackInfo
         return fluid;
     }
 
-    public static String getItemStackGUID(ItemStack stack)
-    {
+    public static String getItemStackGUID(ItemStack stack) {
         if (!guidcache.containsKey(stack)) {
 
             final NBTTagCompound nbTag = itemStackToNBT(stack, false);
@@ -133,15 +125,13 @@ public class StackInfo
                         } catch (Throwable e) {
                             break;
                         }
-
                     }
 
                     if (local instanceof NBTBase) {
-                        keys.add(((NBTBase)local).toString());
+                        keys.add(((NBTBase) local).toString());
                     } else if (local != null) {
                         keys.add(String.valueOf(local));
                     }
-
                 });
 
                 synchronized (guidcache) {
@@ -152,14 +142,12 @@ public class StackInfo
                     guidcache.put(stack, nbTag.toString());
                 }
             }
-
         }
 
         return guidcache.get(stack);
     }
 
-    public static void loadGuidFilters()
-    {
+    public static void loadGuidFilters() {
 
         guidfilters.clear();
 
@@ -177,8 +165,9 @@ public class StackInfo
             }
 
         } else {
-            final URL filterUrl = Thread.currentThread().getContextClassLoader().getResource("assets/nei/guidfilters.cfg");
-                
+            final URL filterUrl =
+                    Thread.currentThread().getContextClassLoader().getResource("assets/nei/guidfilters.cfg");
+
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(filterUrl.openStream()))) {
                 itemStrings = IOUtils.readLines(reader);
             } catch (IOException e) {
@@ -188,20 +177,17 @@ public class StackInfo
                 NEIClientConfig.logger.info("Error parsing guid filters");
                 e.printStackTrace();
             }
-
         }
 
-        for (String guidStr: itemStrings) {
+        for (String guidStr : itemStrings) {
             final String[] parts = guidStr.split(",");
             final HashMap<String, String[]> rules = new HashMap<>();
 
             for (int j = 1; j < parts.length; j++) {
                 rules.put(parts[j], parts[j].split("\\."));
             }
-               
+
             guidfilters.put(parts[0], rules);
         }
-
     }
-
 }

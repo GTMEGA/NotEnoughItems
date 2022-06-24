@@ -1,14 +1,15 @@
 package codechicken.nei.recipe;
 
-
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
 
 public class GuiRecipeTabCreative extends GuiRecipeTab {
     public static final int TAB_WIDTH = 28;
     public static final int TAB_HEIGHT = 31;
-    private static final DrawableResource selectedTabImage = new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 32, 28, 32).build();
-    private static final DrawableResource unselectedTabImage = new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 0, 28, 30).build();
+    private static final DrawableResource selectedTabImage =
+            new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 32, 28, 32).build();
+    private static final DrawableResource unselectedTabImage =
+            new DrawableBuilder("minecraft:textures/gui/container/creative_inventory/tabs.png", 28, 0, 28, 30).build();
 
     public GuiRecipeTabCreative(GuiRecipe guiRecipe, IRecipeHandler handler, int x, int y) {
         super(guiRecipe, handler, x, y);
@@ -33,7 +34,7 @@ public class GuiRecipeTabCreative extends GuiRecipeTab {
     protected int getForegroundIconY() {
         return y + h - 22;
     }
-    
+
     @Override
     public DrawableResource getSelectedTabImage() {
         return selectedTabImage;
@@ -43,5 +44,4 @@ public class GuiRecipeTabCreative extends GuiRecipeTab {
     public DrawableResource getUnselectedTabImage() {
         return unselectedTabImage;
     }
-
 }

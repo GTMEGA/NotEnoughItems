@@ -7,8 +7,10 @@ import codechicken.nei.drawable.DrawableResource;
 import java.awt.Rectangle;
 
 public class OptionToggleButtonBoubs extends OptionButton {
-    private static final DrawableResource coolBoubs = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 48, 16, 22, 22).build();
-    private static final DrawableResource angryBoubs = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 70, 16, 22, 22).build();
+    private static final DrawableResource coolBoubs =
+            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 48, 16, 22, 22).build();
+    private static final DrawableResource angryBoubs =
+            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 70, 16, 22, 22).build();
 
     public final boolean prefixed;
 
@@ -30,9 +32,9 @@ public class OptionToggleButtonBoubs extends OptionButton {
         Rectangle b = buttonSize();
         LayoutManager.drawButtonBackground(b.x, b.y, b.width, b.height, true, getButtonTex(mx, my));
         final Image image = state() ? coolBoubs : angryBoubs;
-        LayoutManager.drawIcon(b.x + (b.width/2) - (coolBoubs.getWidth()/2), b.y, image);
+        LayoutManager.drawIcon(b.x + (b.width / 2) - (coolBoubs.getWidth() / 2), b.y, image);
     }
-    
+
     public String getButtonText() {
         return translateN(name + (state() ? ".true" : ".false"));
     }

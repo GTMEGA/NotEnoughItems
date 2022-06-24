@@ -30,11 +30,9 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
 
     @Override
     public void tickKeyStates() {
-        if (Minecraft.getMinecraft().currentScreen != null)
-            return;
+        if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if (KeyManager.keyStates.get("world.moboverlay").down)
-            mobOverlay = (mobOverlay + 1) % 2;
+        if (KeyManager.keyStates.get("world.moboverlay").down) mobOverlay = (mobOverlay + 1) % 2;
         if (KeyManager.keyStates.get("world.chunkoverlay").down)
             chunkOverlay = (chunkOverlay + 1) % (NEIModContainer.isGT5Loaded() ? 4 : 3);
     }
@@ -157,8 +155,8 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
     private static final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
 
     private static byte getSpawnMode(Chunk chunk, int x, int y, int z) {
-        if (!SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, chunk.worldObj, x, y, z) ||
-                chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15) >= 8) {
+        if (!SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, chunk.worldObj, x, y, z)
+                || chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15) >= 8) {
             return 0;
         }
 
@@ -168,7 +166,8 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
         aabb.maxY = y + 1.8;
         aabb.minZ = z + 0.2;
         aabb.maxZ = z + 0.8;
-        if (!chunk.worldObj.getCollidingBoundingBoxes(dummyEntity, aabb).isEmpty() || chunk.worldObj.isAnyLiquid(aabb)) {
+        if (!chunk.worldObj.getCollidingBoundingBoxes(dummyEntity, aabb).isEmpty()
+                || chunk.worldObj.isAnyLiquid(aabb)) {
             return 0;
         }
 
@@ -176,8 +175,7 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
     }
 
     private static void renderChunkBounds(Entity entity) {
-        if (chunkOverlay == 0)
-            return;
+        if (chunkOverlay == 0) return;
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);

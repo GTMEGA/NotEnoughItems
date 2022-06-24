@@ -1,5 +1,7 @@
 package codechicken.nei;
 
+import static codechicken.nei.NEIClientUtils.translate;
+
 import codechicken.core.gui.GuiScrollSlot;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.lib.vec.Rectangle4i;
@@ -12,12 +14,6 @@ import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.guihook.GuiContainerManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumChatFormatting;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,25 +27,24 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
 
-import static codechicken.nei.NEIClientUtils.translate;
-
-public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoadedCallback, ISearchProvider
-{
+public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoadedCallback, ISearchProvider {
     public static ReentrantReadWriteLock hiddenItemLock = new ReentrantReadWriteLock();
     public static Lock writeLock = hiddenItemLock.writeLock();
     public static Lock readLock = hiddenItemLock.readLock();
-    
-    public static class SubsetState
-    {
+
+    public static class SubsetState {
         int state = 2;
         ArrayList<ItemStack> items = new ArrayList<>();
     }
 
-    public static class SubsetTag
-    {
-        protected class SubsetSlot extends GuiScrollSlot
-        {
+    public static class SubsetTag {
+        protected class SubsetSlot extends GuiScrollSlot {
             public SubsetSlot() {
                 super(0, 0, 0, 0);
                 setSmoothScroll(false);
@@ -62,25 +57,21 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
             @Override
             protected int getNumSlots() {
-                return children.size()+state.items.size();
+                return children.size() + state.items.size();
             }
 
             @Override
             protected void slotClicked(int slot, int button, int mx, int my, int count) {
-                if(slot < sorted.size()) {
+                if (slot < sorted.size()) {
                     SubsetTag tag = sorted.get(slot);
                     if (NEIClientUtils.shiftKey())
                         codechicken.nei.LayoutManager.searchField.setText("@" + tag.fullname);
-                    else if (button == 0 && count >= 2)
-                        SubsetWidget.showOnly(tag);
-                    else
-                        SubsetWidget.setHidden(tag, button == 1);
+                    else if (button == 0 && count >= 2) SubsetWidget.showOnly(tag);
+                    else SubsetWidget.setHidden(tag, button == 1);
                 } else {
-                    ItemStack item = state.items.get(slot-sorted.size());
-                    if(NEIClientUtils.controlKey())
-                        NEIClientUtils.cheatItem(item, button, -1);
-                    else
-                        SubsetWidget.setHidden(state.items.get(slot-sorted.size()), button == 1);
+                    ItemStack item = state.items.get(slot - sorted.size());
+                    if (NEIClientUtils.controlKey()) NEIClientUtils.cheatItem(item, button, -1);
+                    else SubsetWidget.setHidden(state.items.get(slot - sorted.size()), button == 1);
                 }
             }
 
@@ -88,32 +79,31 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             protected void drawSlot(int slot, int x, int y, int mx, int my, float frame) {
                 int w = windowBounds().width;
                 Rectangle4i r = new Rectangle4i(x, y, w, getSlotHeight(slot));
-                if(slot < sorted.size()) {
+                if (slot < sorted.size()) {
                     SubsetTag tag = sorted.get(slot);
-                    codechicken.nei.LayoutManager.getLayoutStyle().drawSubsetTag(tag.displayName(), x, y, r.w, r.h, tag.state.state, r.contains(mx, my));
-                }
-                else {
-                    ItemStack stack = state.items.get(slot-sorted.size());
+                    codechicken.nei.LayoutManager.getLayoutStyle()
+                            .drawSubsetTag(tag.displayName(), x, y, r.w, r.h, tag.state.state, r.contains(mx, my));
+                } else {
+                    ItemStack stack = state.items.get(slot - sorted.size());
                     boolean hidden = SubsetWidget.isHidden(stack);
 
-                    int itemx = w/2-8;
+                    int itemx = w / 2 - 8;
                     int itemy = 1;
 
-                    codechicken.nei.LayoutManager.getLayoutStyle().drawSubsetTag(null, x, y, r.w, r.h, hidden ? 0 : 2, false);
+                    codechicken.nei.LayoutManager.getLayoutStyle()
+                            .drawSubsetTag(null, x, y, r.w, r.h, hidden ? 0 : 2, false);
 
-                    GuiContainerManager.drawItem(x+itemx, y+itemy, stack);
-                    if(new Rectangle4i(itemx, itemy, 16, 16).contains(mx, my))
-                        SubsetWidget.hoverStack = stack;
+                    GuiContainerManager.drawItem(x + itemx, y + itemy, stack);
+                    if (new Rectangle4i(itemx, itemy, 16, 16).contains(mx, my)) SubsetWidget.hoverStack = stack;
                 }
             }
 
             @Override
-            public void drawOverlay(float frame) {
-            }
+            public void drawOverlay(float frame) {}
 
             @Override
             public void drawBackground(float frame) {
-                drawRect(x, y, x+width, y+height, 0xFF202020);
+                drawRect(x, y, x + width, y + height, 0xFF202020);
             }
 
             @Override
@@ -123,8 +113,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
             @Override
             public void drawScrollbar(float frame) {
-                if(hasScrollbar())
-                    super.drawScrollbar(frame);
+                if (hasScrollbar()) super.drawScrollbar(frame);
             }
 
             @Override
@@ -155,9 +144,8 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         public String displayName() {
-            String translated = translate("subsets."+fullname);
-            if(!translated.startsWith("nei."))
-                return translated;
+            String translated = translate("subsets." + fullname);
+            if (!translated.startsWith("nei.")) return translated;
 
             int idx = fullname.lastIndexOf('.');
             return idx < 0 ? fullname : fullname.substring(idx + 1);
@@ -165,7 +153,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
         public String name() {
             int idx = fullname.indexOf('.');
-            return idx < 0 ? fullname : fullname.substring(idx+1);
+            return idx < 0 ? fullname : fullname.substring(idx + 1);
         }
 
         public String parent() {
@@ -177,36 +165,35 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             int idx = name.indexOf('.');
             String childname = idx > 0 ? name.substring(0, idx) : name;
             SubsetTag child = children.get(childname.toLowerCase());
-            if(child == null)
-                return null;
+            if (child == null) return null;
 
-            return idx > 0 ? child.getTag(name.substring(idx+1)) : child;
+            return idx > 0 ? child.getTag(name.substring(idx + 1)) : child;
         }
 
         private void recacheChildren() {
             sorted = new ArrayList<>(children.values());
             childwidth = 0;
-            for(SubsetTag tag : sorted)
-                childwidth = Math.max(childwidth, tag.nameWidth()+2);
+            for (SubsetTag tag : sorted) childwidth = Math.max(childwidth, tag.nameWidth() + 2);
         }
 
         private void addTag(SubsetTag tag) {
-            String name = fullname == null ? tag.fullname : tag.fullname.substring(fullname.length()+1);
+            String name = fullname == null ? tag.fullname : tag.fullname.substring(fullname.length() + 1);
             int idx = name.indexOf('.');
 
-            if(idx < 0) {//add or replace tag
+            if (idx < 0) { // add or replace tag
                 SubsetTag prev = children.put(name.toLowerCase(), tag);
-                if(prev != null) {//replaced, load children
+                if (prev != null) { // replaced, load children
                     tag.children = prev.children;
                     tag.sorted = prev.sorted;
                 }
                 recacheChildren();
-            }
-            else {
+            } else {
                 String childname = name.substring(0, idx);
                 SubsetTag child = children.get(childname.toLowerCase());
-                if(child == null)
-                    children.put(childname.toLowerCase(), child = new SubsetTag(fullname == null ? childname : fullname+'.'+childname));
+                if (child == null)
+                    children.put(
+                            childname.toLowerCase(),
+                            child = new SubsetTag(fullname == null ? childname : fullname + '.' + childname));
                 recacheChildren();
                 child.addTag(tag);
             }
@@ -214,53 +201,42 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
         protected void cacheState() {
             state = SubsetWidget.getState(this);
-            for(SubsetTag tag : sorted)
-                tag.cacheState();
+            for (SubsetTag tag : sorted) tag.cacheState();
         }
 
         public void addFiltersWithItem(List<ItemFilter> filters, String itemSearch) {
-            if(itemSearch == null) {
+            if (itemSearch == null) {
                 addFilters(filters);
             } else {
-                if(filter != null)
-                    filters.add(new DoubleFilteredFilter(filter, itemSearch));
+                if (filter != null) filters.add(new DoubleFilteredFilter(filter, itemSearch));
 
-                for(SubsetTag child : sorted)
-                    child.addFiltersWithItem(filters, itemSearch);
-                
+                for (SubsetTag child : sorted) child.addFiltersWithItem(filters, itemSearch);
             }
         }
-        
-        public void addFilters(List<ItemFilter> filters) {
-            if(filter != null)
-                filters.add(filter);
 
-            for(SubsetTag child : sorted)
-                child.addFilters(filters);
+        public void addFilters(List<ItemFilter> filters) {
+            if (filter != null) filters.add(filter);
+
+            for (SubsetTag child : sorted) child.addFilters(filters);
         }
 
         public void search(List<SubsetTag> tags, Pattern p) {
-            if(fullname != null && p.matcher(fullname.toLowerCase()).find())
-                tags.add(this);
-            else
-                for(SubsetTag child : sorted)
-                    child.search(tags, p);
+            if (fullname != null && p.matcher(fullname.toLowerCase()).find()) tags.add(this);
+            else for (SubsetTag child : sorted) child.search(tags, p);
         }
 
         public void updateVisiblity(int mx, int my) {
-            if(selectedChild != null) {
+            if (selectedChild != null) {
                 selectedChild.updateVisiblity(mx, my);
-                if(!selectedChild.isVisible())
-                    selectedChild = null;
+                if (!selectedChild.isVisible()) selectedChild = null;
             }
 
-            if(slot.contains(mx, my) && (selectedChild == null || !selectedChild.contains(mx, my))) {
+            if (slot.contains(mx, my) && (selectedChild == null || !selectedChild.contains(mx, my))) {
                 int mslot = slot.getClickedSlot(my);
-                if(mslot >= 0 && mslot < sorted.size()) {
+                if (mslot >= 0 && mslot < sorted.size()) {
                     SubsetTag mtag = sorted.get(mslot);
-                    if(mtag != null) {
-                        if(mtag != selectedChild && selectedChild != null)
-                            selectedChild.setHidden();
+                    if (mtag != null) {
+                        if (mtag != selectedChild && selectedChild != null) selectedChild.setHidden();
                         selectedChild = mtag;
                         selectedChild.setVisible();
                     }
@@ -269,14 +245,13 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
                 setVisible();
             }
 
-            if(selectedChild == null)
-                countdownVisible();
+            if (selectedChild == null) countdownVisible();
         }
 
         public void setHidden() {
             visible = 0;
-            slot.mouseMovedOrUp(0, 0, 0);//cancel any scrolling
-            if(selectedChild != null) {
+            slot.mouseMovedOrUp(0, 0, 0); // cancel any scrolling
+            if (selectedChild != null) {
                 selectedChild.setHidden();
                 selectedChild = null;
             }
@@ -288,41 +263,37 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         private void countdownVisible() {
-            if(visible > 0 && --visible == 0)
-                setHidden();
+            if (visible > 0 && --visible == 0) setHidden();
         }
 
         public void resize(int x, int pwidth, int y) {
             int mheight = area.h;
-            int dheight = area.y2()-y;
+            int dheight = area.y2() - y;
             int cheight = slot.contentHeight();
             int height = cheight;
-            if(cheight > mheight) {
+            if (cheight > mheight) {
                 y = area.y;
                 height = mheight;
-            } else if(cheight > dheight) {
+            } else if (cheight > dheight) {
                 y = area.y2() - cheight;
             }
 
-            height = height/slot.getSlotHeight(0)*slot.getSlotHeight(0);//floor to a multiple of slot height
+            height = height / slot.getSlotHeight(0) * slot.getSlotHeight(0); // floor to a multiple of slot height
 
             int width = childwidth;
-            if(!state.items.isEmpty())
-                width = Math.max(childwidth, 18);
-            if(slot.contentHeight() > height)
-                width+=slot.scrollbarDim().width;
+            if (!state.items.isEmpty()) width = Math.max(childwidth, 18);
+            if (slot.contentHeight() > height) width += slot.scrollbarDim().width;
 
-            boolean fitLeft = x-width >= area.x1();
-            boolean fitRight = x+width+pwidth <= area.x2();
-            if(pwidth >= 0 ? !fitRight && fitLeft : !fitLeft)
-                pwidth*=-1;//swap
+            boolean fitLeft = x - width >= area.x1();
+            boolean fitRight = x + width + pwidth <= area.x2();
+            if (pwidth >= 0 ? !fitRight && fitLeft : !fitLeft) pwidth *= -1; // swap
             x += pwidth >= 0 ? pwidth : -width;
 
             slot.setSize(x, y, width, height);
             slot.setMargins(slot.hasScrollbar() ? slot.scrollbarDim().width : 0, 0, 0, 0);
 
-            if(selectedChild != null) {
-                y = slot.getSlotY(sorted.indexOf(selectedChild))-slot.scrolledPixels()+slot.y;
+            if (selectedChild != null) {
+                y = slot.getSlotY(sorted.indexOf(selectedChild)) - slot.scrolledPixels() + slot.y;
                 selectedChild.resize(x, pwidth >= 0 ? width : -width, y);
             }
         }
@@ -337,44 +308,37 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
         public void draw(int mx, int my) {
             slot.draw(mx, my, 0);
-            if(selectedChild != null)
-                selectedChild.draw(mx, my);
+            if (selectedChild != null) selectedChild.draw(mx, my);
         }
 
         public boolean contains(int px, int py) {
-            return slot.contains(px, py) ||
-                    selectedChild != null && selectedChild.contains(px, py);
+            return slot.contains(px, py) || selectedChild != null && selectedChild.contains(px, py);
         }
 
         public void mouseClicked(int mx, int my, int button) {
-            if(selectedChild != null && selectedChild.contains(mx, my))
-                selectedChild.mouseClicked(mx, my, button);
-            else if(slot.contains(mx, my))
-                slot.mouseClicked(mx, my, button);
+            if (selectedChild != null && selectedChild.contains(mx, my)) selectedChild.mouseClicked(mx, my, button);
+            else if (slot.contains(mx, my)) slot.mouseClicked(mx, my, button);
         }
 
         public void mouseDragged(int mx, int my, int button, long heldTime) {
             slot.mouseDragged(mx, my, button, heldTime);
-            if(selectedChild != null)
-                selectedChild.mouseDragged(mx, my, button, heldTime);
+            if (selectedChild != null) selectedChild.mouseDragged(mx, my, button, heldTime);
         }
 
         public void mouseUp(int mx, int my, int button) {
             slot.mouseMovedOrUp(mx, my, button);
-            if(selectedChild != null)
-                selectedChild.mouseUp(mx, my, button);
+            if (selectedChild != null) selectedChild.mouseUp(mx, my, button);
         }
 
         public boolean mouseScrolled(int mx, int my, int scroll) {
-            if(slot.hasScrollbar() && slot.contains(mx, my)) {
+            if (slot.hasScrollbar() && slot.contains(mx, my)) {
                 slot.scroll(scroll);
                 return true;
             }
 
-            if(selectedChild != null && selectedChild.mouseScrolled(mx, my, scroll))
-                return true;
+            if (selectedChild != null && selectedChild.mouseScrolled(mx, my, scroll)) return true;
 
-            if(slot.hasScrollbar() && !contains(mx, my)) {
+            if (slot.hasScrollbar() && !contains(mx, my)) {
                 slot.scroll(scroll);
                 return true;
             }
@@ -383,8 +347,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         public boolean isScrolling() {
-            return slot.isScrolling() ||
-                    selectedChild != null && selectedChild.isScrolling();
+            return slot.isScrolling() || selectedChild != null && selectedChild.isScrolling();
         }
     }
 
@@ -397,6 +360,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
      * All operations on this variable should be synchronised.
      */
     private static final ItemStackSet hiddenItems = new ItemStackSet();
+
     private static final AtomicReference<NBTTagList> dirtyHiddenItems = new AtomicReference<>();
 
     public static SubsetState getState(SubsetTag tag) {
@@ -418,7 +382,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     public static boolean isHidden(ItemStack item) {
         try {
-            if(readLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (readLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
                     return hiddenItems.contains(item);
                 } finally {
@@ -434,27 +398,22 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     }
 
     private static void _setHidden(SubsetTag tag, boolean hidden) {
-        for(ItemStack item : getState(tag).items)
-            _setHidden(item, hidden);
-        for(SubsetTag child : tag.sorted)
-            _setHidden(child, hidden);
+        for (ItemStack item : getState(tag).items) _setHidden(item, hidden);
+        for (SubsetTag child : tag.sorted) _setHidden(child, hidden);
     }
 
     private static void _setHidden(ItemStack item, boolean hidden) {
         if (hiddenItemLock.isWriteLockedByCurrentThread()) {
-            if (hidden)
-                hiddenItems.add(item);
-            else
-                hiddenItems.remove(item);
+            if (hidden) hiddenItems.add(item);
+            else hiddenItems.remove(item);
         }
     }
 
     public static void showOnly(SubsetTag tag) {
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
-                    for (ItemStack item : ItemList.items)
-                        _setHidden(item, true);
+                    for (ItemStack item : ItemList.items) _setHidden(item, true);
                     setHidden(tag, false);
                 } finally {
                     writeLock.unlock();
@@ -469,7 +428,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     public static void setHidden(SubsetTag tag, boolean hidden) {
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
                     _setHidden(tag, hidden);
                     updateHiddenItems();
@@ -486,7 +445,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     public static void setHidden(ItemStack item, boolean hidden) {
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
                     _setHidden(item, hidden);
                     updateHiddenItems();
@@ -503,7 +462,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     public static void unhideAll() {
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
                     hiddenItems.clear();
                     updateHiddenItems();
@@ -525,7 +484,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     public static void loadHidden() {
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
                     hiddenItems.clear();
                 } finally {
@@ -542,19 +501,17 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         List<ItemStack> itemList = new LinkedList<>();
         try {
             NBTTagList list = NEIClientConfig.world.nbt.getTagList("hiddenItems", 10);
-            for(int i = 0; i < list.tagCount(); i++)
+            for (int i = 0; i < list.tagCount(); i++)
                 itemList.add(ItemStack.loadItemStackFromNBT(list.getCompoundTagAt(i)));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             NEIClientConfig.logger.error("Error loading hiddenItems", e);
             return;
         }
 
         try {
-            if(writeLock.tryLock(5, TimeUnit.SECONDS)) {
+            if (writeLock.tryLock(5, TimeUnit.SECONDS)) {
                 try {
-                    for (ItemStack item : itemList)
-                        hiddenItems.add(item);
+                    for (ItemStack item : itemList) hiddenItems.add(item);
                 } finally {
                     writeLock.unlock();
                 }
@@ -569,17 +526,16 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     private static void saveHidden() {
         NBTTagList list = dirtyHiddenItems.getAndSet(null);
-        if(list != null) {
+        if (list != null) {
             NEIClientConfig.world.nbt.setTag("hiddenItems", list);
             NEIClientConfig.world.saveNBT();
         }
     }
 
-    private static final RestartableTask prepareDirtyHiddenItems = new RestartableTask("NEI Subset Save Thread")
-    {
+    private static final RestartableTask prepareDirtyHiddenItems = new RestartableTask("NEI Subset Save Thread") {
         private List<ItemStack> getList() {
             try {
-                if(readLock.tryLock(5, TimeUnit.SECONDS)) {
+                if (readLock.tryLock(5, TimeUnit.SECONDS)) {
                     try {
                         return hiddenItems.values();
                     } finally {
@@ -597,8 +553,8 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         @Override
         public void execute() {
             NBTTagList list = new NBTTagList();
-            for(ItemStack item : getList()) {
-                if(interrupted()) return;
+            for (ItemStack item : getList()) {
+                if (interrupted()) return;
                 NBTTagCompound tag = new NBTTagCompound();
                 item.writeToNBT(tag);
                 list.appendTag(tag);
@@ -608,8 +564,8 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     };
 
     private static final UpdateStateTask updateState = new UpdateStateTask();
-    private static class UpdateStateTask extends RestartableTask
-    {
+
+    private static class UpdateStateTask extends RestartableTask {
         private volatile boolean reallocate;
 
         public UpdateStateTask() {
@@ -636,13 +592,13 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             List<SubsetTag> tags = new LinkedList<>();
             synchronized (root) {
                 cloneStates(root, tags, state);
-                if(interrupted()) return;
+                if (interrupted()) return;
             }
 
-            if(reallocate) {
+            if (reallocate) {
                 for (ItemStack item : ItemList.items) {
-                    if(interrupted()) return;
-                    if(ItemInfo.isHidden(item)) continue;
+                    if (interrupted()) return;
+                    if (ItemInfo.isHidden(item)) continue;
                     for (SubsetTag tag : tags)
                         if (tag.filter.matches(item))
                             state.get(tag.fullname).items.add(item);
@@ -651,7 +607,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
             synchronized (root) {
                 calculateVisibility(root, state);
-                if(interrupted()) return;
+                if (interrupted()) return;
             }
 
             subsetState = state;
@@ -659,44 +615,38 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
         }
 
         private void cloneStates(SubsetTag tag, List<SubsetTag> tags, HashMap<String, SubsetState> state) {
-            for(SubsetTag child : tag.sorted) {
-                if(interrupted()) return;
+            for (SubsetTag child : tag.sorted) {
+                if (interrupted()) return;
                 cloneStates(child, tags, state);
             }
 
             tags.add(tag);
             SubsetState sstate = new SubsetState();
-            if(!reallocate)
-                sstate.items = SubsetWidget.getState(tag).items;
+            if (!reallocate) sstate.items = SubsetWidget.getState(tag).items;
             state.put(tag.fullname, sstate);
         }
 
         private void calculateVisibility(SubsetTag tag, Map<String, SubsetState> state) {
             SubsetState sstate = state.get(tag.fullname);
             int hidden = 0;
-            for(SubsetTag child : tag.sorted) {
-                if(interrupted()) return;
+            for (SubsetTag child : tag.sorted) {
+                if (interrupted()) return;
                 calculateVisibility(child, state);
                 int cstate = state.get(child.fullname).state;
-                if(cstate == 1)
-                    sstate.state = 1;
-                else if(cstate == 0)
-                    hidden++;
+                if (cstate == 1) sstate.state = 1;
+                else if (cstate == 0) hidden++;
             }
 
-            if(sstate.state == 1) return;
+            if (sstate.state == 1) return;
 
             List<ItemStack> items = sstate.items;
-            for(ItemStack item : items) {
-                if(interrupted()) return;
-                if (isHidden(item))
-                    hidden++;
+            for (ItemStack item : items) {
+                if (interrupted()) return;
+                if (isHidden(item)) hidden++;
             }
 
-            if(hidden == tag.sorted.size()+items.size())
-                sstate.state = 0;
-            else if(hidden > 0)
-                sstate.state = 1;
+            if (hidden == tag.sorted.size() + items.size()) sstate.state = 0;
+            else if (hidden > 0) sstate.state = 1;
         }
     }
 
@@ -718,7 +668,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     public void draw(int mx, int my) {
         super.draw(mx, my);
 
-        area.set(x, y + h, w, LayoutManager.searchField.y - h - y); //23 for the search box
+        area.set(x, y + h, w, LayoutManager.searchField.y - h - y); // 23 for the search box
 
         hoverStack = null;
         if (root.isVisible()) {
@@ -736,33 +686,28 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     }
 
     private void updateVisiblity(int mx, int my) {
-        if(!root.isVisible() || root.isScrolling())
-            return;
+        if (!root.isVisible() || root.isScrolling()) return;
 
         root.updateVisiblity(mx, my);
 
-        if(!root.isVisible() && bounds().contains(mx, my))
-            root.setVisible();
+        if (!root.isVisible() && bounds().contains(mx, my)) root.setVisible();
     }
 
     @Override
     public boolean contains(int px, int py) {
-        return super.contains(px, py) ||
-                root.isVisible() && root.contains(px, py);
+        return super.contains(px, py) || root.isVisible() && root.contains(px, py);
     }
 
     @Override
     public boolean handleClick(int mx, int my, int button) {
-        if(root.isVisible() && root.contains(mx, my)) {
+        if (root.isVisible() && root.contains(mx, my)) {
             root.mouseClicked(mx, my, button);
             return true;
         }
 
-        if(button == 0) {
-            if(System.currentTimeMillis() - lastclicktime < 500)
-                unhideAll();
-            else
-                root.setVisible();
+        if (button == 0) {
+            if (System.currentTimeMillis() - lastclicktime < 500) unhideAll();
+            else root.setVisible();
 
             NEIClientUtils.playClickSound();
             lastclicktime = System.currentTimeMillis();
@@ -781,14 +726,12 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     @Override
     public void mouseDragged(int mx, int my, int button, long heldTime) {
-        if(root.isVisible())
-            root.mouseDragged(mx, my, button, heldTime);
+        if (root.isVisible()) root.mouseDragged(mx, my, button, heldTime);
     }
 
     @Override
     public void mouseUp(int mx, int my, int button) {
-        if(root.isVisible())
-            root.mouseUp(mx, my, button);
+        if (root.isVisible()) root.mouseUp(mx, my, button);
     }
 
     @Override
@@ -798,8 +741,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     @Override
     public void onGuiClick(int mx, int my) {
-        if(!contains(mx, my))
-            root.setHidden();
+        if (!contains(mx, my)) root.setHidden();
     }
 
     @Override
@@ -809,10 +751,10 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     @Override
     public ItemFilter getFilter() {
-        //synchronise access on hiddenItems
+        // synchronise access on hiddenItems
         return item -> {
             try {
-                if(readLock.tryLock(5, TimeUnit.SECONDS)) {
+                if (readLock.tryLock(5, TimeUnit.SECONDS)) {
                     try {
                         return !hiddenItems.matches(item);
                     } finally {
@@ -835,36 +777,34 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
 
     @Override
     public ItemFilter getFilter(String searchText) {
-        if(!searchText.startsWith("@"))
-            return null;
+        if (!searchText.startsWith("@")) return null;
 
         searchText = searchText.substring(1);
         String itemSearch = null;
-        if(searchText.contains("->")) {
+        if (searchText.contains("->")) {
             String[] split = searchText.split("->");
             searchText = split[0];
-            if(split.length > 1) itemSearch = split[1];
+            if (split.length > 1) itemSearch = split[1];
         }
-        
+
         AnyMultiItemFilter filter = new AnyMultiItemFilter();
         SubsetTag tag = getTag(searchText);
-        if(tag != null) {
+        if (tag != null) {
             // We've got an exact match
             tag.addFiltersWithItem(filter.filters, itemSearch);
-        }
-        else {
+        } else {
             // Try searching for a substring
             Pattern p = SearchField.getPattern(searchText);
-            if(p == null) return null;
+            if (p == null) return null;
 
             List<SubsetTag> matching = new LinkedList<>();
             root.search(matching, p);
-            if(matching.isEmpty()) return null;
-            for(SubsetTag tag2 : matching) {
+            if (matching.isEmpty()) return null;
+            for (SubsetTag tag2 : matching) {
                 tag2.addFiltersWithItem(filter.filters, itemSearch);
             }
         }
-        
+
         return filter;
     }
 

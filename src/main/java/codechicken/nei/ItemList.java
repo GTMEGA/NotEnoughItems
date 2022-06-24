@@ -7,10 +7,6 @@ import codechicken.nei.api.ItemInfo;
 import codechicken.nei.guihook.GuiContainerManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,13 +15,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
-public class ItemList
-{
+public class ItemList {
     /**
      * Fields are replaced atomically and contents never modified.
      */
-    public static volatile List<ItemStack>  items = new ArrayList<>();
+    public static volatile List<ItemStack> items = new ArrayList<>();
     /**
      * Fields are replaced atomically and contents never modified.
      */
@@ -34,29 +32,27 @@ public class ItemList
      * Updates to this should be synchronised on this
      */
     public static final List<ItemFilterProvider> itemFilterers = new LinkedList<>();
+
     public static final List<ItemsLoadedCallback> loadCallbacks = new LinkedList<>();
 
     private static final HashSet<Item> erroredItems = new HashSet<>();
     private static final HashSet<String> stackTraces = new HashSet<>();
 
-    public static class EverythingItemFilter implements ItemFilter
-    {
+    public static class EverythingItemFilter implements ItemFilter {
         @Override
         public boolean matches(ItemStack item) {
             return true;
         }
     }
 
-    public static class NothingItemFilter implements ItemFilter
-    {
+    public static class NothingItemFilter implements ItemFilter {
         @Override
         public boolean matches(ItemStack item) {
             return false;
         }
     }
 
-    public static class PatternItemFilter implements ItemFilter
-    {
+    public static class PatternItemFilter implements ItemFilter {
         public Pattern pattern;
 
         public PatternItemFilter(Pattern pattern) {
@@ -69,8 +65,7 @@ public class ItemList
         }
     }
 
-    public static class AllMultiItemFilter implements ItemFilter
-    {
+    public static class AllMultiItemFilter implements ItemFilter {
         public List<ItemFilter> filters;
 
         public AllMultiItemFilter(List<ItemFilter> filters) {
@@ -83,19 +78,18 @@ public class ItemList
 
         @Override
         public boolean matches(ItemStack item) {
-            for(ItemFilter filter : filters)
+            for (ItemFilter filter : filters)
                 try {
                     if (!filter.matches(item)) return false;
                 } catch (Exception e) {
-                    NEIClientConfig.logger.error("Exception filtering "+item+" with "+filter, e);
+                    NEIClientConfig.logger.error("Exception filtering " + item + " with " + filter, e);
                 }
 
             return true;
         }
     }
 
-    public static class AnyMultiItemFilter implements ItemFilter
-    {
+    public static class AnyMultiItemFilter implements ItemFilter {
         public List<ItemFilter> filters;
 
         public AnyMultiItemFilter(List<ItemFilter> filters) {
@@ -108,29 +102,27 @@ public class ItemList
 
         @Override
         public boolean matches(ItemStack item) {
-            for(ItemFilter filter : filters)
+            for (ItemFilter filter : filters)
                 try {
                     if (filter.matches(item)) return true;
                 } catch (Exception e) {
-                    NEIClientConfig.logger.error("Exception filtering "+item+" with "+filter, e);
+                    NEIClientConfig.logger.error("Exception filtering " + item + " with " + filter, e);
                 }
 
             return false;
         }
     }
 
-    public static interface ItemsLoadedCallback
-    {
+    public static interface ItemsLoadedCallback {
         public void itemsLoaded();
     }
 
     public static boolean itemMatchesAll(ItemStack item, List<ItemFilter> filters) {
-        for(ItemFilter filter : filters) {
+        for (ItemFilter filter : filters) {
             try {
-                if (!filter.matches(item))
-                    return false;
+                if (!filter.matches(item)) return false;
             } catch (Exception e) {
-                NEIClientConfig.logger.error("Exception filtering "+item+" with "+filter, e);
+                NEIClientConfig.logger.error("Exception filtering " + item + " with " + filter, e);
             }
         }
 
@@ -152,14 +144,12 @@ public class ItemList
     public static List<ItemFilter> getItemFilters() {
         LinkedList<ItemFilter> filters = new LinkedList<>();
         synchronized (itemFilterers) {
-            for(ItemFilterProvider p : itemFilterers)
-                filters.add(p.getFilter());
+            for (ItemFilterProvider p : itemFilterers) filters.add(p.getFilter());
         }
         return filters;
     }
 
-    public static final RestartableTask loadItems = new RestartableTask("NEI Item Loading")
-    {
+    public static final RestartableTask loadItems = new RestartableTask("NEI Item Loading") {
         private void damageSearch(Item item, List<ItemStack> permutations) {
             HashSet<String> damageIconSet = new HashSet<>();
             for (int damage = 0; damage < 16; damage++)
@@ -172,12 +162,15 @@ public class ItemList
                         damageIconSet.add(s);
                         permutations.add(itemstack);
                     }
-                }
-                catch(TimeoutException t) {
+                } catch (TimeoutException t) {
                     throw t;
-                }
-                catch(Throwable t) {
-                    NEIServerUtils.logOnce(t, stackTraces, "Ommiting "+item+":"+damage+" "+item.getClass().getSimpleName(), item.toString());
+                } catch (Throwable t) {
+                    NEIServerUtils.logOnce(
+                            t,
+                            stackTraces,
+                            "Ommiting " + item + ":" + damage + " "
+                                    + item.getClass().getSimpleName(),
+                            item.toString());
                 }
         }
 
@@ -195,8 +188,7 @@ public class ItemList
             for (Item item : (Iterable<Item>) Item.itemRegistry) {
                 if (interrupted()) return;
 
-                if (item == null || erroredItems.contains(item))
-                    continue;
+                if (item == null || erroredItems.contains(item)) continue;
 
                 try {
                     timer.reset(item);
@@ -204,11 +196,9 @@ public class ItemList
                     permutations.clear();
                     permutations.addAll(ItemInfo.itemOverrides.get(item));
 
-                    if (permutations.isEmpty())
-                        item.getSubItems(item, null, permutations);
+                    if (permutations.isEmpty()) item.getSubItems(item, null, permutations);
 
-                    if (permutations.isEmpty())
-                        damageSearch(item, permutations);
+                    if (permutations.isEmpty()) damageSearch(item, permutations);
 
                     permutations.addAll(ItemInfo.itemVariants.get(item));
 
@@ -222,19 +212,17 @@ public class ItemList
                 }
             }
 
-            if(interrupted()) return;
+            if (interrupted()) return;
             ItemList.items = items;
             ItemList.itemMap = itemMap;
-            for(ItemsLoadedCallback callback : loadCallbacks)
-                callback.itemsLoaded();
+            for (ItemsLoadedCallback callback : loadCallbacks) callback.itemsLoaded();
 
             updateFilter.restart();
         }
     };
 
     public static ForkJoinPool getPool(int poolSize) {
-        if(poolSize < 1)
-            poolSize = 1;
+        if (poolSize < 1) poolSize = 1;
 
         return new ForkJoinPool(poolSize);
     }
@@ -242,8 +230,7 @@ public class ItemList
     public static final int numProcessors = Runtime.getRuntime().availableProcessors();
     public static ForkJoinPool forkJoinPool = getPool(numProcessors * 2 / 3);
 
-    public static final RestartableTask updateFilter = new RestartableTask("NEI Item Filtering")
-    {
+    public static final RestartableTask updateFilter = new RestartableTask("NEI Item Filtering") {
         @Override
         public void execute() {
             // System.out.println("Executing NEI Item Filtering");
@@ -251,19 +238,21 @@ public class ItemList
             ItemFilter filter = getItemListFilter();
 
             try {
-                filtered = ItemList.forkJoinPool.submit(() -> items.parallelStream()
-                    .filter(PresetsWidget::matches)
-                    .filter(filter::matches)
-                    .collect(Collectors.toCollection(ArrayList::new))).get();
+                filtered = ItemList.forkJoinPool
+                        .submit(() -> items.parallelStream()
+                                .filter(PresetsWidget::matches)
+                                .filter(filter::matches)
+                                .collect(Collectors.toCollection(ArrayList::new)))
+                        .get();
             } catch (InterruptedException | ExecutionException e) {
                 filtered = new ArrayList<>();
                 e.printStackTrace();
                 stop();
             }
 
-            if(interrupted()) return;
+            if (interrupted()) return;
             ItemSorter.sort(filtered);
-            if(interrupted()) return;
+            if (interrupted()) return;
             ItemPanel.updateItemList(filtered);
         }
     };

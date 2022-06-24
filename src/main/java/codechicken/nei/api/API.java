@@ -24,6 +24,9 @@ import codechicken.nei.recipe.IUsageHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.nei.recipe.StackInfo;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
@@ -31,17 +34,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * This is the main class that handles item property configuration.
  * WARNING: DO NOT access this class until the world has been loaded
  * These methods should be called from INEIConfig implementors
  */
-public class API
-{
+public class API {
     /**
      * Register a new Crafting Recipe handler;
      *
@@ -92,7 +90,8 @@ public class API
      *                   {crafting, crafting2x2, smelting, fuel, brewing}
      * @param positioner A Stack Repositioner for moving the items to the right place
      */
-    public static void registerGuiOverlay(Class<? extends GuiContainer> classz, String ident, IStackPositioner positioner) {
+    public static void registerGuiOverlay(
+            Class<? extends GuiContainer> classz, String ident, IStackPositioner positioner) {
         RecipeInfo.registerGuiOverlay(classz, ident, positioner);
     }
 
@@ -101,7 +100,8 @@ public class API
      * @param handler The handler to register
      * @param ident   The recipe identification string
      */
-    public static void registerGuiOverlayHandler(Class<? extends GuiContainer> classz, IOverlayHandler handler, String ident) {
+    public static void registerGuiOverlayHandler(
+            Class<? extends GuiContainer> classz, IOverlayHandler handler, String ident) {
         RecipeInfo.registerOverlayHandler(classz, handler, ident);
     }
 
@@ -155,8 +155,7 @@ public class API
      * Sets the item variants to appear in the item panel, overriding the default search pattern for a given item
      */
     public static void setItemListEntries(Item item, Iterable<ItemStack> items) {
-        if(items == null)
-            items = Collections.emptyList();
+        if (items == null) items = Collections.emptyList();
         ItemInfo.itemOverrides.replaceValues(item, items);
         LayoutManager.markItemsDirty();
     }
@@ -253,8 +252,7 @@ public class API
      */
     public static void addSubset(String name, Iterable<ItemStack> items) {
         ItemStackSet filter = new ItemStackSet();
-        for(ItemStack item : items)
-            filter.add(item);
+        for (ItemStack item : items) filter.add(item);
         addSubset(new SubsetTag(name, filter));
     }
 
@@ -290,8 +288,7 @@ public class API
         LayoutManager.markItemsDirty();
     }
 
-    public static void registerStackStringifyHandler(IStackStringifyHandler handler)
-    {
+    public static void registerStackStringifyHandler(IStackStringifyHandler handler) {
         StackInfo.stackStringifyHandlers.add(handler);
     }
 
@@ -356,11 +353,8 @@ public class API
     }
 
     @Deprecated
-    public static void addRecipeCatalyst(ItemStack stack, Class<? extends IRecipeHandler> handler) {
-    }
+    public static void addRecipeCatalyst(ItemStack stack, Class<? extends IRecipeHandler> handler) {}
 
     @Deprecated
-    public static void addRecipeCatalyst(List<ItemStack> stacks, Class<? extends IRecipeHandler> handler) {
-    }
-
+    public static void addRecipeCatalyst(List<ItemStack> stacks, Class<? extends IRecipeHandler> handler) {}
 }

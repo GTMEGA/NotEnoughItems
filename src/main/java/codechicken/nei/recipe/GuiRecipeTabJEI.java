@@ -1,14 +1,15 @@
 package codechicken.nei.recipe;
 
-
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
 
 public class GuiRecipeTabJEI extends GuiRecipeTab {
     public static final int TAB_WIDTH = 24;
     public static final int TAB_HEIGHT = 24;
-    private static final DrawableResource selectedTabImage = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 16, 24, 24).build();
-    private static final DrawableResource unselectedTabImage = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 24, 16, 24, 24).build();
+    private static final DrawableResource selectedTabImage =
+            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 16, 24, 24).build();
+    private static final DrawableResource unselectedTabImage =
+            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 24, 16, 24, 24).build();
 
     public GuiRecipeTabJEI(GuiRecipe guiRecipe, IRecipeHandler handler, int x, int y) {
         super(guiRecipe, handler, x, y);
@@ -31,7 +32,7 @@ public class GuiRecipeTabJEI extends GuiRecipeTab {
 
     @Override
     protected int getForegroundIconY() {
-        return y  + 4;
+        return y + 4;
     }
 
     @Override
@@ -43,5 +44,4 @@ public class GuiRecipeTabJEI extends GuiRecipeTab {
     public DrawableResource getUnselectedTabImage() {
         return unselectedTabImage;
     }
-
 }

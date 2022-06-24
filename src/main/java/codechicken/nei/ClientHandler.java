@@ -7,7 +7,6 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.StackInfo;
-
 import com.google.common.collect.Lists;
 import cpw.mods.fml.client.CustomModLoadingErrorDisplayException;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -15,6 +14,23 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -33,47 +49,26 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-public class ClientHandler
-{
-    private static String[] defaultSerialHandlers = {
-        "WayofTime.alchemicalWizardry.client.nei.NEIAlchemyRecipeHandler"
-    };
+public class ClientHandler {
+    private static String[] defaultSerialHandlers = {"WayofTime.alchemicalWizardry.client.nei.NEIAlchemyRecipeHandler"};
     private static String[] defaultHeightHackHandlerRegex = {
-            "buildcraft.compat.nei.*",
-            "cofh.thermalexpansion.plugins.nei.handlers.*",
-            "crazypants.enderio.nei.*",
-            "forestry.factory.recipes.nei.*",
-            "ic2.neiIntegration.core.recipehandler.*",
-            "mariculture.plugins.nei.*",
-            "redgear.brewcraft.plugins.nei.*",
-            "tconstruct.plugins.nei.*",
-            "WayofTime.alchemicalWizardry.client.nei.*",
+        "buildcraft.compat.nei.*",
+        "cofh.thermalexpansion.plugins.nei.handlers.*",
+        "crazypants.enderio.nei.*",
+        "forestry.factory.recipes.nei.*",
+        "ic2.neiIntegration.core.recipehandler.*",
+        "mariculture.plugins.nei.*",
+        "redgear.brewcraft.plugins.nei.*",
+        "tconstruct.plugins.nei.*",
+        "WayofTime.alchemicalWizardry.client.nei.*",
     };
     private static String[] defaultHandlerOrdering = {
-            "# Each line in this file should either be a comment (starts with '#') or an ordering.",
-            "# Ordering lines are <handler ID>,<ordering number>.",
-            "# Handlers will be sorted in order of number ascending, so smaller numbers first.",
-            "# Any handlers that are missing from this file will be assigned to 0.",
-            "# Negative numbers are fine.",
-            "# If you delete this file, it will be regenerated with all registered handler IDs.",
+        "# Each line in this file should either be a comment (starts with '#') or an ordering.",
+        "# Ordering lines are <handler ID>,<ordering number>.",
+        "# Handlers will be sorted in order of number ascending, so smaller numbers first.",
+        "# Any handlers that are missing from this file will be assigned to 0.",
+        "# Negative numbers are fine.",
+        "# If you delete this file, it will be regenerated with all registered handler IDs.",
     };
     private static ClientHandler instance;
 
@@ -104,7 +99,8 @@ public class ClientHandler
         if (world.isRemote) {
             items = SMPmagneticItems;
         } else {
-            items = world.getEntitiesWithinAABB(EntityItem.class, player.boundingBox.expand(distancexz, distancey, distancexz));
+            items = world.getEntitiesWithinAABB(
+                    EntityItem.class, player.boundingBox.expand(distancexz, distancey, distancexz));
         }
         for (Iterator<EntityItem> iterator = items.iterator(); iterator.hasNext(); ) {
             EntityItem item = iterator.next();
@@ -164,13 +160,15 @@ public class ClientHandler
         ItemInfo.preInit();
         StackInfo.loadGuidFilters();
     }
-    
+
     public static void loadSerialHandlers() {
         File file = NEIClientConfig.serialHandlersFile;
-        if(!file.exists()) {
-            try(FileWriter writer = new FileWriter(file)) {
+        if (!file.exists()) {
+            try (FileWriter writer = new FileWriter(file)) {
                 NEIClientConfig.logger.info("Creating default serial handlers list {}", file);
-                Collection<String> toSave = Loader.isModLoaded("dreamcraft") ? Collections.singletonList("") : Arrays.asList(defaultSerialHandlers);
+                Collection<String> toSave = Loader.isModLoaded("dreamcraft")
+                        ? Collections.singletonList("")
+                        : Arrays.asList(defaultSerialHandlers);
                 IOUtils.writeLines(toSave, "\n", writer);
             } catch (IOException e) {
                 NEIClientConfig.logger.error("Failed to save default serial handlers list to file {}", file, e);
@@ -198,10 +196,9 @@ public class ClientHandler
 
         try (FileReader reader = new FileReader(file)) {
             NEIClientConfig.logger.info("Loading height hack handlers from file {}", file);
-            NEIClientConfig.heightHackHandlerRegex =
-                    IOUtils.readLines(reader).stream()
-                            .map(Pattern::compile)
-                            .collect(Collectors.toCollection(HashSet::new));
+            NEIClientConfig.heightHackHandlerRegex = IOUtils.readLines(reader).stream()
+                    .map(Pattern::compile)
+                    .collect(Collectors.toCollection(HashSet::new));
         } catch (IOException e) {
             NEIClientConfig.logger.error("Failed to load height hack handlers from file {}", file, e);
         }
@@ -274,32 +271,27 @@ public class ClientHandler
 
     @SubscribeEvent
     public void tickEvent(TickEvent.ClientTickEvent event) {
-        if(event.phase == Phase.END)
-            return;
+        if (event.phase == Phase.END) return;
 
         Minecraft mc = Minecraft.getMinecraft();
-        if(mc.theWorld != null) {
+        if (mc.theWorld != null) {
             loadWorld(mc.theWorld, false);
 
-            if (!NEIClientConfig.isEnabled())
-                return;
+            if (!NEIClientConfig.isEnabled()) return;
 
             KeyManager.tickKeyStates();
 
             NEIController.updateUnlimitedItems(mc.thePlayer.inventory);
-            if (mc.currentScreen == null)
-                NEIController.processCreativeCycling(mc.thePlayer.inventory);
+            if (mc.currentScreen == null) NEIController.processCreativeCycling(mc.thePlayer.inventory);
 
             updateMagnetMode(mc.theWorld, mc.thePlayer);
         }
 
         GuiScreen gui = mc.currentScreen;
         if (gui != lastGui) {
-            if (gui instanceof GuiMainMenu)
-                lastworld = null;
-            else if (gui instanceof GuiSelectWorld)
-                NEIClientConfig.reloadSaves();
-            else if(gui == null) {
+            if (gui instanceof GuiMainMenu) lastworld = null;
+            else if (gui instanceof GuiSelectWorld) NEIClientConfig.reloadSaves();
+            else if (gui == null) {
                 /* prevent WorldClient reference being held in the Gui */
                 NEIController.manager = null;
             }
@@ -309,17 +301,13 @@ public class ClientHandler
 
     @SubscribeEvent
     public void tickEvent(TickEvent.RenderTickEvent event) {
-        if(event.phase == Phase.END && NEIClientConfig.isEnabled())
-            HUDRenderer.renderOverlay();
+        if (event.phase == Phase.END && NEIClientConfig.isEnabled()) HUDRenderer.renderOverlay();
     }
-
 
     @SubscribeEvent
     public void renderLastEvent(RenderWorldLastEvent event) {
-        if (NEIClientConfig.isEnabled())
-            WorldOverlayRenderer.render(event.partialTicks);
+        if (NEIClientConfig.isEnabled()) WorldOverlayRenderer.render(event.partialTicks);
     }
-
 
     public void loadWorld(World world, boolean fromServer) {
         if (world != lastworld) {
@@ -330,8 +318,8 @@ public class ClientHandler
                 NEIClientConfig.setHasSMPCounterPart(false);
                 NEIClientConfig.setInternalEnabled(false);
 
-                if (!Minecraft.getMinecraft().isSingleplayer())//wait for server to initiate in singleplayer
-                    NEIClientConfig.loadWorld("remote/" + ClientUtils.getServerIP().replace(':', '~'));
+                if (!Minecraft.getMinecraft().isSingleplayer()) // wait for server to initiate in singleplayer
+                NEIClientConfig.loadWorld("remote/" + ClientUtils.getServerIP().replace(':', '~'));
 
                 ItemMobSpawner.clearEntityReferences(world);
             }
@@ -345,8 +333,7 @@ public class ClientHandler
     }
 
     public static RuntimeException throwCME(final String message) {
-        final GuiScreen errorGui = new GuiErrorScreen(null, null)
-        {
+        final GuiScreen errorGui = new GuiErrorScreen(null, null) {
             @Override
             public void handleMouseInput() {}
 
@@ -363,15 +350,19 @@ public class ClientHandler
         };
 
         @SuppressWarnings("serial")
-        CustomModLoadingErrorDisplayException e = new CustomModLoadingErrorDisplayException()
-        {
+        CustomModLoadingErrorDisplayException e = new CustomModLoadingErrorDisplayException() {
             @Override
             public void initGui(GuiErrorScreen errorScreen, FontRenderer fontRenderer) {
                 Minecraft.getMinecraft().displayGuiScreen(errorGui);
             }
 
             @Override
-            public void drawScreen(GuiErrorScreen errorScreen, FontRenderer fontRenderer, int mouseRelX, int mouseRelY, float tickTime) {}
+            public void drawScreen(
+                    GuiErrorScreen errorScreen,
+                    FontRenderer fontRenderer,
+                    int mouseRelX,
+                    int mouseRelY,
+                    float tickTime) {}
         };
         throw e;
     }

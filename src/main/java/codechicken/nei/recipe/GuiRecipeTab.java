@@ -1,6 +1,5 @@
 package codechicken.nei.recipe;
 
-
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.Widget;
@@ -8,17 +7,6 @@ import codechicken.nei.drawable.DrawableResource;
 import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.common.Loader;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +18,16 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public abstract class GuiRecipeTab extends Widget {
     public static HandlerInfo DEFAULT_HANDLER_INFO = getDefaultHandlerInfo();
@@ -43,16 +41,18 @@ public abstract class GuiRecipeTab extends Widget {
     private final String handlerID;
 
     private boolean selected;
-    
+
     public abstract int getWidth();
+
     public abstract int getHeight();
-    
+
     public abstract DrawableResource getSelectedTabImage();
+
     public abstract DrawableResource getUnselectedTabImage();
 
     protected abstract int getForegroundIconX();
-    protected abstract int getForegroundIconY();
 
+    protected abstract int getForegroundIconY();
 
     public GuiRecipeTab(GuiRecipe guiRecipe, IRecipeHandler handler, int x, int y) {
         super();
@@ -65,7 +65,7 @@ public abstract class GuiRecipeTab extends Widget {
         this.guiRecipe = guiRecipe;
         this.selected = false;
 
-        if(handler instanceof TemplateRecipeHandler) {
+        if (handler instanceof TemplateRecipeHandler) {
             handlerID = handler.getOverlayIdentifier();
         } else {
             handlerID = null;
@@ -82,10 +82,10 @@ public abstract class GuiRecipeTab extends Widget {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glColor4f(1, 1, 1, 1);
         final DrawableResource image;
-        if (selected)  image = getSelectedTabImage();
-        else           image = getUnselectedTabImage();
+        if (selected) image = getSelectedTabImage();
+        else image = getUnselectedTabImage();
 
-        final int iconX = x + (w - image.getWidth())  / 2;
+        final int iconX = x + (w - image.getWidth()) / 2;
         final int iconY = y + (h - image.getHeight()) / 2;
         image.draw(iconX, iconY);
     }
@@ -97,9 +97,8 @@ public abstract class GuiRecipeTab extends Widget {
         final FontRenderer fontRenderer = GuiDraw.fontRenderer;
         final HandlerInfo handlerInfo = getHandlerInfo(handlerName, handlerID);
         final DrawableResource icon = handlerInfo != null ? handlerInfo.getImage() : null;
-        final ItemStack itemStack =  handlerInfo != null ? handlerInfo.getItemStack() : null;
-       
-        
+        final ItemStack itemStack = handlerInfo != null ? handlerInfo.getItemStack() : null;
+
         if (icon != null) {
             icon.draw(iconX + 1, iconY + 1);
         } else if (itemStack != null) {
@@ -108,8 +107,7 @@ public abstract class GuiRecipeTab extends Widget {
             GuiContainerManager.drawItems.zLevel += 100;
             GuiContainerManager.drawItem(iconX, iconY, itemStack);
             GuiContainerManager.drawItems.zLevel -= 100;
-            if (!isEnabled)
-                GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            if (!isEnabled) GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         } else {
             // Text fallback
             String text = handler.getRecipeName();
@@ -120,45 +118,44 @@ public abstract class GuiRecipeTab extends Widget {
             } else {
                 text = "??";
             }
-            
+
             int textCenterX = x + (int) (getWidth() / 2f);
             int textCenterY = y + (int) (getHeight() / 2f) - 3;
             int color = selected ? 0xffffa0 : 0xe0e0e0;
-            fontRenderer.drawStringWithShadow(text, textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f), textCenterY, color);
+            fontRenderer.drawStringWithShadow(
+                    text, textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f), textCenterY, color);
             GL11.glColor4f(1, 1, 1, 1);
-        } 
+        }
     }
 
     public void addTooltips(List<String> tooltip) {
         tooltip.add(handler.getRecipeTabName().trim());
-        
+
         String handlerMod = getHandlerMod(handlerName, handlerID);
         tooltip.add(EnumChatFormatting.BLUE + handlerMod);
 
-        boolean shiftHeld = Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT);
+        boolean shiftHeld = Keyboard.getEventKeyState()
+                && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT);
         if (handlerMod.equals("Unknown") || shiftHeld) {
             tooltip.add("");
             tooltip.add("HandlerName: " + handlerName);
             tooltip.add("HandlerID: " + handlerID);
         }
-
     }
-    
+
     public boolean onButtonPress(boolean rightclick) {
         int newIdx = guiRecipe.currenthandlers.indexOf(handler);
-        if (newIdx == -1)
-            return false;
+        if (newIdx == -1) return false;
 
         guiRecipe.setRecipePage(newIdx);
         return true;
     }
-    
+
     public void setSelected(IRecipeHandler current) {
         selected = handler == current;
     }
 
-    public static HandlerInfo getHandlerInfo(IRecipeHandler handler)
-    {
+    public static HandlerInfo getHandlerInfo(IRecipeHandler handler) {
         final String handlerID;
 
         if (handler instanceof TemplateRecipeHandler) {
@@ -168,29 +165,26 @@ public abstract class GuiRecipeTab extends Widget {
         }
 
         HandlerInfo info = getHandlerInfo(handler.getHandlerId(), handlerID);
-        
-        if (info == null)
-            return GuiRecipeTab.DEFAULT_HANDLER_INFO;
-        
+
+        if (info == null) return GuiRecipeTab.DEFAULT_HANDLER_INFO;
+
         return info;
     }
 
     public static HandlerInfo getHandlerInfo(String name, String name2) {
         HandlerInfo res = handlerMap.get(name);
         if (res == null) res = handlerMap.get(name2);
-        
+
         return res;
     }
 
-
     public static String getHandlerMod(String name, String name2) {
-        HandlerInfo info  = getHandlerInfo(name, name2);
-        if (info == null)
-            return "Unknown";
+        HandlerInfo info = getHandlerInfo(name, name2);
+        if (info == null) return "Unknown";
 
         return info.getModName();
     }
-    
+
     public static void loadHandlerInfo() {
         final boolean fromJar = NEIClientConfig.loadHandlersFromJar();
         NEIClientConfig.logger.info("Loading handler info from " + (fromJar ? "JAR" : "Config"));
@@ -206,7 +200,7 @@ public abstract class GuiRecipeTab extends Widget {
             }
         } else {
             File handlerFile = NEIClientConfig.handlerFile;
-            if(!handlerFile.exists()) {
+            if (!handlerFile.exists()) {
                 NEIClientConfig.logger.info("Config file doesn't exist, creating");
                 try {
                     assert handlerUrl != null;
@@ -238,37 +232,36 @@ public abstract class GuiRecipeTab extends Widget {
 
                 if (requiresMod && !Loader.isModLoaded(modId)) continue;
                 if (excludedModId != null && Loader.isModLoaded(excludedModId)) continue;
-                
-                
+
                 HandlerInfo info = new HandlerInfo(handler, modName, modId, requiresMod, excludedModId);
                 final String imageResource = record.get("imageResource");
-                if(imageResource != null && !imageResource.equals("")) {
-                    info.setImage(imageResource, 
-                        Integer.parseInt(record.get("imageX")), 
-                        Integer.parseInt(record.get("imageY")),
-                        Integer.parseInt(record.get("imageWidth")),
-                        Integer.parseInt(record.get("imageHeight"))
-                    );
+                if (imageResource != null && !imageResource.equals("")) {
+                    info.setImage(
+                            imageResource,
+                            Integer.parseInt(record.get("imageX")),
+                            Integer.parseInt(record.get("imageY")),
+                            Integer.parseInt(record.get("imageWidth")),
+                            Integer.parseInt(record.get("imageHeight")));
                 }
-                if(!info.hasImageOrItem()) {
+                if (!info.hasImageOrItem()) {
                     final String itemName = record.get("itemName");
                     if (itemName != null && !itemName.equals("")) {
                         info.setItem(itemName, record.get("nbtInfo"));
                     }
                 }
                 final String yShift = record.get("yShift");
-                if (yShift != null && !yShift.equals(""))
-                    info.setYShift(Integer.parseInt(yShift));
-                
+                if (yShift != null && !yShift.equals("")) info.setYShift(Integer.parseInt(yShift));
+
                 try {
                     final int imageHeight = intOrDefault(record.get("handlerHeight"), HandlerInfo.DEFAULT_HEIGHT);
                     final int imageWidth = intOrDefault(record.get("handlerWidth"), HandlerInfo.DEFAULT_WIDTH);
-                    final int maxRecipesPerPage = intOrDefault(record.get("maxRecipesPerPage"), HandlerInfo.DEFAULT_MAX_PER_PAGE);
+                    final int maxRecipesPerPage =
+                            intOrDefault(record.get("maxRecipesPerPage"), HandlerInfo.DEFAULT_MAX_PER_PAGE);
                     info.setHandlerDimensions(imageHeight, imageWidth, maxRecipesPerPage);
                 } catch (NumberFormatException ignored) {
                     NEIClientConfig.logger.info("Error setting handler dimensions for " + handler);
                 }
-                
+
                 handlerMap.put(handler, info);
                 NEIClientConfig.logger.info("Loaded " + handler);
             }
@@ -283,10 +276,11 @@ public abstract class GuiRecipeTab extends Widget {
         NEIClientConfig.logger.info("Sending {}", NEIRegisterHandlerInfosEvent.class.getSimpleName());
         MinecraftForge.EVENT_BUS.post(new NEIRegisterHandlerInfosEvent());
     }
-    
+
     private static HandlerInfo getDefaultHandlerInfo() {
         final HandlerInfo info = new HandlerInfo("Unknown", "Unknown", "Unknown", false, "");
-        info.setHandlerDimensions(HandlerInfo.DEFAULT_HEIGHT, HandlerInfo.DEFAULT_WIDTH, HandlerInfo.DEFAULT_MAX_PER_PAGE);
+        info.setHandlerDimensions(
+                HandlerInfo.DEFAULT_HEIGHT, HandlerInfo.DEFAULT_WIDTH, HandlerInfo.DEFAULT_MAX_PER_PAGE);
         return info;
     }
 
@@ -298,6 +292,4 @@ public abstract class GuiRecipeTab extends Widget {
             return defaultValue;
         }
     }
-
-
 }

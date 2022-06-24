@@ -3,12 +3,11 @@ package codechicken.nei.recipe;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIServerUtils;
 import com.google.common.collect.ForwardingList;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
+import net.minecraft.item.ItemStack;
 
 // Do not directly extend ArrayList, see Effective Java Item 16
 public class CatalystInfoList extends ForwardingList<CatalystInfo> {
@@ -32,7 +31,9 @@ public class CatalystInfoList extends ForwardingList<CatalystInfo> {
     @Override
     public boolean add(@Nonnull CatalystInfo catalystInfo) {
         if (contains(catalystInfo)) {
-            NEIClientConfig.logger.info(String.format("catalyst %s is already registered to handler %s", catalystInfo.getStack().getDisplayName(), handlerID));
+            NEIClientConfig.logger.info(String.format(
+                    "catalyst %s is already registered to handler %s",
+                    catalystInfo.getStack().getDisplayName(), handlerID));
             return false;
         }
         super.add(catalystInfo);
@@ -49,7 +50,8 @@ public class CatalystInfoList extends ForwardingList<CatalystInfo> {
     }
 
     public boolean contains(ItemStack stack) {
-        return catalystInfoList.stream().anyMatch(c -> NEIServerUtils.areStacksSameTypeCraftingWithNBT(c.getStack(), stack));
+        return catalystInfoList.stream()
+                .anyMatch(c -> NEIServerUtils.areStacksSameTypeCraftingWithNBT(c.getStack(), stack));
     }
 
     public boolean remove(ItemStack stack) {

@@ -1,11 +1,11 @@
 package codechicken.nei.asm;
 
+import static org.objectweb.asm.Opcodes.POP;
+import static org.objectweb.asm.Opcodes.PUTSTATIC;
+
 import codechicken.lib.asm.ASMHelper;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-
-import static org.objectweb.asm.Opcodes.POP;
-import static org.objectweb.asm.Opcodes.PUTSTATIC;
 
 public class GuiContainerManagerAPITransformer extends ClassVisitor {
     private final String tname;
@@ -21,8 +21,12 @@ public class GuiContainerManagerAPITransformer extends ClassVisitor {
         return new MethodVisitor(api, super.visitMethod(access, mname, mdesc, signature, exceptions)) {
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-                if (opcode == PUTSTATIC && "codechicken/nei/guihook/GuiContainerManager".equals(owner) && name.endsWith("Handlers") && desc.equals("Ljava/util/LinkedList;")) {
-                    ASMHelper.logger.warn("Found suspicious PUTSTATIC {} in {}#{}{}, replacing with POP!", name, tname, mname, mdesc);
+                if (opcode == PUTSTATIC
+                        && "codechicken/nei/guihook/GuiContainerManager".equals(owner)
+                        && name.endsWith("Handlers")
+                        && desc.equals("Ljava/util/LinkedList;")) {
+                    ASMHelper.logger.warn(
+                            "Found suspicious PUTSTATIC {} in {}#{}{}, replacing with POP!", name, tname, mname, mdesc);
                     changed = true;
                     super.visitInsn(POP);
                 } else {

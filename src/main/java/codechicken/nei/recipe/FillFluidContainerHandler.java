@@ -9,12 +9,10 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
-public class FillFluidContainerHandler extends INEIGuiAdapter
-{
+public class FillFluidContainerHandler extends INEIGuiAdapter {
 
     @Override
-    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button)
-    {
+    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
 
         if (button == 2) {
             return false;
@@ -41,25 +39,21 @@ public class FillFluidContainerHandler extends INEIGuiAdapter
                         } else {
                             ItemPanels.bookmarkPanel.draggedStack = container;
                         }
-
-                    }
-                    
-                    if (button == 1 && StackInfo.getFluid(container != null? container: draggedStack) != null) {
-                        ItemPanels.bookmarkPanel.addOrRemoveItem((container != null? container: draggedStack).copy());
                     }
 
+                    if (button == 1 && StackInfo.getFluid(container != null ? container : draggedStack) != null) {
+                        ItemPanels.bookmarkPanel.addOrRemoveItem((container != null ? container : draggedStack).copy());
+                    }
                 }
 
                 return true;
             }
-
         }
 
         return false;
     }
 
-    protected ItemStack fillContainer(ItemStack draggedStack, FluidStack fluidStack)
-    {
+    protected ItemStack fillContainer(ItemStack draggedStack, FluidStack fluidStack) {
         fluidStack = fluidStack.copy();
         draggedStack = draggedStack.copy();
         draggedStack.stackSize = 1;
@@ -85,10 +79,8 @@ public class FillFluidContainerHandler extends INEIGuiAdapter
             if (item.fill(draggedStack, fluidStack, true) > 0) {
                 return draggedStack;
             }
-
         }
 
         return null;
     }
-
 }

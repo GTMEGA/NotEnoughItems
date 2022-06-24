@@ -4,8 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 
-public abstract class TextField extends Widget
-{
+public abstract class TextField extends Widget {
     protected GuiTextField field;
 
     private static final int maxSearchLength = 256;
@@ -24,7 +23,7 @@ public abstract class TextField extends Widget
     public TextField(String ident) {
         identifier = ident;
         initInternalTextField();
-//        Keyboard.enableRepeatEvents(true);
+        //        Keyboard.enableRepeatEvents(true);
     }
 
     public int getTextColour() {
@@ -44,7 +43,7 @@ public abstract class TextField extends Widget
         try {
             setDimensionsAndColor();
             field.drawTextBox();
-        } catch(NullPointerException npe) {
+        } catch (NullPointerException npe) {
             // Hack to deal with a null font renderer... recreate the field and it should work
             GuiTextField oldField = field;
 
@@ -58,49 +57,43 @@ public abstract class TextField extends Widget
 
     @Override
     public void onGuiClick(int mousex, int mousey) {
-        if (!contains(mousex, mousey))
-            setFocus(false);
+        if (!contains(mousex, mousey)) setFocus(false);
     }
 
     @Override
     public boolean handleClick(int mousex, int mousey, int button) {
         setFocus(true);
 
-        if (button == 1)
-            setText("");
-        else
-            field.mouseClicked(mousex, mousey, button);
+        if (button == 1) setText("");
+        else field.mouseClicked(mousex, mousey, button);
 
         return true;
     }
 
     @Override
     public boolean handleKeyPress(int keyID, char keyChar) {
-        if (!focused())
-            return false;
+        if (!focused()) return false;
 
         String oldText = text();
         boolean handled = field.textboxKeyTyped(keyChar, keyID);
-        if(!handled) {
+        if (!handled) {
             if (keyID == Keyboard.KEY_RETURN || keyID == Keyboard.KEY_NUMPADENTER || keyID == Keyboard.KEY_ESCAPE) {
                 setFocus(false);
                 handled = true;
             }
         }
 
-        if(handled) {
+        if (handled) {
             onTextChange(oldText);
         }
 
         return handled;
-
     }
 
     public abstract void onTextChange(String oldText);
 
     @Override
-    public void update() {
-    }
+    public void update() {}
 
     public void setText(String s) {
         String oldText = text();
@@ -126,7 +119,6 @@ public abstract class TextField extends Widget
                 Keyboard.enableRepeatEvents(previousKeyboardRepeatEnabled);
                 loseFocus();
             }
-
         }
     }
 
@@ -137,5 +129,4 @@ public abstract class TextField extends Widget
     public String text() {
         return field.getText();
     }
-
 }

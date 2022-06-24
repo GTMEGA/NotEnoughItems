@@ -1,27 +1,24 @@
 package codechicken.nei;
 
+import static codechicken.nei.NEIServerUtils.areStacksIdentical;
+import static codechicken.nei.NEIServerUtils.areStacksSameType;
+import static codechicken.nei.NEIServerUtils.copyStack;
+
 import codechicken.nei.guihook.GuiContainerManager;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-
-import static codechicken.nei.NEIServerUtils.areStacksIdentical;
-import static codechicken.nei.NEIServerUtils.areStacksSameType;
-import static codechicken.nei.NEIServerUtils.copyStack;
-
-public class FastTransferManager
-{
+public class FastTransferManager {
     /**
      * Based on the general assumption that we want to fill top to bottom, left to right
      */
-    public static class SlotPositionComparator implements Comparator<Integer>
-    {
+    public static class SlotPositionComparator implements Comparator<Integer> {
         final Container container;
 
         public SlotPositionComparator(Container c) {
@@ -47,8 +44,7 @@ public class FastTransferManager
         stack.stackSize = 1;
 
         for (int slotNo = 0; slotNo < container.inventorySlots.size(); slotNo++) {
-            if (slotZoneMap.containsKey(slotNo) || !container.getSlot(slotNo).isItemValid(stack))
-                continue;
+            if (slotZoneMap.containsKey(slotNo) || !container.getSlot(slotNo).isItemValid(stack)) continue;
 
             HashSet<Integer> connectedSlots = new HashSet<>();
             findConnectedSlots(container, slotNo, connectedSlots);
@@ -69,11 +65,11 @@ public class FastTransferManager
         final int threshold = 18;
 
         for (int i = 0; i < container.inventorySlots.size(); i++) {
-            if (connectedSlots.contains(i))
-                continue;
+            if (connectedSlots.contains(i)) continue;
 
             Slot slot1 = container.getSlot(i);
-            if (Math.abs(slot.xDisplayPosition - slot1.xDisplayPosition) <= threshold && Math.abs(slot.yDisplayPosition - slot1.yDisplayPosition) <= threshold) {
+            if (Math.abs(slot.xDisplayPosition - slot1.xDisplayPosition) <= threshold
+                    && Math.abs(slot.yDisplayPosition - slot1.yDisplayPosition) <= threshold) {
                 findConnectedSlots(container, i, connectedSlots);
             }
         }
@@ -82,8 +78,7 @@ public class FastTransferManager
     public static int findSlotWithItem(Container container, ItemStack teststack) {
         for (int slotNo = 0; slotNo < container.inventorySlots.size(); slotNo++) {
             ItemStack stack = container.getSlot(slotNo).getStack();
-            if (areStacksSameType(stack, teststack))
-                return slotNo;
+            if (areStacksSameType(stack, teststack)) return slotNo;
         }
         return -1;
     }
@@ -99,20 +94,17 @@ public class FastTransferManager
         Integer fromZone = slotZoneMap.get(fromSlot);
         Integer toZone = slotZoneMap.get(toSlot);
 
-        if (fromZone == null || toZone == null || fromZone.equals(toZone))
-            return;
+        if (fromZone == null || toZone == null || fromZone.equals(toZone)) return;
 
-        if (NEIClientUtils.getHeldItem() != null && !areStacksSameType(heldStack, NEIClientUtils.getHeldItem()))
-            return;
+        if (NEIClientUtils.getHeldItem() != null && !areStacksSameType(heldStack, NEIClientUtils.getHeldItem())) return;
 
-        if (!fillZoneWithHeldItem(window, toZone))
-            return;
+        if (!fillZoneWithHeldItem(window, toZone)) return;
 
         for (int transferFrom : slotZones.get(fromZone)) {
-            ItemStack transferStack = window.inventorySlots.getSlot(transferFrom).getStack();
+            ItemStack transferStack =
+                    window.inventorySlots.getSlot(transferFrom).getStack();
 
-            if (!areStacksSameType(heldStack, transferStack))
-                continue;
+            if (!areStacksSameType(heldStack, transferStack)) continue;
 
             clickSlot(window, transferFrom);
             if (!fillZoneWithHeldItem(window, toZone)) {
@@ -130,8 +122,7 @@ public class FastTransferManager
 
         Slot slot = container.getSlot(fromSlot);
         ItemStack stack = slot.getStack();
-        if (stack == null)
-            return -1;
+        if (stack == null) return -1;
 
         stack.stackSize = 1;
         slot.putStack(stack.copy());
@@ -141,20 +132,22 @@ public class FastTransferManager
         LinkedList<ItemStack> compareAfter = saveContainer(container);
 
         try {
-            //if(compareAfter.get(fromSlot) != null)//transfer failed
-            //return -1;
+            // if(compareAfter.get(fromSlot) != null)//transfer failed
+            // return -1;
 
             for (int i = 0; i < compareBefore.size(); i++) {
-                if (i == fromSlot)
-                    continue;
+                if (i == fromSlot) continue;
 
                 ItemStack before = compareBefore.get(i);
                 ItemStack after = compareAfter.get(i);
 
                 if (!areStacksIdentical(before, after) && after != null)
-                    if (before == null ? areStacksSameType(stack, after) ://transfered into this empty slot
-                            areStacksSameType(stack, after) && after.stackSize - before.stackSize > 0)//it added to this stack
-                        return i;
+                    if (before == null
+                            ? areStacksSameType(stack, after)
+                            : // transfered into this empty slot
+                            areStacksSameType(stack, after)
+                                    && after.stackSize - before.stackSize > 0) // it added to this stack
+                    return i;
             }
 
             return -1;
@@ -181,46 +174,43 @@ public class FastTransferManager
 
     public void transferItem(GuiContainer window, int fromSlot) {
         int toSlot = findShiftClickDestinationSlot(window.inventorySlots, fromSlot);
-        if (toSlot == -1)
-            return;
+        if (toSlot == -1) return;
 
         Slot from = window.inventorySlots.getSlot(fromSlot);
 
-        if (from.isItemValid(from.getStack()))
-            moveOneItem(window, fromSlot, toSlot);
-        else//slots that you can't put stuff in
-            moveOutputSet(window, fromSlot, toSlot);
+        if (from.isItemValid(from.getStack())) moveOneItem(window, fromSlot, toSlot);
+        else // slots that you can't put stuff in
+        moveOutputSet(window, fromSlot, toSlot);
     }
 
     public void moveOutputSet(GuiContainer window, int fromSlot, int toSlot) {
-        if (NEIClientUtils.getHeldItem() != null)
-            return;
+        if (NEIClientUtils.getHeldItem() != null) return;
 
-        clickSlot(window, fromSlot);//pickup fromSlot
-        if (NEIClientUtils.getHeldItem() == null)//maybe this container does auto transfers. No need to pick up the final item
-            return;
-        clickSlot(window, toSlot);//place one in toSlot
+        clickSlot(window, fromSlot); // pickup fromSlot
+        if (NEIClientUtils.getHeldItem()
+                == null) // maybe this container does auto transfers. No need to pick up the final item
+        return;
+        clickSlot(window, toSlot); // place one in toSlot
     }
 
     public void moveOneItem(GuiContainer window, int fromSlot, int toSlot) {
-        clickSlot(window, fromSlot);//pickup fromSlot
-        clickSlot(window, toSlot, 1);//place one in toSlot
-        clickSlot(window, fromSlot);//place down in fromSlot
+        clickSlot(window, fromSlot); // pickup fromSlot
+        clickSlot(window, toSlot, 1); // place one in toSlot
+        clickSlot(window, fromSlot); // place down in fromSlot
     }
 
     public void retrieveItem(GuiContainer window, int toSlot) {
         Slot slot = window.inventorySlots.getSlot(toSlot);
         ItemStack slotStack = slot.getStack();
-        if (slotStack == null ||
-                slotStack.stackSize == slot.getSlotStackLimit() ||
-                slotStack.stackSize == slotStack.getMaxStackSize())
-            return;
+        if (slotStack == null
+                || slotStack.stackSize == slot.getSlotStackLimit()
+                || slotStack.stackSize == slotStack.getMaxStackSize()) return;
 
         generateSlotMap(window.inventorySlots, slotStack);
 
         Integer destZone = slotZoneMap.get(toSlot);
-        if (destZone == null)//slots that don't accept
-            return;
+        if (destZone == null) // slots that don't accept
+        return;
 
         int firstZoneSlot = findShiftClickDestinationSlot(window.inventorySlots, toSlot);
         int firstZone = -1;
@@ -228,17 +218,14 @@ public class FastTransferManager
             Integer integer = slotZoneMap.get(firstZoneSlot);
             if (integer != null) {
                 firstZone = integer;
-                if (retrieveItemFromZone(window, firstZone, toSlot))
-                    return;
+                if (retrieveItemFromZone(window, firstZone, toSlot)) return;
             }
         }
 
         for (int zone = 0; zone < slotZones.size(); zone++) {
-            if (zone == destZone || zone == firstZone)
-                continue;
+            if (zone == destZone || zone == firstZone) continue;
 
-            if (retrieveItemFromZone(window, zone, toSlot))
-                return;
+            if (retrieveItemFromZone(window, zone, toSlot)) return;
         }
 
         retrieveItemFromZone(window, destZone, toSlot);
@@ -247,14 +234,14 @@ public class FastTransferManager
     private boolean retrieveItemFromZone(GuiContainer window, int zone, int toSlot) {
         ItemStack stack = window.inventorySlots.getSlot(toSlot).getStack();
         for (int i : slotZones.get(zone)) {
-            if (i == toSlot)
-                continue;
+            if (i == toSlot) continue;
 
             Slot slot = window.inventorySlots.getSlot(i);
             ItemStack stack1 = slot.getStack();
 
-            if (areStacksSameType(stack, stack1) &&
-                    stack1.stackSize != slot.getSlotStackLimit() && //get from full stacks on second pass
+            if (areStacksSameType(stack, stack1)
+                    && stack1.stackSize != slot.getSlotStackLimit()
+                    && // get from full stacks on second pass
                     stack1.stackSize != stack1.getMaxStackSize()) {
                 moveOneItem(window, i, toSlot);
                 return true;
@@ -262,8 +249,7 @@ public class FastTransferManager
         }
 
         for (int i : slotZones.get(zone)) {
-            if (i == toSlot)
-                continue;
+            if (i == toSlot) continue;
 
             Slot slot = window.inventorySlots.getSlot(i);
             ItemStack stack1 = slot.getStack();
@@ -292,28 +278,24 @@ public class FastTransferManager
         for (int transferTo : slotZones.get(zoneIndex)) {
             ItemStack held = NEIClientUtils.getHeldItem();
 
-            if (held == null)
-                break;
+            if (held == null) break;
 
             ItemStack inToSlot = window.inventorySlots.getSlot(transferTo).getStack();
 
-            if (!areStacksSameType(inToSlot, held))
-                continue;
+            if (!areStacksSameType(inToSlot, held)) continue;
 
             clickSlot(window, transferTo);
         }
 
-        for (int transferTo : slotZones.get(zoneIndex))//repeat on empty slots
+        for (int transferTo : slotZones.get(zoneIndex)) // repeat on empty slots
         {
             ItemStack held = NEIClientUtils.getHeldItem();
 
-            if (held == null)
-                break;
+            if (held == null) break;
 
             ItemStack inToSlot = window.inventorySlots.getSlot(transferTo).getStack();
 
-            if (inToSlot != null)
-                continue;
+            if (inToSlot != null) continue;
 
             clickSlot(window, transferTo);
         }
@@ -323,15 +305,14 @@ public class FastTransferManager
 
     public void throwAll(GuiContainer window, int pickedUpFromSlot) {
         ItemStack held = NEIClientUtils.getHeldItem();
-        if (held == null)
-            return;
+        if (held == null) return;
 
         clickSlot(window, -999);
 
         generateSlotMap(window.inventorySlots, held);
         Integer zone = slotZoneMap.get(pickedUpFromSlot);
-        if(zone == null) //something went wrong and we can't work out where the item was picked up from
-            return;
+        if (zone == null) // something went wrong and we can't work out where the item was picked up from
+        return;
 
         for (int slotIndex : slotZones.get(zone)) {
             Slot slot = window.inventorySlots.getSlot(slotIndex);

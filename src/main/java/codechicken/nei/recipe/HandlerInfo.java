@@ -4,28 +4,21 @@ import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.Level;
 
 public class HandlerInfo {
     public static int DEFAULT_HEIGHT = 65;
     public static int DEFAULT_WIDTH = 166;
     public static int DEFAULT_MAX_PER_PAGE = 1;
-    
+
     private String handlerName;
-    
+
     private String modName;
     private String modId;
     private boolean requiresMod;
     private String excludedModId;
-    
+
     private String itemId;
     private String nbtString;
 
@@ -33,10 +26,10 @@ public class HandlerInfo {
     private int height = DEFAULT_HEIGHT;
     private int width = DEFAULT_WIDTH;
     private int maxRecipesPerPage = DEFAULT_MAX_PER_PAGE;
-    
+
     private ItemStack itemStack = null;
     private DrawableResource image = null;
-    
+
     public HandlerInfo(String handlerName, String modName, String modId, boolean requiresMod, String excludedModId) {
         this.handlerName = handlerName;
         this.modName = modName;
@@ -44,7 +37,7 @@ public class HandlerInfo {
         this.requiresMod = requiresMod;
         this.excludedModId = excludedModId;
     }
-    
+
     public void setHandlerDimensions(int height, int width, int maxRecipesPerPage) {
         this.height = height;
         this.width = width;
@@ -52,35 +45,32 @@ public class HandlerInfo {
     }
 
     public boolean setItem(String itemId, String nbtString) {
-        if(hasImageOrItem())
-            return false;
+        if (hasImageOrItem()) return false;
 
         itemStack = NEIServerUtils.getModdedItem(itemId, nbtString);
-        if (itemStack == null)
-            NEIClientConfig.logger.info("Couldn't find " + modName + " - " + itemId);
+        if (itemStack == null) NEIClientConfig.logger.info("Couldn't find " + modName + " - " + itemId);
         else {
             this.itemId = itemId;
             this.nbtString = nbtString;
         }
         return (itemStack != null);
     }
-    
+
     public boolean setImage(String resourceLocation, int imageX, int imageY, int imageWidth, int imageHeight) {
-        if(hasImageOrItem())
-            return false;
-        
-        this.image =  new DrawableBuilder(resourceLocation, imageX, imageY, imageWidth, imageHeight).build();
+        if (hasImageOrItem()) return false;
+
+        this.image = new DrawableBuilder(resourceLocation, imageX, imageY, imageWidth, imageHeight).build();
         return true;
     }
-    
+
     public DrawableResource getImage() {
         return image;
     }
-    
+
     public ItemStack getItemStack() {
         return itemStack;
     }
-    
+
     public String getModName() {
         return modName;
     }
@@ -100,7 +90,7 @@ public class HandlerInfo {
     public int getMaxRecipesPerPage() {
         return Math.max(maxRecipesPerPage, 1);
     }
-    
+
     public int getYShift() {
         return yShift;
     }
@@ -112,7 +102,7 @@ public class HandlerInfo {
     public boolean hasImageOrItem() {
         if (image != null) return true;
         if (itemStack != null) return true;
-        
+
         return false;
     }
 
@@ -138,7 +128,8 @@ public class HandlerInfo {
             return this;
         }
 
-        public Builder setDisplayImage(ResourceLocation location, int imageX, int imageY, int imageWidth, int imageHeight) {
+        public Builder setDisplayImage(
+                ResourceLocation location, int imageX, int imageY, int imageWidth, int imageHeight) {
             info.itemStack = null;
             info.setImage(location.toString(), imageX, imageY, imageWidth, imageHeight);
             return this;

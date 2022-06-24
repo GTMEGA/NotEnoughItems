@@ -16,12 +16,23 @@ public class DrawableResource extends Image {
     private final int paddingLeft;
     private final int paddingRight;
 
-    public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
+    public DrawableResource(
+            ResourceLocation resourceLocation,
+            int u,
+            int v,
+            int width,
+            int height,
+            int paddingTop,
+            int paddingBottom,
+            int paddingLeft,
+            int paddingRight,
+            int textureWidth,
+            int textureHeight) {
         super(u, v, width, height);
         this.resourceLocation = resourceLocation;
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
-        
+
         this.paddingTop = paddingTop;
         this.paddingBottom = paddingBottom;
         this.paddingLeft = paddingLeft;
@@ -53,4 +64,3 @@ public class DrawableResource extends Image {
         Gui.func_146110_a(x, y, textureX, textureY, width, height, textureWidth, textureHeight);
     }
 }
-

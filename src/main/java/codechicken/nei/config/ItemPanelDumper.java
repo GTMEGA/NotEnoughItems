@@ -5,6 +5,11 @@ import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.guihook.GuiContainerManager;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.LinkedList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,15 +19,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
-
-public class ItemPanelDumper extends DataDumper
-{
-    private static final int[] resolutions = new int[]{16, 32, 48, 64, 128, 256};
+public class ItemPanelDumper extends DataDumper {
+    private static final int[] resolutions = new int[] {16, 32, 48, 64, 128, 256};
 
     public ItemPanelDumper(String name) {
         super(name);
@@ -30,19 +28,19 @@ public class ItemPanelDumper extends DataDumper
 
     @Override
     public String[] header() {
-        return new String[]{"Item Name", "Item ID", "Item meta", "Has NBT", "Display Name"};
+        return new String[] {"Item Name", "Item ID", "Item meta", "Has NBT", "Display Name"};
     }
 
     @Override
     public Iterable<String[]> dump(int mode) {
         LinkedList<String[]> list = new LinkedList<>();
         for (ItemStack stack : ItemPanels.itemPanel.getItems())
-            list.add(new String[]{
-                    Item.itemRegistry.getNameForObject(stack.getItem()),
-                    Integer.toString(Item.getIdFromItem(stack.getItem())),
-                    Integer.toString(InventoryUtils.actualDamage(stack)),
-                    stack.stackTagCompound == null ? "false" : "true",
-                    EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack))
+            list.add(new String[] {
+                Item.itemRegistry.getNameForObject(stack.getItem()),
+                Integer.toString(Item.getIdFromItem(stack.getItem())),
+                Integer.toString(InventoryUtils.actualDamage(stack)),
+                stack.stackTagCompound == null ? "false" : "true",
+                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack))
             });
 
         return list;
@@ -54,8 +52,8 @@ public class ItemPanelDumper extends DataDumper
     }
 
     public int getRes() {
-        int i = renderTag(name+".res").getIntValue(0);
-        if(i >= resolutions.length || i < 0) renderTag().setIntValue(i = 0);
+        int i = renderTag(name + ".res").getIntValue(0);
+        if (i >= resolutions.length || i < 0) renderTag().setIntValue(i = 0);
         return resolutions[i];
     }
 
@@ -67,28 +65,29 @@ public class ItemPanelDumper extends DataDumper
     @Override
     public void draw(int mousex, int mousey, float frame) {
         super.draw(mousex, mousey, frame);
-        if(getMode() == 3) {
+        if (getMode() == 3) {
             int res = getRes();
-            drawButton(mousex, mousey, resButtonSize(), res+"x"+res);
+            drawButton(mousex, mousey, resButtonSize(), res + "x" + res);
         }
     }
 
     @Override
     public void mouseClicked(int mousex, int mousey, int button) {
-        if(getMode() == 3 && resButtonSize().contains(mousex, mousey)) {
+        if (getMode() == 3 && resButtonSize().contains(mousex, mousey)) {
             NEIClientUtils.playClickSound();
-            getTag(name+".res").setIntValue((renderTag(name+".res").getIntValue(0) + 1) % resolutions.length);
-        }
-        else
-            super.mouseClicked(mousex, mousey, button);
+            getTag(name + ".res").setIntValue((renderTag(name + ".res").getIntValue(0) + 1) % resolutions.length);
+        } else super.mouseClicked(mousex, mousey, button);
     }
 
     @Override
     public String getFileExtension() {
-        switch(getMode()) {
-            case 0: return ".csv";
-            case 1: return ".nbt";
-            case 2: return ".json";
+        switch (getMode()) {
+            case 0:
+                return ".csv";
+            case 1:
+                return ".nbt";
+            case 2:
+                return ".json";
         }
         return null;
     }
@@ -105,26 +104,20 @@ public class ItemPanelDumper extends DataDumper
 
     @Override
     public void dumpFile() {
-        if(getMode() == 3)
-            Minecraft.getMinecraft().displayGuiScreen(new GuiItemIconDumper(this, getRes()));
-        else
-            super.dumpFile();
+        if (getMode() == 3) Minecraft.getMinecraft().displayGuiScreen(new GuiItemIconDumper(this, getRes()));
+        else super.dumpFile();
     }
 
     @Override
     public void dumpTo(File file) throws IOException {
-        if (getMode() == 0)
-            super.dumpTo(file);
-        else if (getMode() == 1)
-            dumpNBT(file);
-        else
-            dumpJson(file);
+        if (getMode() == 0) super.dumpTo(file);
+        else if (getMode() == 1) dumpNBT(file);
+        else dumpJson(file);
     }
 
     public void dumpNBT(File file) throws IOException {
         NBTTagList list = new NBTTagList();
-        for (ItemStack stack : ItemPanels.itemPanel.getItems())
-            list.appendTag(stack.writeToNBT(new NBTTagCompound()));
+        for (ItemStack stack : ItemPanels.itemPanel.getItems()) list.appendTag(stack.writeToNBT(new NBTTagCompound()));
 
         NBTTagCompound tag = new NBTTagCompound();
         tag.setTag("list", list);

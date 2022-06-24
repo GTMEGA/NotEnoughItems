@@ -1,19 +1,17 @@
 package codechicken.nei.recipe;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonPrimitive;
-import codechicken.nei.util.NBTJson;
 import codechicken.nei.PositionedStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.item.ItemStack;
-
+import codechicken.nei.util.NBTJson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-public class BookmarkRecipeId
-{
+public class BookmarkRecipeId {
 
     public int position = -1;
 
@@ -23,9 +21,7 @@ public class BookmarkRecipeId
 
     public List<NBTTagCompound> ingredients = new ArrayList<>();
 
-    
-    public BookmarkRecipeId(String handlerName, List<?> stacks)
-    {
+    public BookmarkRecipeId(String handlerName, List<?> stacks) {
         this.handlerName = handlerName;
 
         for (Object pos : stacks) {
@@ -41,13 +37,10 @@ public class BookmarkRecipeId
             if (pos instanceof NBTTagCompound) {
                 ingredients.add((NBTTagCompound) pos);
             }
-
         }
-
     }
 
-    public BookmarkRecipeId(JsonObject json)
-    {
+    public BookmarkRecipeId(JsonObject json) {
 
         if (json.get("handlerName") != null) {
             handlerName = json.get("handlerName").getAsString();
@@ -60,18 +53,12 @@ public class BookmarkRecipeId
             if (ingredients != null) {
                 this.ingredients = ingredients;
             }
-    
         }
-
     }
 
-    public BookmarkRecipeId()
-    {
+    public BookmarkRecipeId() {}
 
-    }
-
-    public boolean equalsIngredients(List<PositionedStack> stacks)
-    {
+    public boolean equalsIngredients(List<PositionedStack> stacks) {
 
         if (ingredients.size() != stacks.size()) {
             return false;
@@ -93,8 +80,7 @@ public class BookmarkRecipeId
         return true;
     }
 
-    public ItemStack getItemStackWithMinimumDamage(ItemStack[] stacks)
-    {
+    public ItemStack getItemStackWithMinimumDamage(ItemStack[] stacks) {
         int damage = Short.MAX_VALUE;
         ItemStack result = stacks[0];
 
@@ -110,8 +96,7 @@ public class BookmarkRecipeId
         return result.copy();
     }
 
-    public JsonObject toJsonObject()
-    {
+    public JsonObject toJsonObject() {
         JsonObject json = new JsonObject();
 
         if (handlerName != null) {
@@ -122,8 +107,7 @@ public class BookmarkRecipeId
         return json;
     }
 
-    protected List<NBTTagCompound> convertJsonArrayToIngredients(JsonArray arr)
-    {
+    protected List<NBTTagCompound> convertJsonArrayToIngredients(JsonArray arr) {
         List<NBTTagCompound> ingredients = new ArrayList<>();
 
         for (JsonElement elem : arr) {
@@ -139,8 +123,7 @@ public class BookmarkRecipeId
         return ingredients;
     }
 
-    protected JsonArray convertIngredientsToJsonArray(List<NBTTagCompound> ingredients)
-    {
+    protected JsonArray convertIngredientsToJsonArray(List<NBTTagCompound> ingredients) {
         JsonArray arr = new JsonArray();
 
         for (NBTTagCompound nbTag : ingredients) {
@@ -150,10 +133,9 @@ public class BookmarkRecipeId
         return arr;
     }
 
-    public boolean equals(Object anObject)
-    {
-        if (this == anObject) {    
-            return true;    
+    public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
         }
 
         if (anObject instanceof BookmarkRecipeId) {
@@ -176,12 +158,10 @@ public class BookmarkRecipeId
             return true;
         }
 
-        return false;    
+        return false;
     }
 
-    public BookmarkRecipeId copy()
-    {
+    public BookmarkRecipeId copy() {
         return new BookmarkRecipeId(handlerName, ingredients);
     }
-
 }

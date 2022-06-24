@@ -18,16 +18,6 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.guihook.IGuiHandleMouseWheel;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -38,13 +28,27 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
-public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOverlay, IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler, INEIGuiHandler {
+public abstract class GuiRecipe extends GuiContainer
+        implements IGuiContainerOverlay,
+                IGuiClientSide,
+                IGuiHandleMouseWheel,
+                IContainerTooltipHandler,
+                INEIGuiHandler {
     // Background image calculations
     private static final int BG_TOP_HEIGHT = 6;
     private static final int BG_MIDDLE_HEIGHT = 154;
     private static final int BG_BOTTOM_HEIGHT = 6;
-    
+
     private static final int BG_TOP_Y = 0;
     private static final int BG_MIDDLE_Y = BG_TOP_Y + BG_TOP_HEIGHT;
     private static final int BG_BOTTOM_Y = BG_MIDDLE_Y + BG_MIDDLE_HEIGHT;
@@ -55,10 +59,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     private static final int buttonHeight = 12;
 
     // Background image
-    final DrawableResource bgTop =    new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_TOP_Y,    176, BG_TOP_HEIGHT).build();
-    final DrawableResource bgMiddle = new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_MIDDLE_Y, 176, BG_MIDDLE_HEIGHT).build();
-    final DrawableResource bgBottom = new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_BOTTOM_Y, 176, BG_BOTTOM_HEIGHT).build();
-    
+    final DrawableResource bgTop =
+            new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_TOP_Y, 176, BG_TOP_HEIGHT).build();
+    final DrawableResource bgMiddle =
+            new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_MIDDLE_Y, 176, BG_MIDDLE_HEIGHT).build();
+    final DrawableResource bgBottom =
+            new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_BOTTOM_Y, 176, BG_BOTTOM_HEIGHT).build();
+
     public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
 
     public int page;
@@ -72,16 +79,16 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public GuiButton prevpage;
     private GuiButton nexttype;
     private GuiButton prevtype;
-    
+
     private int OVERLAY_BUTTON_ID_START = 4;
     private GuiButton[] overlayButtons;
-    
+
     private final Rectangle area = new Rectangle();
     private final GuiRecipeTabs recipeTabs;
     private final GuiRecipeCatalyst guiRecipeCatalyst;
     private IRecipeHandler handler;
     private HandlerInfo handlerInfo;
-    
+
     private int yShift = 0;
 
     protected GuiRecipe(GuiScreen prevgui) {
@@ -92,14 +99,12 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         this.prevGui = prevgui;
         this.firstGuiGeneral = prevgui;
-        if(prevgui instanceof GuiContainer)
-            this.firstGui = (GuiContainer)prevgui;
+        if (prevgui instanceof GuiContainer) this.firstGui = (GuiContainer) prevgui;
 
         if (prevgui instanceof IGuiContainerOverlay) {
             this.firstGui = ((IGuiContainerOverlay) prevgui).getFirstScreen();
             this.firstGuiGeneral = ((IGuiContainerOverlay) prevgui).getFirstScreenGeneral();
         }
-
     }
 
     /**
@@ -117,10 +122,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         private HeightHack() {
             trueHeight = height;
 
-            boolean applyHeightHack =
-                    NEIClientConfig.heightHackHandlerRegex.stream()
-                            .map(pattern -> pattern.matcher(handler.getHandlerId()))
-                            .anyMatch(Matcher::matches);
+            boolean applyHeightHack = NEIClientConfig.heightHackHandlerRegex.stream()
+                    .map(pattern -> pattern.matcher(handler.getHandlerId()))
+                    .anyMatch(Matcher::matches);
             if (applyHeightHack) {
                 // The old mods use the calculation ((height - 166) / 2) to compute the y-value of
                 // the top edge of the NEI window.
@@ -142,7 +146,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             height = trueHeight;
         }
     }
-   
+
     @Override
     @SuppressWarnings("unchecked")
     public void initGui() {
@@ -151,30 +155,28 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         super.initGui();
         guiTop = (height - ySize) / 2 + 10;
         currenthandlers = getCurrentRecipeHandlers(); // Probably don't comment me out
-        
-        if(handler == null) 
-            setRecipePage(recipetype);
-        else
-            initOverlayButtons();
-        
+
+        if (handler == null) setRecipePage(recipetype);
+        else initOverlayButtons();
+
         checkYShift();
-        
+
         final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
         final int leftButtonX = guiLeft + borderPadding;
 
         nexttype = new GuiNEIButton(0, leftButtonX, guiTop + 3, buttonWidth, buttonHeight, "<");
         prevtype = new GuiNEIButton(1, rightButtonX, guiTop + 3, buttonWidth, buttonHeight, ">");
-        
+
         nextpage = new GuiNEIButton(2, leftButtonX, guiTop + 17, buttonWidth, buttonHeight, "<");
         prevpage = new GuiNEIButton(3, rightButtonX, guiTop + 17, buttonWidth, buttonHeight, ">");
-        
+
         buttonList.addAll(Arrays.asList(nexttype, prevtype, nextpage, prevpage));
 
         if (currenthandlers.size() == 1) {
             nexttype.visible = false;
             prevtype.visible = false;
         }
-        
+
         recipeTabs.initLayout();
         refreshPage();
     }
@@ -184,23 +186,22 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         if (overlayButtons != null) {
             buttonList.removeIf(Arrays.asList(overlayButtons)::contains);
         }
-        
+
         final int recipesPerPage = getRecipesPerPage();
         overlayButtons = new GuiButton[recipesPerPage];
-        for (int i = 0 ; i < recipesPerPage ; i++) {
+        for (int i = 0; i < recipesPerPage; i++) {
             overlayButtons[i] = new GuiNEIButton(
-                OVERLAY_BUTTON_ID_START + i,
-                 (width / 2) + 65,
-                 guiTop + 16 + (handlerInfo.getHeight() * (i+1)) - 2,
-                 buttonWidth,
-                 buttonHeight,
-                 "?");
+                    OVERLAY_BUTTON_ID_START + i,
+                    (width / 2) + 65,
+                    guiTop + 16 + (handlerInfo.getHeight() * (i + 1)) - 2,
+                    buttonWidth,
+                    buttonHeight,
+                    "?");
         }
         Collections.addAll(buttonList, overlayButtons);
         itemPresenceCacheRecipe = -1;
-
     }
-    
+
     private void checkYShift() {
         yShift = handlerInfo == null ? 0 : handlerInfo.getYShift();
     }
@@ -216,14 +217,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         handler = currenthandlers.get(recipetype);
         handlerInfo = GuiRecipeTab.getHandlerInfo(handler);
-        page = Math.min(Math.max(0, position), handler.numRecipes() - 1)  / getRecipesPerPage();
+        page = Math.min(Math.max(0, position), handler.numRecipes() - 1) / getRecipesPerPage();
         recipeTabs.calcPageNumber();
         checkYShift();
         initOverlayButtons();
     }
 
-    public void openTargetRecipe(BookmarkRecipeId recipeId) 
-    {
+    public void openTargetRecipe(BookmarkRecipeId recipeId) {
 
         if (recipeId == null) {
             return;
@@ -238,7 +238,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                 for (int j = 0; j < currenthandlers.size(); j++) {
                     IRecipeHandler localHandler = currenthandlers.get(j);
                     HandlerInfo localHandlerInfo = GuiRecipeTab.getHandlerInfo(localHandler);
-        
+
                     if (localHandlerInfo.getHandlerName().equals(recipeId.handlerName)) {
                         recipeId.recipetype = j;
 
@@ -249,24 +249,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                                     recipeId.position = i;
                                     break;
                                 }
-    
                             }
                         }
-        
+
                         break;
                     }
-
                 }
-
             }
-
         }
 
-        setRecipePage(recipeId.recipetype, recipeId.position);    
+        setRecipePage(recipeId.recipetype, recipeId.position);
     }
 
-    public List<PositionedStack> getFocusedRecipeIngredients()
-    {
+    public List<PositionedStack> getFocusedRecipeIngredients() {
         final int recipesPerPage = getRecipesPerPage();
 
         for (int idx = page * recipesPerPage; idx < handler.numRecipes() && idx < (page + 1) * recipesPerPage; idx++) {
@@ -278,8 +273,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         return null;
     }
 
-    protected boolean recipeInFocus(int idx)
-    {
+    protected boolean recipeInFocus(int idx) {
         final PositionedStack result = handler.getResultStack(idx);
         if (result != null && isMouseOver(result, idx)) {
             return true;
@@ -295,8 +289,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         return false;
     }
 
-    public String getHandlerName()
-    {
+    public String getHandlerName() {
         return handlerInfo.getHandlerName();
     }
 
@@ -314,45 +307,32 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public void keyTyped(char c, int i) {
-        if (i == Keyboard.KEY_ESCAPE) //esc
+        if (i == Keyboard.KEY_ESCAPE) // esc
         {
             mc.displayGuiScreen(firstGuiGeneral);
             return;
         }
-        if (GuiContainerManager.getManager(this).lastKeyTyped(i, c))
-            return;
+        if (GuiContainerManager.getManager(this).lastKeyTyped(i, c)) return;
 
         try (HeightHack heightHack = new HeightHack()) {
-            for (int recipe : getRecipeIndices())
-                if (handler.keyTyped(this, c, i, recipe))
-                    return;
+            for (int recipe : getRecipeIndices()) if (handler.keyTyped(this, c, i, recipe)) return;
         }
 
-        if (i == mc.gameSettings.keyBindInventory.getKeyCode())
-            mc.displayGuiScreen(firstGuiGeneral);
-        else if (i == NEIClientConfig.getKeyBinding("gui.back"))
-            mc.displayGuiScreen(prevGui);
-        else if (i == NEIClientConfig.getKeyBinding("gui.prev_machine"))
-            prevType();
-        else if (i == NEIClientConfig.getKeyBinding("gui.next_machine"))
-            nextType();
-        else if (i == NEIClientConfig.getKeyBinding("gui.prev_recipe"))
-            prevPage();
-        else if (i == NEIClientConfig.getKeyBinding("gui.next_recipe"))
-            nextPage();
-
+        if (i == mc.gameSettings.keyBindInventory.getKeyCode()) mc.displayGuiScreen(firstGuiGeneral);
+        else if (i == NEIClientConfig.getKeyBinding("gui.back")) mc.displayGuiScreen(prevGui);
+        else if (i == NEIClientConfig.getKeyBinding("gui.prev_machine")) prevType();
+        else if (i == NEIClientConfig.getKeyBinding("gui.next_machine")) nextType();
+        else if (i == NEIClientConfig.getKeyBinding("gui.prev_recipe")) prevPage();
+        else if (i == NEIClientConfig.getKeyBinding("gui.next_recipe")) nextPage();
     }
 
     @Override
     protected void mouseClicked(int x, int y, int button) {
         try (HeightHack heightHack = new HeightHack()) {
-            for (int recipe : getRecipeIndices())
-                if (handler.mouseClicked(this, button, recipe))
-                    return;
+            for (int recipe : getRecipeIndices()) if (handler.mouseClicked(this, button, recipe)) return;
         }
 
-        if (recipeTabs.mouseClicked(x, y, button))
-            return;
+        if (recipeTabs.mouseClicked(x, y, button)) return;
 
         super.mouseClicked(x, y, button);
     }
@@ -364,13 +344,11 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         // the value of the height field will be different from in other mouseover methods, which
         // could be confusing...
 
-        for (int recipe : getRecipeIndices())
-            if (handler.mouseScrolled(this, i, recipe))
-                return;
+        for (int recipe : getRecipeIndices()) if (handler.mouseScrolled(this, i, recipe)) return;
 
         if (new Rectangle(guiLeft, guiTop, xSize, ySize).contains(GuiDraw.getMousePosition())) {
             if (i > 0) prevPage();
-            else       nextPage();
+            else nextPage();
         }
     }
 
@@ -391,7 +369,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                 nextPage();
                 return;
         }
-        if (overlayButtons != null && guibutton.id >= OVERLAY_BUTTON_ID_START && guibutton.id < OVERLAY_BUTTON_ID_START + overlayButtons.length) {
+        if (overlayButtons != null
+                && guibutton.id >= OVERLAY_BUTTON_ID_START
+                && guibutton.id < OVERLAY_BUTTON_ID_START + overlayButtons.length) {
             overlayRecipe(page * getRecipesPerPage() + guibutton.id - OVERLAY_BUTTON_ID_START);
         }
     }
@@ -406,19 +386,18 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
         try (HeightHack heightHack = new HeightHack()) {
-            for (int i : getRecipeIndices())
-                currenttip = handler.handleTooltip(this, currenttip, i);
+            for (int i : getRecipeIndices()) currenttip = handler.handleTooltip(this, currenttip, i);
         }
         recipeTabs.handleTooltip(mousex, mousey, currenttip);
         return currenttip;
     }
 
     @Override
-    public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mousex, int mousey, List<String> currenttip) {
+    public List<String> handleItemTooltip(
+            GuiContainer gui, ItemStack stack, int mousex, int mousey, List<String> currenttip) {
         // Height hacking is probably not needed as it doesn't look like any mods check mouse
         // position for this method.
-        for (int i : getRecipeIndices())
-            currenttip = handler.handleItemTooltip(this, stack, currenttip, i);
+        for (int i : getRecipeIndices()) currenttip = handler.handleItemTooltip(this, stack, currenttip, i);
 
         return currenttip;
     }
@@ -462,7 +441,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             LayoutManager.overlayRenderer = renderer;
         }
     }
-    
+
     public void refreshPage() {
         RecipeCatalysts.updatePosition(ySize - BG_TOP_HEIGHT - (GuiRecipeCatalyst.fullBorder * 2));
         refreshSlots();
@@ -474,17 +453,17 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         area.width = handlerInfo.getWidth();
         area.height = handlerInfo.getHeight() * numRecipes;
         area.x = guiLeft - 2;
-        area.y = guiTop  - 4 + yShift;
+        area.y = guiTop - 4 + yShift;
         checkYShift();
 
         nextpage.enabled = prevpage.enabled = multiplepages;
-        
-        if(firstGui == null) {
+
+        if (firstGui == null) {
             for (GuiButton overlay : overlayButtons) {
                 overlay.visible = false;
             }
         } else {
-            for(int i = 0 ; i < overlayButtons.length ; i ++) {
+            for (int i = 0; i < overlayButtons.length; i++) {
                 if (i >= numRecipes) {
                     overlayButtons[i].visible = false;
                 } else {
@@ -504,16 +483,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             Point p = getRecipePosition(i);
 
             List<PositionedStack> stacks = handler.getIngredientStacks(i);
-            for (PositionedStack stack : stacks)
-                slotcontainer.addSlot(stack, p.x, p.y);
+            for (PositionedStack stack : stacks) slotcontainer.addSlot(stack, p.x, p.y);
 
             stacks = handler.getOtherStacks(i);
-            for (PositionedStack stack : stacks)
-                slotcontainer.addSlot(stack, p.x, p.y);
+            for (PositionedStack stack : stacks) slotcontainer.addSlot(stack, p.x, p.y);
 
             PositionedStack result = handler.getResultStack(i);
-            if (result != null)
-                slotcontainer.addSlot(result, p.x, p.y);
+            if (result != null) slotcontainer.addSlot(result, p.x, p.y);
 
             List<PositionedStack> catalysts = RecipeCatalysts.getRecipeCatalysts(handler);
             for (PositionedStack catalyst : catalysts) {
@@ -534,12 +510,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         itemPresenceCacheRecipe = recipe;
         itemPresenceCacheSlots.clear();
         List<PositionedStack> ingredients = handler.getIngredientStacks(recipe);
-        ArrayList<ItemStack> invStacks = ((List<Slot>) firstGui.inventorySlots.inventorySlots).stream()
-                .filter(s -> s != null && s.getStack() != null && s.getStack().stackSize > 0 && s.isItemValid(s.getStack()) && s.canTakeStack(mc.thePlayer))
-                .map(s -> s.getStack().copy())
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<ItemStack> invStacks = ((List<Slot>) firstGui.inventorySlots.inventorySlots)
+                .stream()
+                        .filter(s -> s != null
+                                && s.getStack() != null
+                                && s.getStack().stackSize > 0
+                                && s.isItemValid(s.getStack())
+                                && s.canTakeStack(mc.thePlayer))
+                        .map(s -> s.getStack().copy())
+                        .collect(Collectors.toCollection(ArrayList::new));
         for (PositionedStack stack : ingredients) {
-            Optional<ItemStack> used = invStacks.stream().filter(is -> is.stackSize > 0 && stack.contains(is)).findFirst();
+            Optional<ItemStack> used = invStacks.stream()
+                    .filter(is -> is.stackSize > 0 && stack.contains(is))
+                    .findFirst();
             itemPresenceCacheSlots.add(used.isPresent());
             if (used.isPresent()) {
                 ItemStack is = used.get();
@@ -563,10 +546,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         try (HeightHack heightHack = new HeightHack()) {
             for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
                 handler.drawForeground(i);
-                if (drawItemPresence && isMouseOverOverlayButton(i - page * recipesPerPage)
+                if (drawItemPresence
+                        && isMouseOverOverlayButton(i - page * recipesPerPage)
                         && firstGui.inventorySlots != null) {
                     List<PositionedStack> ingredients = handler.getIngredientStacks(i);
-                    if (itemPresenceCacheRecipe != i || itemPresenceCacheSlots == null || itemPresenceCacheSlots.size() != ingredients.size()) {
+                    if (itemPresenceCacheRecipe != i
+                            || itemPresenceCacheSlots == null
+                            || itemPresenceCacheSlots.size() != ingredients.size()) {
                         updateItemPresenceCache(i);
                     }
                     for (int j = 0; j < ingredients.size(); j++) {
@@ -585,22 +571,24 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
         final int recipesPerPage = getRecipesPerPage();
         GL11.glColor4f(1, 1, 1, 1);
-        final int j = (width  - xSize) / 2;
+        final int j = (width - xSize) / 2;
         final int k = guiTop;
-        
+
         drawBackgroundTiled(j, k);
 
-        drawRect(guiLeft + borderPadding + buttonWidth - 1,
-                 nexttype.yPosition,
-                 guiLeft + xSize - borderPadding - buttonWidth,
-                 nexttype.yPosition + buttonHeight,
-                 0x30000000);
-        drawRect(guiLeft + borderPadding + buttonWidth - 1,
-                 nextpage.yPosition,
-                 guiLeft + xSize - borderPadding - buttonWidth,
-                 nextpage.yPosition + buttonHeight,
-                 0x30000000);
-        
+        drawRect(
+                guiLeft + borderPadding + buttonWidth - 1,
+                nexttype.yPosition,
+                guiLeft + xSize - borderPadding - buttonWidth,
+                nexttype.yPosition + buttonHeight,
+                0x30000000);
+        drawRect(
+                guiLeft + borderPadding + buttonWidth - 1,
+                nextpage.yPosition,
+                guiLeft + xSize - borderPadding - buttonWidth,
+                nextpage.yPosition + buttonHeight,
+                0x30000000);
+
         if (NEIClientConfig.areJEIStyleTabsVisible()) {
             RenderHelper.enableGUIStandardItemLighting();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
@@ -633,7 +621,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             final int yTileCount = tiledHeight / BG_MIDDLE_HEIGHT;
             final int yRemainder = tiledHeight - (yTileCount * BG_MIDDLE_HEIGHT);
             final int yStart = k + BG_TOP_HEIGHT + tiledHeight;
-            
+
             for (int yTile = 0; yTile <= yTileCount; yTile++) {
                 final int tileHeight = (yTile == yTileCount) ? yRemainder : BG_MIDDLE_HEIGHT;
                 final int y = yStart - ((yTile + 1) * BG_MIDDLE_HEIGHT);
@@ -658,7 +646,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     public boolean isMouseOver(PositionedStack stack, int recipe) {
-        Slot stackSlot = slotcontainer.getSlotWithStack(stack, getRecipePosition(recipe).x, getRecipePosition(recipe).y);
+        Slot stackSlot =
+                slotcontainer.getSlotWithStack(stack, getRecipePosition(recipe).x, getRecipePosition(recipe).y);
         Point mousepos = GuiDraw.getMousePosition();
         Slot mouseoverSlot = getSlotAtPosition(mousepos.x, mousepos.y);
 
@@ -666,11 +655,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     private boolean isMouseOverOverlayButton(int buttonId) {
-        if(buttonId >= 0 && buttonId < overlayButtons.length) {
+        if (buttonId >= 0 && buttonId < overlayButtons.length) {
             GuiButton button = overlayButtons[buttonId];
             Point mousePos = GuiDraw.getMousePosition();
-            return button.visible && mousePos.x >= button.xPosition && mousePos.y >= button.yPosition
-                    && mousePos.x < button.xPosition + button.width && mousePos.y < button.yPosition + button.height;
+            return button.visible
+                    && mousePos.x >= button.xPosition
+                    && mousePos.y >= button.yPosition
+                    && mousePos.x < button.xPosition + button.width
+                    && mousePos.y < button.yPosition + button.height;
         } else {
             return false;
         }
@@ -679,12 +671,15 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     private int getRecipesPerPage() {
         return getRecipesPerPage(handlerInfo);
     }
-    
+
     private int getRecipesPerPage(HandlerInfo handlerInfo) {
-        if(handlerInfo != null) 
-            return Math.max(Math.min(((ySize - (buttonHeight*3)) / handlerInfo.getHeight()), handlerInfo.getMaxRecipesPerPage()), 1);
-        else
-            return (handler.recipiesPerPage());
+        if (handlerInfo != null)
+            return Math.max(
+                    Math.min(
+                            ((ySize - (buttonHeight * 3)) / handlerInfo.getHeight()),
+                            handlerInfo.getMaxRecipesPerPage()),
+                    1);
+        else return (handler.recipiesPerPage());
     }
 
     public Point getRecipePosition(int recipe) {
@@ -694,8 +689,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public abstract ArrayList<? extends IRecipeHandler> getCurrentRecipeHandlers();
 
     @Override
-    public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility)
-    {
+    public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
         return currentVisibility;
     }
 
@@ -703,7 +697,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack item) {
         return Collections.emptyList();
     }
-
 
     @Override
     public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
@@ -720,5 +713,4 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         // Because some of the handlers *cough avaritia* are oversized
         return area.intersects(x, y, w, h);
     }
-
 }

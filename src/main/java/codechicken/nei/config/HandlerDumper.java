@@ -8,24 +8,24 @@ import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import codechicken.nei.util.NBTJson;
 import com.google.common.base.Objects;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
+import org.apache.commons.io.IOUtils;
 
-public class HandlerDumper extends DataDumper
-{
+public class HandlerDumper extends DataDumper {
     public HandlerDumper(String name) {
         super(name);
     }
 
     @Override
     public String[] header() {
-        return new String[]{"Handler Recipe Name", "Handler Class", "Overlay Identifier", "Mod DisplayName", "ItemStack"};
+        return new String[] {
+            "Handler Recipe Name", "Handler Class", "Overlay Identifier", "Mod DisplayName", "ItemStack"
+        };
     }
 
     @Override
@@ -33,7 +33,11 @@ public class HandlerDumper extends DataDumper
         LinkedList<String[]> list = new LinkedList<>();
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String handlerName = handler.getHandlerId();
-            final String handlerId = Objects.firstNonNull(handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler)handler).getOverlayIdentifier() : null, "null");
+            final String handlerId = Objects.firstNonNull(
+                    handler instanceof TemplateRecipeHandler
+                            ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
+                            : null,
+                    "null");
             HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
 
             list.add(new String[] {
@@ -41,7 +45,9 @@ public class HandlerDumper extends DataDumper
                 handlerName,
                 handlerId,
                 info != null ? info.getModName() : "Unknown",
-                info != null && info.getItemStack() != null ? info.getItemStack().toString() : "Unknown"
+                info != null && info.getItemStack() != null
+                        ? info.getItemStack().toString()
+                        : "Unknown"
             });
         }
         return list;
@@ -54,9 +60,11 @@ public class HandlerDumper extends DataDumper
 
     @Override
     public String getFileExtension() {
-        switch(getMode()) {
-            case 0: return ".csv";
-            case 1: return ".json";
+        switch (getMode()) {
+            case 0:
+                return ".csv";
+            case 1:
+                return ".json";
         }
         return null;
     }
@@ -71,13 +79,10 @@ public class HandlerDumper extends DataDumper
         return translateN(name + ".mode." + getMode());
     }
 
-
     @Override
     public void dumpTo(File file) throws IOException {
-        if (getMode() == 0)
-            super.dumpTo(file);
-        else
-            dumpJson(file);
+        if (getMode() == 0) super.dumpTo(file);
+        else dumpJson(file);
     }
 
     public void dumpJson(File file) throws IOException {
@@ -93,11 +98,9 @@ public class HandlerDumper extends DataDumper
                 IOUtils.write(NBTJson.toJson(tag) + "\n", writer);
             }
             writer.close();
-        }  catch (IOException e) {
+        } catch (IOException e) {
             NEIClientConfig.logger.error("Filed to save dump handler list to file {}", file, e);
-        } 
-        
-
+        }
     }
 
     @Override

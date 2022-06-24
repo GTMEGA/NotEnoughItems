@@ -21,6 +21,13 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -52,22 +59,14 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * This is an internal class for storing information about items, to be accessed by the API
  */
-public class ItemInfo
-{
-    public static enum Layout
-    {
-        HEADER, BODY, FOOTER
+public class ItemInfo {
+    public static enum Layout {
+        HEADER,
+        BODY,
+        FOOTER
     }
 
     public static final ArrayListMultimap<Layout, IHighlightHandler> highlightHandlers = ArrayListMultimap.create();
@@ -85,33 +84,32 @@ public class ItemInfo
 
     private static class ItemStackKey {
         public final ItemStack stack;
+
         public ItemStackKey(ItemStack stack) {
             this.stack = stack;
         }
 
         @Override
         public int hashCode() {
-            if(this.stack == null)
-                return 1;
+            if (this.stack == null) return 1;
             int hashCode = 1;
             hashCode = 31 * hashCode + stack.stackSize;
             hashCode = 31 * hashCode + Item.getIdFromItem(stack.getItem());
             hashCode = 31 * hashCode + stack.getItemDamage();
-            hashCode = 31 * hashCode + (!stack.hasTagCompound() ? 0 : stack.getTagCompound().hashCode());
+            hashCode = 31 * hashCode
+                    + (!stack.hasTagCompound() ? 0 : stack.getTagCompound().hashCode());
             return hashCode;
         }
 
         @Override
         public boolean equals(Object o) {
-            if(o == this)
-                return true;
-            if(!(o instanceof ItemStackKey))
-                return false;
-            return ItemStack.areItemStacksEqual(this.stack, ((ItemStackKey)o).stack);
+            if (o == this) return true;
+            if (!(o instanceof ItemStackKey)) return false;
+            return ItemStack.areItemStacksEqual(this.stack, ((ItemStackKey) o).stack);
         }
     }
 
-    //lookup optimisation
+    // lookup optimisation
     public static final ConcurrentHashMap<ItemStackKey, String> itemSearchNames = new ConcurrentHashMap<>();
 
     public static boolean isHidden(ItemStack stack) {
@@ -164,7 +162,7 @@ public class ItemInfo
     private static void populateSearchMap() {
         /* Create a snapshot of the current keys in the cache */
         HashSet<ItemStackKey> oldItems = new HashSet<>(itemSearchNames.keySet());
-        for(ItemStack stack : ItemList.items) {
+        for (ItemStack stack : ItemList.items) {
             /* Populate each entry and remove it from the snapshot */
             getSearchName(stack);
             oldItems.remove(new ItemStackKey(stack));
@@ -177,21 +175,20 @@ public class ItemInfo
     }
 
     private static void addIDDumps() {
-        API.addOption(new RegistryDumper<Item>("tools.dump.item")
-        {
+        API.addOption(new RegistryDumper<Item>("tools.dump.item") {
             @Override
             public String[] header() {
-                return new String[]{"Name", "ID", "Has Block", "Mod", "Class"};
+                return new String[] {"Name", "ID", "Has Block", "Mod", "Class"};
             }
 
             @Override
             public String[] dump(Item item, int id, String name) {
-                return new String[]{
-                        name,
-                        Integer.toString(id),
-                        Boolean.toString(Block.getBlockFromItem(item) != Blocks.air),
-                        ItemInfo.itemOwners.get(item),
-                        item.getClass().getCanonicalName()
+                return new String[] {
+                    name,
+                    Integer.toString(id),
+                    Boolean.toString(Block.getBlockFromItem(item) != Blocks.air),
+                    ItemInfo.itemOwners.get(item),
+                    item.getClass().getCanonicalName()
                 };
             }
 
@@ -200,21 +197,20 @@ public class ItemInfo
                 return Item.itemRegistry;
             }
         });
-        API.addOption(new RegistryDumper<Block>("tools.dump.block")
-        {
+        API.addOption(new RegistryDumper<Block>("tools.dump.block") {
             @Override
             public String[] header() {
-                return new String[]{"Name", "ID", "Has Item", "Mod", "Class"};
+                return new String[] {"Name", "ID", "Has Item", "Mod", "Class"};
             }
 
             @Override
             public String[] dump(Block item, int id, String name) {
-                return new String[]{
-                        name,
-                        Integer.toString(id),
-                        Boolean.toString(Item.getItemFromBlock(item) != null),
-                        ItemInfo.itemOwners.get(item),
-                        item.getClass().getCanonicalName()
+                return new String[] {
+                    name,
+                    Integer.toString(id),
+                    Boolean.toString(Item.getItemFromBlock(item) != null),
+                    ItemInfo.itemOwners.get(item),
+                    item.getClass().getCanonicalName()
                 };
             }
 
@@ -223,18 +219,15 @@ public class ItemInfo
                 return Block.blockRegistry;
             }
         });
-        API.addOption(new ArrayDumper<Potion>("tools.dump.potion")
-        {
+        API.addOption(new ArrayDumper<Potion>("tools.dump.potion") {
             public String[] header() {
-                return new String[]{"ID", "Unlocalised name", "Class"};
+                return new String[] {"ID", "Unlocalised name", "Class"};
             }
 
             @Override
             public String[] dump(Potion potion, int id) {
-                return new String[]{
-                        Integer.toString(id),
-                        potion.getName(),
-                        potion.getClass().getCanonicalName()
+                return new String[] {
+                    Integer.toString(id), potion.getName(), potion.getClass().getCanonicalName()
                 };
             }
 
@@ -243,21 +236,20 @@ public class ItemInfo
                 return Potion.potionTypes;
             }
         });
-        API.addOption(new ArrayDumper<Enchantment>("tools.dump.enchantment")
-        {
+        API.addOption(new ArrayDumper<Enchantment>("tools.dump.enchantment") {
             public String[] header() {
-                return new String[]{"ID", "Unlocalised name", "Type", "Min Level", "Max Level", "Class"};
+                return new String[] {"ID", "Unlocalised name", "Type", "Min Level", "Max Level", "Class"};
             }
 
             @Override
             public String[] dump(Enchantment ench, int id) {
-                return new String[]{
-                        Integer.toString(id),
-                        ench.getName(),
-                        ench.type.toString(),
-                        Integer.toString(ench.getMinLevel()),
-                        Integer.toString(ench.getMaxLevel()),
-                        ench.getClass().getCanonicalName()
+                return new String[] {
+                    Integer.toString(id),
+                    ench.getName(),
+                    ench.type.toString(),
+                    Integer.toString(ench.getMinLevel()),
+                    Integer.toString(ench.getMaxLevel()),
+                    ench.getClass().getCanonicalName()
                 };
             }
 
@@ -266,11 +258,20 @@ public class ItemInfo
                 return Enchantment.enchantmentsList;
             }
         });
-        API.addOption(new ArrayDumper<BiomeGenBase>("tools.dump.biome")
-        {
+        API.addOption(new ArrayDumper<BiomeGenBase>("tools.dump.biome") {
             @Override
             public String[] header() {
-                return new String[]{"ID", "Name", "Temperature", "Rainfall", "Spawn Chance", "Root Height", "Height Variation", "Types", "Class"};
+                return new String[] {
+                    "ID",
+                    "Name",
+                    "Temperature",
+                    "Rainfall",
+                    "Spawn Chance",
+                    "Root Height",
+                    "Height Variation",
+                    "Types",
+                    "Class"
+                };
             }
 
             @Override
@@ -278,21 +279,20 @@ public class ItemInfo
                 BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(biome);
                 StringBuilder s_types = new StringBuilder();
                 for (BiomeDictionary.Type t : types) {
-                    if (s_types.length() > 0)
-                        s_types.append(", ");
+                    if (s_types.length() > 0) s_types.append(", ");
                     s_types.append(t.name());
                 }
 
-                return new String[]{
-                        Integer.toString(id),
-                        biome.biomeName,
-                        Float.toString(biome.getFloatTemperature(0, 0, 0)),
-                        Float.toString(biome.getFloatRainfall()),
-                        Float.toString(biome.getSpawningChance()),
-                        Float.toString(biome.rootHeight),
-                        Float.toString(biome.heightVariation),
-                        s_types.toString(),
-                        biome.getClass().getCanonicalName()
+                return new String[] {
+                    Integer.toString(id),
+                    biome.biomeName,
+                    Float.toString(biome.getFloatTemperature(0, 0, 0)),
+                    Float.toString(biome.getFloatRainfall()),
+                    Float.toString(biome.getSpawningChance()),
+                    Float.toString(biome.rootHeight),
+                    Float.toString(biome.heightVariation),
+                    s_types.toString(),
+                    biome.getClass().getCanonicalName()
                 };
             }
 
@@ -312,28 +312,26 @@ public class ItemInfo
             UniqueIdentifier ident = null;
             try {
                 ident = GameRegistry.findUniqueIdentifierFor(item);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
 
-            if(ident == null) {
-                NEIClientConfig.logger.error("Failed to find identifier for: "+item);
+            if (ident == null) {
+                NEIClientConfig.logger.error("Failed to find identifier for: " + item);
                 continue;
             }
 
             String modId = ident.modId;
             itemOwners.put(item, modId);
             ItemStackSet itemset = modSubsets.get(modId);
-            if(itemset == null)
-                modSubsets.put(modId, itemset = new ItemStackSet());
+            if (itemset == null) modSubsets.put(modId, itemset = new ItemStackSet());
             itemset.with(item);
         }
 
         API.addSubset("Mod.Minecraft", modSubsets.remove("minecraft"));
-        for(Entry<String, ItemStackSet> entry : modSubsets.entrySet()) {
+        for (Entry<String, ItemStackSet> entry : modSubsets.entrySet()) {
             ModContainer mc = FMLCommonHandler.instance().findContainerFor(entry.getKey());
-            if(mc == null)
-                NEIClientConfig.logger.error("Missing container for "+entry.getKey());
-            else
-                API.addSubset("Mod."+mc.getName(), entry.getValue());
+            if (mc == null) NEIClientConfig.logger.error("Missing container for " + entry.getKey());
+            else API.addSubset("Mod." + mc.getName(), entry.getValue());
         }
     }
 
@@ -392,40 +390,32 @@ public class ItemInfo
         List<ItemStack> stackList = new LinkedList<>();
 
         for (Item item : (Iterable<Item>) Item.itemRegistry) {
-            if (item == null)
-                continue;
+            if (item == null) continue;
 
-            for(CreativeTabs itemTab : item.getCreativeTabs()) {
+            for (CreativeTabs itemTab : item.getCreativeTabs()) {
                 if (itemTab != null) {
-                    while (itemTab.getTabIndex() >= creativeTabRanges.size())
-                        creativeTabRanges.add(null);
+                    while (itemTab.getTabIndex() >= creativeTabRanges.size()) creativeTabRanges.add(null);
                     ItemStackSet set = creativeTabRanges.get(itemTab.getTabIndex());
-                    if (set == null)
-                        creativeTabRanges.set(itemTab.getTabIndex(), set = new ItemStackSet());
+                    if (set == null) creativeTabRanges.set(itemTab.getTabIndex(), set = new ItemStackSet());
 
                     try {
                         stackList.clear();
                         item.getSubItems(item, itemTab, stackList);
-                        for(ItemStack stack : stackList)
-                            set.add(stack);
+                        for (ItemStack stack : stackList) set.add(stack);
                     } catch (Exception e) {
-                        NEIClientConfig.logger.error("Error loading sub-items for: "+item+". Tab: "+itemTab.getTabLabel(), e);
+                        NEIClientConfig.logger.error(
+                                "Error loading sub-items for: " + item + ". Tab: " + itemTab.getTabLabel(), e);
                     }
                 }
             }
 
             if (item.isDamageable()) {
                 tools.with(item);
-                if (item instanceof ItemPickaxe)
-                    picks.with(item);
-                else if (item instanceof ItemSpade)
-                    shovels.with(item);
-                else if (item instanceof ItemAxe)
-                    axes.with(item);
-                else if (item instanceof ItemHoe)
-                    hoes.with(item);
-                else if (item instanceof ItemSword)
-                    swords.with(item);
+                if (item instanceof ItemPickaxe) picks.with(item);
+                else if (item instanceof ItemSpade) shovels.with(item);
+                else if (item instanceof ItemAxe) axes.with(item);
+                else if (item instanceof ItemHoe) hoes.with(item);
+                else if (item instanceof ItemSword) swords.with(item);
                 else if (item instanceof ItemArmor)
                     switch (((ItemArmor) item).armorType) {
                         case 0:
@@ -441,19 +431,17 @@ public class ItemInfo
                             boots.with(item);
                             break;
                     }
-                else if (item == Items.arrow || item == Items.bow)
-                    ranged.with(item);
+                else if (item == Items.arrow || item == Items.bow) ranged.with(item);
                 else if (item == Items.fishing_rod || item == Items.flint_and_steel || item == Items.shears)
                     other.with(item);
             }
 
-            if (item instanceof ItemFood)
-                food.with(item);
+            if (item instanceof ItemFood) food.with(item);
 
             try {
                 LinkedList<ItemStack> subItems = new LinkedList<>();
                 item.getSubItems(item, null, subItems);
-                for(ItemStack stack : subItems) {
+                for (ItemStack stack : subItems) {
                     if (item.isPotionIngredient(stack) && item.getPotionEffect(stack) != null) {
                         BrewingRecipeHandler.ingredients.add(stack);
                         potioningredients.add(stack);
@@ -461,7 +449,7 @@ public class ItemInfo
                 }
 
             } catch (Exception e) {
-                NEIClientConfig.logger.error("Error loading brewing ingredients for: "+item, e);
+                NEIClientConfig.logger.error("Error loading brewing ingredients for: " + item, e);
             }
         }
         API.addSubset("Items.Tools.Pickaxes", picks);
@@ -479,7 +467,7 @@ public class ItemInfo
         API.addSubset("Items.Potions.Ingredients", potioningredients);
 
         for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
-            if(tab.getTabIndex() >= creativeTabRanges.size()) continue;
+            if (tab.getTabIndex() >= creativeTabRanges.size()) continue;
             ItemStackSet set = creativeTabRanges.get(tab.getTabIndex());
             if (set != null && !set.isEmpty())
                 API.addSubset("CreativeTabs." + I18n.format(tab.getTranslatedTabLabel()), set);
@@ -488,15 +476,14 @@ public class ItemInfo
         BrewingRecipeHandler.searchPotions();
     }
 
-    private static void addSpawnEggs()
-    {
+    private static void addSpawnEggs() {
         addEntityEgg(EntitySnowman.class, 0xEEFFFF, 0xffa221);
         addEntityEgg(EntityIronGolem.class, 0xC5C2C1, 0xffe1cc);
     }
 
     @SuppressWarnings("unchecked")
     private static void addEntityEgg(Class<?> entity, int i, int j) {
-        int id = (Integer)EntityList.classToIDMapping.get(entity);
+        int id = (Integer) EntityList.classToIDMapping.get(entity);
         EntityList.entityEggs.put(id, new EntityEggInfo(id, i, j));
     }
 
@@ -509,34 +496,29 @@ public class ItemInfo
         ArrayList<ItemStack> items = new ArrayList<>();
 
         ArrayList<IHighlightHandler> handlers = new ArrayList<>();
-        if (highlightIdentifiers.containsKey(null))
-            handlers.addAll(highlightIdentifiers.get(null));
-        if (highlightIdentifiers.containsKey(mouseoverBlock))
-            handlers.addAll(highlightIdentifiers.get(mouseoverBlock));
+        if (highlightIdentifiers.containsKey(null)) handlers.addAll(highlightIdentifiers.get(null));
+        if (highlightIdentifiers.containsKey(mouseoverBlock)) handlers.addAll(highlightIdentifiers.get(mouseoverBlock));
         for (IHighlightHandler ident : handlers) {
             ItemStack item = ident.identifyHighlight(world, player, hit);
-            if (item != null)
-                items.add(item);
+            if (item != null) items.add(item);
         }
 
-        if (items.size() > 0)
-            return items;
+        if (items.size() > 0) return items;
 
         ItemStack pick = mouseoverBlock.getPickBlock(hit, world, x, y, z, player);
-        if (pick != null)
-            items.add(pick);
+        if (pick != null) items.add(pick);
 
         try {
             items.addAll(mouseoverBlock.getDrops(world, x, y, z, world.getBlockMetadata(x, y, z), 0));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         if (mouseoverBlock instanceof IShearable) {
             IShearable shearable = (IShearable) mouseoverBlock;
             if (shearable.isShearable(new ItemStack(Items.shears), world, x, y, z))
                 items.addAll(shearable.onSheared(new ItemStack(Items.shears), world, x, y, z, 0));
         }
 
-        if (items.size() == 0)
-            items.add(0, new ItemStack(mouseoverBlock, 1, world.getBlockMetadata(x, y, z)));
+        if (items.size() == 0) items.add(0, new ItemStack(mouseoverBlock, 1, world.getBlockMetadata(x, y, z)));
 
         return items;
     }
@@ -546,7 +528,8 @@ public class ItemInfo
             ItemInfo.highlightHandlers.get(layout).add(handler);
     }
 
-    public static List<String> getText(ItemStack itemStack, World world, EntityPlayer player, MovingObjectPosition mop) {
+    public static List<String> getText(
+            ItemStack itemStack, World world, EntityPlayer player, MovingObjectPosition mop) {
         List<String> retString = new ArrayList<>();
 
         for (ItemInfo.Layout layout : ItemInfo.Layout.values())
@@ -557,8 +540,10 @@ public class ItemInfo
     }
 
     public static String getSearchName(ItemStack stack) {
-        return itemSearchNames.computeIfAbsent(new ItemStackKey(stack), key ->
-                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.concatenatedDisplayName(key.stack, true).toLowerCase())
-        );
+        return itemSearchNames.computeIfAbsent(
+                new ItemStackKey(stack),
+                key -> EnumChatFormatting.getTextWithoutFormattingCodes(
+                        GuiContainerManager.concatenatedDisplayName(key.stack, true)
+                                .toLowerCase()));
     }
 }

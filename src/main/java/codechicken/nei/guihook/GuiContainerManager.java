@@ -1,6 +1,21 @@
 package codechicken.nei.guihook;
 
+import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.lib.gui.GuiDraw.renderEngine;
+
 import codechicken.lib.gui.GuiDraw;
+import java.awt.Point;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,32 +31,20 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.awt.Point;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
-
-import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
-import static codechicken.lib.gui.GuiDraw.fontRenderer;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-import static codechicken.lib.gui.GuiDraw.renderEngine;
-
-public class GuiContainerManager
-{
+public class GuiContainerManager {
     public GuiContainer window;
 
     public static RenderItem drawItems = new RenderItem();
-    public static final LinkedList<IContainerTooltipHandler> tooltipHandlers = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerInputHandler> inputHandlers = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerDrawHandler> drawHandlers = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerObjectHandler> objectHandlers = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerTooltipHandler> tooltipHandlers =
+            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerInputHandler> inputHandlers =
+            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerDrawHandler> drawHandlers =
+            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerObjectHandler> objectHandlers =
+            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers =
+            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
 
     static {
         addSlotClickHandler(new DefaultSlotClickHandler());
@@ -53,7 +56,7 @@ public class GuiContainerManager
     }
 
     public static GuiContainerManager getManager(GuiContainer gui) {
-        //gets GuiContainer.manager using ASM
+        // gets GuiContainer.manager using ASM
         return null;
     }
 
@@ -105,8 +108,7 @@ public class GuiContainerManager
     public static FontRenderer getFontRenderer(ItemStack stack) {
         if (stack != null && stack.getItem() != null) {
             FontRenderer f = stack.getItem().getFontRenderer(stack);
-            if (f != null)
-                return f;
+            if (f != null) return f;
         }
         return fontRenderer;
     }
@@ -122,17 +124,17 @@ public class GuiContainerManager
     public static List<String> itemDisplayNameMultiline(ItemStack stack, GuiContainer gui, boolean includeHandlers) {
         List<String> namelist = null;
         try {
-            namelist = stack.getTooltip(Minecraft.getMinecraft().thePlayer, includeHandlers && Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
-        } catch (Throwable ignored) {}
+            namelist = stack.getTooltip(
+                    Minecraft.getMinecraft().thePlayer,
+                    includeHandlers && Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
+        } catch (Throwable ignored) {
+        }
 
-        if (namelist == null)
-            namelist = new ArrayList<>();
+        if (namelist == null) namelist = new ArrayList<>();
 
-        if (namelist.size() == 0)
-            namelist.add("Unnamed");
+        if (namelist.size() == 0) namelist.add("Unnamed");
 
-        if (namelist.get(0) == null || namelist.get(0).equals(""))
-            namelist.set(0, "Unnamed");
+        if (namelist.get(0) == null || namelist.get(0).equals("")) namelist.set(0, "Unnamed");
 
         if (includeHandlers) {
             for (IContainerTooltipHandler handler : tooltipHandlers) {
@@ -141,8 +143,7 @@ public class GuiContainerManager
         }
 
         namelist.set(0, stack.getRarity().rarityColor.toString() + namelist.get(0));
-        for (int i = 1; i < namelist.size(); i++)
-            namelist.set(i, "\u00a77" + namelist.get(i));
+        for (int i = 1; i < namelist.size(); i++) namelist.set(i, "\u00a77" + namelist.get(i));
 
         return namelist;
     }
@@ -198,9 +199,10 @@ public class GuiContainerManager
     private static int modelviewDepth = -1;
     private static final HashSet<String> stackTraces = new HashSet<>();
 
-    public static void drawItem(int i, int j, ItemStack itemstack, FontRenderer fontRenderer, boolean smallAmount, String stackSize) {
+    public static void drawItem(
+            int i, int j, ItemStack itemstack, FontRenderer fontRenderer, boolean smallAmount, String stackSize) {
         enable3DRender();
-        //for lighting correction
+        // for lighting correction
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 
         float zLevel = drawItems.zLevel += 100F;
@@ -208,7 +210,7 @@ public class GuiContainerManager
             drawItems.renderItemAndEffectIntoGUI(fontRenderer, renderEngine, itemstack, i, j);
 
             if (stackSize == null) {
-                stackSize = itemstack.stackSize > 1? String.valueOf(itemstack.stackSize): "";
+                stackSize = itemstack.stackSize > 1 ? String.valueOf(itemstack.stackSize) : "";
             }
 
             if (smallAmount) {
@@ -223,10 +225,8 @@ public class GuiContainerManager
                 drawItems.renderItemOverlayIntoGUI(fontRenderer, renderEngine, itemstack, i, j, stackSize);
             }
 
-            if (!checkMatrixStack())
-                throw new IllegalStateException("Modelview matrix stack too deep");
-            if (Tessellator.instance.isDrawing)
-                throw new IllegalStateException("Still drawing");
+            if (!checkMatrixStack()) throw new IllegalStateException("Modelview matrix stack too deep");
+            if (Tessellator.instance.isDrawing) throw new IllegalStateException("Still drawing");
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -238,8 +238,7 @@ public class GuiContainerManager
             }
 
             restoreMatrixStack();
-            if (Tessellator.instance.isDrawing)
-                Tessellator.instance.draw();
+            if (Tessellator.instance.isDrawing) Tessellator.instance.draw();
 
             drawItems.zLevel = zLevel;
             drawItems.renderItemIntoGUI(fontRenderer, renderEngine, new ItemStack(Blocks.fire), i, j);
@@ -250,22 +249,21 @@ public class GuiContainerManager
         drawItems.zLevel = zLevel - 100;
     }
 
-    //copy from appeng.client.render.AppEngRenderItem
-    protected static void drawBigStackSize(int offsetX, int offsetY, String stackSize)
-    {
+    // copy from appeng.client.render.AppEngRenderItem
+    protected static void drawBigStackSize(int offsetX, int offsetY, String stackSize) {
         final float scaleFactor = fontRenderer.getUnicodeFlag() ? 0.85f : 0.5f;
         final float inverseScaleFactor = 1.0f / scaleFactor;
 
         enable2DRender();
         GL11.glScaled(scaleFactor, scaleFactor, scaleFactor);
 
-        final int X = (int) ( ( (float) offsetX + 16.0f - fontRenderer.getStringWidth( stackSize ) * scaleFactor ) * inverseScaleFactor );
-        final int Y = (int) ( ( (float) offsetY + 16.0f - 7.0f * scaleFactor ) * inverseScaleFactor );
+        final int X = (int)
+                (((float) offsetX + 16.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor) * inverseScaleFactor);
+        final int Y = (int) (((float) offsetY + 16.0f - 7.0f * scaleFactor) * inverseScaleFactor);
         fontRenderer.drawStringWithShadow(stackSize, X, Y, 16777215);
-        
+
         GL11.glScaled(inverseScaleFactor, inverseScaleFactor, inverseScaleFactor);
         enable3DRender();
-
     }
 
     public static void enableMatrixStackLogging() {
@@ -282,8 +280,7 @@ public class GuiContainerManager
 
     public static void restoreMatrixStack() {
         if (modelviewDepth >= 0)
-            for (int i = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH); i > modelviewDepth; i--)
-                GL11.glPopMatrix();
+            for (int i = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH); i > modelviewDepth; i--) GL11.glPopMatrix();
     }
 
     public static void setColouredItemRender(boolean enable) {
@@ -309,8 +306,7 @@ public class GuiContainerManager
             instanceTooltipHandlers = Collections.synchronizedList(new LinkedList<>());
             instanceTooltipHandlers.add((IContainerTooltipHandler) screen);
             instanceTooltipHandlers.addAll(tooltipHandlers);
-        } else
-            instanceTooltipHandlers = tooltipHandlers;
+        } else instanceTooltipHandlers = tooltipHandlers;
     }
 
     public static ItemStack getStackMouseOver(GuiContainer window) {
@@ -318,60 +314,51 @@ public class GuiContainerManager
 
         for (IContainerObjectHandler objectHandler : objectHandlers) {
             ItemStack item = objectHandler.getStackUnderMouse(window, mousePos.x, mousePos.y);
-            if (item != null)
-                return item;
+            if (item != null) return item;
         }
 
         Slot slot = getSlotMouseOver(window);
-        if (slot != null)
-            return slot.getStack();
+        if (slot != null) return slot.getStack();
 
         return null;
     }
 
     public static Slot getSlotMouseOver(GuiContainer window) {
         Point mousePos = getMousePosition();
-        if (getManager(window).objectUnderMouse(mousePos.x, mousePos.y))
-            return null;
+        if (getManager(window).objectUnderMouse(mousePos.x, mousePos.y)) return null;
 
         return window.getSlotAtPosition(mousePos.x, mousePos.y);
     }
 
     public void load() {
         clickHandled = 0;
-        for (IContainerObjectHandler objectHandler : objectHandlers)
-            objectHandler.load(window);
+        for (IContainerObjectHandler objectHandler : objectHandlers) objectHandler.load(window);
     }
 
     /**
      * Called from updateScreen
      */
     public void updateScreen() {
-        for (IContainerObjectHandler objectHandler : objectHandlers)
-            objectHandler.guiTick(window);
+        for (IContainerObjectHandler objectHandler : objectHandlers) objectHandler.guiTick(window);
     }
 
     /**
      * Override for keyTyped
      */
     public boolean lastKeyTyped(int keyID, char keyChar) {
-        if (keyID == 1)
-            return false;
+        if (keyID == 1) return false;
 
         for (IContainerInputHandler inputhander : inputHandlers)
-            if (inputhander.lastKeyTyped(window, keyChar, keyID))
-                return true;
+            if (inputhander.lastKeyTyped(window, keyChar, keyID)) return true;
 
         return false;
     }
 
     public boolean firstKeyTyped(char keyChar, int keyID) {
-        for (IContainerInputHandler inputhander : inputHandlers)
-            inputhander.onKeyTyped(window, keyChar, keyID);
+        for (IContainerInputHandler inputhander : inputHandlers) inputhander.onKeyTyped(window, keyChar, keyID);
 
         for (IContainerInputHandler inputhander : inputHandlers)
-            if (inputhander.keyTyped(window, keyChar, keyID))
-                return true;
+            if (inputhander.keyTyped(window, keyChar, keyID)) return true;
 
         return false;
     }
@@ -396,11 +383,9 @@ public class GuiContainerManager
             inputHandler.onMouseScrolled(window, mousepos.x, mousepos.y, scrolled);
 
         for (IContainerInputHandler inputHandler : inputHandlers)
-            if (inputHandler.mouseScrolled(window, mousepos.x, mousepos.y, scrolled))
-                return;
+            if (inputHandler.mouseScrolled(window, mousepos.x, mousepos.y, scrolled)) return;
 
-        if (window instanceof IGuiHandleMouseWheel)
-            ((IGuiHandleMouseWheel) window).mouseScrolled(scrolled);
+        if (window instanceof IGuiHandleMouseWheel) ((IGuiHandleMouseWheel) window).mouseScrolled(scrolled);
     }
 
     /**
@@ -416,8 +401,7 @@ public class GuiContainerManager
     }
 
     public void mouseUp(int mousex, int mousey, int button) {
-        for (IContainerInputHandler inputhander : inputHandlers)
-            inputhander.onMouseUp(window, mousex, mousey, button);
+        for (IContainerInputHandler inputhander : inputHandlers) inputhander.onMouseUp(window, mousex, mousey, button);
     }
 
     /**
@@ -432,17 +416,14 @@ public class GuiContainerManager
      * Called at the start of drawScreen
      */
     public void preDraw() {
-        for (IContainerDrawHandler drawHandler : drawHandlers)
-            drawHandler.onPreDraw(window);
+        for (IContainerDrawHandler drawHandler : drawHandlers) drawHandler.onPreDraw(window);
     }
 
     public void renderObjects(int mousex, int mousey) {
         GL11.glTranslatef(-window.guiLeft, -window.guiTop, 200F);
-        for (IContainerDrawHandler drawHandler : drawHandlers)
-            drawHandler.renderObjects(window, mousex, mousey);
+        for (IContainerDrawHandler drawHandler : drawHandlers) drawHandler.renderObjects(window, mousex, mousey);
 
-        for (IContainerDrawHandler drawHandler : drawHandlers)
-            drawHandler.postRenderObjects(window, mousex, mousey);
+        for (IContainerDrawHandler drawHandler : drawHandlers) drawHandler.postRenderObjects(window, mousex, mousey);
         GL11.glTranslatef(window.guiLeft, window.guiTop, -200F);
     }
 
@@ -454,12 +435,11 @@ public class GuiContainerManager
             for (IContainerTooltipHandler handler : instanceTooltipHandlers)
                 tooltip = handler.handleTooltip(window, mousex, mousey, tooltip);
         }
-        
-        if (tooltip.isEmpty() && shouldShowTooltip(window)) {//mouseover tip, not holding an item
+
+        if (tooltip.isEmpty() && shouldShowTooltip(window)) { // mouseover tip, not holding an item
             ItemStack stack = getStackMouseOver(window);
             font = getFontRenderer(stack);
-            if (stack != null)
-                tooltip = itemDisplayNameMultiline(stack, window, true);
+            if (stack != null) tooltip = itemDisplayNameMultiline(stack, window, true);
 
             synchronized (instanceTooltipHandlers) {
                 for (IContainerTooltipHandler handler : instanceTooltipHandlers)
@@ -467,28 +447,23 @@ public class GuiContainerManager
             }
         }
 
-        if (tooltip.size() > 0)
-            tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE);//add space after 'title'
+        if (tooltip.size() > 0) tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE); // add space after 'title'
 
         drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
     }
 
     public static boolean shouldShowTooltip(GuiContainer window) {
-        for (IContainerObjectHandler handler : objectHandlers)
-            if (!handler.shouldShowTooltip(window))
-                return false;
+        for (IContainerObjectHandler handler : objectHandlers) if (!handler.shouldShowTooltip(window)) return false;
 
         return window.mc.thePlayer.inventory.getItemStack() == null;
     }
 
     public void renderSlotUnderlay(Slot slot) {
-        for (IContainerDrawHandler drawHandler : drawHandlers)
-            drawHandler.renderSlotUnderlay(window, slot);
+        for (IContainerDrawHandler drawHandler : drawHandlers) drawHandler.renderSlotUnderlay(window, slot);
     }
 
     public void renderSlotOverlay(Slot slot) {
-        for (IContainerDrawHandler drawHandler : drawHandlers)
-            drawHandler.renderSlotOverlay(window, slot);
+        for (IContainerDrawHandler drawHandler : drawHandlers) drawHandler.renderSlotOverlay(window, slot);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
 
@@ -497,8 +472,7 @@ public class GuiContainerManager
      */
     public boolean objectUnderMouse(int mousex, int mousey) {
         for (IContainerObjectHandler objectHandler : objectHandlers)
-            if (objectHandler.objectUnderMouse(window, mousex, mousey))
-                return true;
+            if (objectHandler.objectUnderMouse(window, mousex, mousey)) return true;
 
         return false;
     }
@@ -532,24 +506,21 @@ public class GuiContainerManager
         window.mc.func_152348_aa();
     }
 
-
     public void keyTyped(char c, int k) {
-        if (firstKeyTyped(c, k))
-            return;
+        if (firstKeyTyped(c, k)) return;
 
         callKeyTyped(window, c, k);
     }
 
     private static void callKeyTyped(GuiContainer window, char c, int k) {
-        //calls GuiContainer.keyTyped using ASM generated forwarder
+        // calls GuiContainer.keyTyped using ASM generated forwarder
     }
 
     /**
      * Delegate for changing item rendering for certain slots. Eg. Shrinking text for large itemstacks
      */
     public void drawSlotItem(Slot slot, ItemStack stack, int x, int y, String quantity) {
-        if(window instanceof IGuiSlotDraw)
-            ((IGuiSlotDraw)window).drawSlotItem(slot, stack, x, y, quantity);
+        if (window instanceof IGuiSlotDraw) ((IGuiSlotDraw) window).drawSlotItem(slot, stack, x, y, quantity);
         else {
             drawItems.renderItemAndEffectIntoGUI(fontRenderer, window.mc.getTextureManager(), stack, x, y);
             drawItems.renderItemOverlayIntoGUI(fontRenderer, window.mc.getTextureManager(), stack, x, y, quantity);
@@ -560,13 +531,15 @@ public class GuiContainerManager
      * Implementation for handleMouseClick
      */
     public void handleSlotClick(int slotIndex, int button, int modifiers) {
-        if (slotIndex == -1)
-            return;
+        if (slotIndex == -1) return;
 
-        if (window instanceof IGuiClientSide)//send the calls directly to the container bypassing the MPController window send
-            window.mc.thePlayer.openContainer.slotClick(slotIndex, button, modifiers, window.mc.thePlayer);
+        if (window
+                instanceof
+                IGuiClientSide) // send the calls directly to the container bypassing the MPController window send
+        window.mc.thePlayer.openContainer.slotClick(slotIndex, button, modifiers, window.mc.thePlayer);
         else
-            window.mc.playerController.windowClick(window.inventorySlots.windowId, slotIndex, button, modifiers, window.mc.thePlayer);
+            window.mc.playerController.windowClick(
+                    window.inventorySlots.windowId, slotIndex, button, modifiers, window.mc.thePlayer);
     }
 
     /**
@@ -574,7 +547,6 @@ public class GuiContainerManager
      */
     public void handleMouseWheel() {
         int i = Mouse.getEventDWheel();
-        if (i != 0)
-            mouseScrolled(i > 0 ? 1 : -1);
+        if (i != 0) mouseScrolled(i > 0 ? 1 : -1);
     }
 }

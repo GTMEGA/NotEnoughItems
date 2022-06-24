@@ -3,8 +3,7 @@ package codechicken.nei.guihook;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
-public interface IContainerDrawHandler 
-{
+public interface IContainerDrawHandler {
     /**
      * Initialize your objects and the gui for drawing.
      * @param gui An instance of the currentscreen

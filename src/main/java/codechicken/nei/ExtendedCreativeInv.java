@@ -5,8 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-public class ExtendedCreativeInv implements IInventory
-{
+public class ExtendedCreativeInv implements IInventory {
     final PlayerSave playerSave;
     final Side side;
 
@@ -22,8 +21,7 @@ public class ExtendedCreativeInv implements IInventory
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        if (side.isClient())
-            return NEIClientConfig.creativeInv[slot];
+        if (side.isClient()) return NEIClientConfig.creativeInv[slot];
         return playerSave.creativeInv[slot];
     }
 
@@ -58,10 +56,8 @@ public class ExtendedCreativeInv implements IInventory
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        if (side.isClient())
-            NEIClientConfig.creativeInv[slot] = stack;
-        else
-            playerSave.creativeInv[slot] = stack;
+        if (side.isClient()) NEIClientConfig.creativeInv[slot] = stack;
+        else playerSave.creativeInv[slot] = stack;
 
         markDirty();
     }
@@ -78,8 +74,7 @@ public class ExtendedCreativeInv implements IInventory
 
     @Override
     public void markDirty() {
-        if (side.isServer())
-            playerSave.setCreativeDirty();
+        if (side.isServer()) playerSave.setCreativeDirty();
     }
 
     @Override
@@ -88,12 +83,10 @@ public class ExtendedCreativeInv implements IInventory
     }
 
     @Override
-    public void openInventory() {
-    }
+    public void openInventory() {}
 
     @Override
-    public void closeInventory() {
-    }
+    public void closeInventory() {}
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
@@ -104,5 +97,4 @@ public class ExtendedCreativeInv implements IInventory
     public boolean hasCustomInventoryName() {
         return true;
     }
-
 }

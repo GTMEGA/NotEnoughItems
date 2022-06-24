@@ -1,18 +1,15 @@
 package codechicken.nei;
 
+import static codechicken.lib.gui.GuiDraw.drawRect;
+
 import codechicken.lib.vec.Rectangle4i;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
+public class ItemPanel extends PanelWidget {
 
-import static codechicken.lib.gui.GuiDraw.drawRect;
-
-import java.util.ArrayList;
-
-public class ItemPanel extends PanelWidget
-{
-   
     /**
      *  Backwards compat :-/
      */
@@ -25,46 +22,40 @@ public class ItemPanel extends PanelWidget
 
     @Deprecated
     public ArrayList<ItemStack> realItems = new ArrayList<>();
-    
+
     public ItemStack getStackMouseOver(int mousex, int mousey) {
         // *looks angrily at AppleCore*
         return super.getStackMouseOver(mousex, mousey);
-    };
+    }
+    ;
 
     public Button more;
     public Button less;
     public ItemQuantityField quantity;
 
-    public static class ItemPanelSlot
-    {
+    public static class ItemPanelSlot {
         public ItemStack item;
         public int slotIndex;
 
-        public ItemPanelSlot(int idx, ItemStack stack)
-        {
+        public ItemPanelSlot(int idx, ItemStack stack) {
             slotIndex = idx;
             item = stack;
         }
 
         @Deprecated
-        public ItemPanelSlot(int idx)
-        {
+        public ItemPanelSlot(int idx) {
             this(idx, ItemPanels.itemPanel.getGrid().getItem(idx));
         }
-
     }
 
-    protected static class ItemPanelGrid extends ItemsGrid
-    {
+    protected static class ItemPanelGrid extends ItemsGrid {
         public ArrayList<ItemStack> newItems;
 
-        public void setItems(ArrayList<ItemStack> items)
-        {
+        public void setItems(ArrayList<ItemStack> items) {
             newItems = items;
         }
 
-        public void refresh(GuiContainer gui)
-        {
+        public void refresh(GuiContainer gui) {
 
             if (newItems != null) {
                 realItems = newItems;
@@ -78,36 +69,30 @@ public class ItemPanel extends PanelWidget
         @Override
         protected void drawSlotOutline(@Nullable ItemPanelSlot focused, int slotIdx, Rectangle4i rect) {
             if (PresetsWidget.inEditMode()) {
-                if(!PresetsWidget.isHidden(getItem(slotIdx)))
-                    drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);
+                if (!PresetsWidget.isHidden(getItem(slotIdx))) drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555);
             } else {
                 super.drawSlotOutline(focused, slotIdx, rect);
             }
         }
     }
 
-    public ItemPanel()
-    {
+    public ItemPanel() {
         grid = new ItemPanelGrid();
     }
 
-    public static void updateItemList(ArrayList<ItemStack> newItems)
-    {
+    public static void updateItemList(ArrayList<ItemStack> newItems) {
         ((ItemPanelGrid) ItemPanels.itemPanel.getGrid()).setItems(newItems);
         ItemPanels.itemPanel.realItems = newItems;
     }
 
     @Override
-    public void init()
-    {
+    public void init() {
         super.init();
 
-        more = new Button("+")
-        {
+        more = new Button("+") {
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                if (rightclick)
-                    return false;
+                if (rightclick) return false;
 
                 int modifier = NEIClientUtils.controlKey() ? 64 : NEIClientUtils.shiftKey() ? 10 : 1;
                 int quantity = NEIClientConfig.getItemQuantity() + modifier;
@@ -120,12 +105,10 @@ public class ItemPanel extends PanelWidget
                 return true;
             }
         };
-        less = new Button("-")
-        {
+        less = new Button("-") {
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                if (rightclick)
-                    return false;
+                if (rightclick) return false;
 
                 int modifier = NEIClientUtils.controlKey() ? -64 : NEIClientUtils.shiftKey() ? -10 : -1;
                 int quantity = NEIClientConfig.getItemQuantity() + modifier;
@@ -140,47 +123,38 @@ public class ItemPanel extends PanelWidget
         };
 
         quantity = new ItemQuantityField("quantity");
-
     }
 
     @Deprecated
-    public void scroll(int i)
-    {
+    public void scroll(int i) {
         grid.shiftPage(i);
     }
-    
-    public String getLabelText()
-    {
+
+    public String getLabelText() {
         return String.format("(%d/%d)", getPage(), Math.max(1, getNumPages()));
     }
 
-    protected String getPositioningSettingName()
-    {
+    protected String getPositioningSettingName() {
         return "world.panels.items";
     }
 
-    public int getMarginLeft(GuiContainer gui)
-    {
+    public int getMarginLeft(GuiContainer gui) {
         return (gui.width + gui.xSize) / 2 + PADDING;
     }
 
-    public int getMarginTop(GuiContainer gui)
-    {
+    public int getMarginTop(GuiContainer gui) {
         return PADDING;
     }
 
-    public int getWidth(GuiContainer gui)
-    {
+    public int getWidth(GuiContainer gui) {
         return gui.width - (gui.xSize + gui.width) / 2 - PADDING * 2;
     }
 
-    public int getHeight(GuiContainer gui)
-    {
+    public int getHeight(GuiContainer gui) {
         return gui.height - getMarginTop(gui) - PADDING;
     }
 
-    protected int resizeFooter(GuiContainer gui)
-    {
+    protected int resizeFooter(GuiContainer gui) {
         final int BUTTON_SIZE = 16;
 
         more.w = less.w = BUTTON_SIZE;
@@ -197,20 +171,17 @@ public class ItemPanel extends PanelWidget
     }
 
     @Override
-    public void setVisible()
-    {
+    public void setVisible() {
         super.setVisible();
-        
+
         if (grid.getPerPage() > 0) {
             LayoutManager.addWidget(more);
             LayoutManager.addWidget(less);
             LayoutManager.addWidget(quantity);
         }
-        
     }
 
-    protected ItemStack getDraggedStackWithQuantity(int mouseDownSlot)
-    {
+    protected ItemStack getDraggedStackWithQuantity(int mouseDownSlot) {
         ItemStack stack = grid.getItem(mouseDownSlot);
 
         if (stack != null) {
@@ -225,5 +196,4 @@ public class ItemPanel extends PanelWidget
 
         return null;
     }
-
 }

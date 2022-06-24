@@ -3,8 +3,7 @@ package codechicken.nei.guihook;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import org.lwjgl.input.Keyboard;
 
-public interface IContainerInputHandler
-{    
+public interface IContainerInputHandler {
     /**
      * Only use this for things like input boxes that have to be 'focused' first and will not conflict with others
      * @param gui An instance of the currentscreen
@@ -13,7 +12,7 @@ public interface IContainerInputHandler
      * @return true to terminate further processing of this event.
      */
     public boolean keyTyped(GuiContainer gui, char keyChar, int keyCode);
-    
+
     /**
      * This version of keyTyped is passive and will be called on every input handler before keyTyped is processed
      * @param gui An instance of the currentscreen
@@ -53,7 +52,7 @@ public interface IContainerInputHandler
      * @param button The button index being released, {0 = Left Click, 1 = Right Click, 2 = Middle Click}
      */
     public void onMouseUp(GuiContainer gui, int mousex, int mousey, int button);
-    
+
     /**
      * @param gui An instance of the currentscreen
      * @param mousex The x position of the mouse in pixels from left
@@ -62,7 +61,7 @@ public interface IContainerInputHandler
      * @return true to terminate further processing of this event.
      */
     public boolean mouseScrolled(GuiContainer gui, int mousex, int mousey, int scrolled);
-    
+
     /**
      * This version of mouseScrolled is passive and will be called on every input handler before mouseScrolled is processed
      * @param gui An instance of the currentscreen
@@ -81,5 +80,4 @@ public interface IContainerInputHandler
      * @param heldTime The number of milliseconds since the button was first pressed
      */
     public void onMouseDragged(GuiContainer gui, int mousex, int mousey, int button, long heldTime);
-
 }

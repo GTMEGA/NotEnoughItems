@@ -1,21 +1,19 @@
 package codechicken.nei.recipe.stackinfo;
 
 import codechicken.nei.api.IStackStringifyHandler;
+import java.lang.reflect.Method;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.lang.reflect.Method;
-
-public class GTFluidStackStringifyHandler implements IStackStringifyHandler
-{
+public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
 
     public static Class GTDisplayFluid = null;
     public static Method getFluidDisplayStack = null;
     public static Method getFluidFromDisplayStack = null;
-    
+
     static {
         try {
             final Class gtUtility = Class.forName("gregtech.api.util.GT_Utility");
@@ -24,11 +22,12 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler
             getFluidFromDisplayStack = gtUtility.getMethod("getFluidFromDisplayStack", ItemStack.class);
             getFluidDisplayStack = gtUtility.getMethod("getFluidDisplayStack", FluidStack.class, boolean.class);
 
-        } catch (Exception ignored) { /*Do nothing*/ }
+        } catch (Exception ignored) {
+            /*Do nothing*/
+        }
     }
 
-    public NBTTagCompound convertItemStackToNBT(ItemStack stack, boolean saveStackSize)
-    {
+    public NBTTagCompound convertItemStackToNBT(ItemStack stack, boolean saveStackSize) {
 
         if (GTDisplayFluid != null && GTDisplayFluid.isInstance(stack.getItem())) {
             final FluidStack fluidStack = getFluid(stack);
@@ -36,17 +35,15 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler
             if (fluidStack != null) {
                 final NBTTagCompound nbTag = new NBTTagCompound();
                 nbTag.setString("gtFluidName", fluidStack.getFluid().getName());
-                nbTag.setInteger("Count", saveStackSize? fluidStack.amount: 1);
+                nbTag.setInteger("Count", saveStackSize ? fluidStack.amount : 1);
                 return nbTag;
             }
-
         }
 
         return null;
     }
 
-    public ItemStack convertNBTToItemStack(NBTTagCompound nbtTag)
-    {
+    public ItemStack convertNBTToItemStack(NBTTagCompound nbtTag) {
 
         if (getFluidDisplayStack != null && nbtTag.hasKey("gtFluidName")) {
             final String fluidName = nbtTag.getString("gtFluidName");
@@ -60,28 +57,27 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler
                     return (ItemStack) obj;
                 }
 
-            } catch (Exception e) {}
-
+            } catch (Exception e) {
+            }
         }
 
         return null;
     }
 
-    public FluidStack getFluid(ItemStack stack)
-    {
+    public FluidStack getFluid(ItemStack stack) {
 
         if (getFluidFromDisplayStack != null && GTDisplayFluid != null && GTDisplayFluid.isInstance(stack.getItem())) {
             try {
                 final Object obj = getFluidFromDisplayStack.invoke(null, stack);
-    
+
                 if (obj != null) {
                     return (FluidStack) obj;
                 }
-    
-            } catch (Exception e) {}
+
+            } catch (Exception e) {
+            }
         }
-        
+
         return null;
     }
-    
 }

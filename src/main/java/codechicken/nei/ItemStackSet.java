@@ -5,23 +5,19 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemStackSet extends ItemStackMap<ItemStack> implements ItemFilter
-{
+public class ItemStackSet extends ItemStackMap<ItemStack> implements ItemFilter {
     public ItemStackSet with(ItemStack... items) {
-        for(ItemStack item : items)
-            add(item);
+        for (ItemStack item : items) add(item);
         return this;
     }
 
     public ItemStackSet with(Item... items) {
-        for(Item item : items)
-            add(ItemStackMap.wildcard(item));
+        for (Item item : items) add(ItemStackMap.wildcard(item));
         return this;
     }
 
     public ItemStackSet with(Block... blocks) {
-        for(Block block : blocks)
-            add(ItemStackMap.wildcard(Item.getItemFromBlock(block)));
+        for (Block block : blocks) add(ItemStackMap.wildcard(Item.getItemFromBlock(block)));
         return this;
     }
 

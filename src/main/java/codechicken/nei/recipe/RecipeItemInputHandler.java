@@ -7,10 +7,9 @@ import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
+import java.util.List;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
-
-import java.util.List;
 
 public class RecipeItemInputHandler implements IContainerInputHandler {
     @Override
@@ -44,8 +43,9 @@ public class RecipeItemInputHandler implements IContainerInputHandler {
             }
             if (!NEIClientConfig.saveCurrentRecipeInBookmarksEnabled()) return false;
             final BookmarkRecipeId mouseOverRecipeId = ItemPanels.bookmarkPanel.getBookmarkMouseOverRecipeId();
-            if (mouseOverRecipeId == null || mouseOverRecipeId.ingredients == null || mouseOverRecipeId.ingredients.isEmpty())
-                return false;
+            if (mouseOverRecipeId == null
+                    || mouseOverRecipeId.ingredients == null
+                    || mouseOverRecipeId.ingredients.isEmpty()) return false;
             return GuiCraftingRecipe.openRecipeGui("item", true, stackover.copy());
         }
 
@@ -60,8 +60,10 @@ public class RecipeItemInputHandler implements IContainerInputHandler {
 
         if (!(gui instanceof GuiRecipe)) return false;
 
-        //disabled open recipe gui if hold shift (player have move recipe)
-        if (button == 0 && ItemPanels.bookmarkPanel.getStackMouseOver(mousex, mousey) != null && NEIClientUtils.shiftKey()) {
+        // disabled open recipe gui if hold shift (player have move recipe)
+        if (button == 0
+                && ItemPanels.bookmarkPanel.getStackMouseOver(mousex, mousey) != null
+                && NEIClientUtils.shiftKey()) {
             return false;
         }
 
@@ -73,16 +75,13 @@ public class RecipeItemInputHandler implements IContainerInputHandler {
     }
 
     @Override
-    public void onKeyTyped(GuiContainer gui, char keyChar, int keyID) {
-    }
+    public void onKeyTyped(GuiContainer gui, char keyChar, int keyID) {}
 
     @Override
-    public void onMouseClicked(GuiContainer gui, int mousex, int mousey, int button) {
-    }
+    public void onMouseClicked(GuiContainer gui, int mousex, int mousey, int button) {}
 
     @Override
-    public void onMouseUp(GuiContainer gui, int mousex, int mousey, int button) {
-    }
+    public void onMouseUp(GuiContainer gui, int mousex, int mousey, int button) {}
 
     @Override
     public boolean keyTyped(GuiContainer gui, char keyChar, int keyID) {
@@ -95,10 +94,8 @@ public class RecipeItemInputHandler implements IContainerInputHandler {
     }
 
     @Override
-    public void onMouseScrolled(GuiContainer gui, int mousex, int mousey, int scrolled) {
-    }
+    public void onMouseScrolled(GuiContainer gui, int mousex, int mousey, int scrolled) {}
 
     @Override
-    public void onMouseDragged(GuiContainer gui, int mousex, int mousey, int button, long heldTime) {
-    }
+    public void onMouseDragged(GuiContainer gui, int mousex, int mousey, int button, long heldTime) {}
 }

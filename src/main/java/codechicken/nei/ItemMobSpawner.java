@@ -1,5 +1,8 @@
 package codechicken.nei;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -16,12 +19,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ItemMobSpawner extends ItemBlock
-{
+public class ItemMobSpawner extends ItemBlock {
     private static Map<Integer, EntityLiving> entityHashMap;
     private static Map<Integer, String> IDtoNameMap;
     public static int idPig;
@@ -41,6 +39,7 @@ public class ItemMobSpawner extends ItemBlock
      * These are ASM translated from BlockMobSpawner
      */
     public static int placedX;
+
     public static int placedY;
     public static int placedZ;
 
@@ -49,9 +48,20 @@ public class ItemMobSpawner extends ItemBlock
         return Blocks.mob_spawner.getBlockTextureFromSide(0);
     }
 
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int par7, float par8, float par9, float par10) {
+    public boolean onItemUse(
+            ItemStack itemstack,
+            EntityPlayer entityplayer,
+            World world,
+            int x,
+            int y,
+            int z,
+            int par7,
+            float par8,
+            float par9,
+            float par10) {
         if (super.onItemUse(itemstack, entityplayer, world, x, y, z, par7, par8, par9, par10) && world.isRemote) {
-            TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world.getTileEntity(placedX, placedY, placedZ);
+            TileEntityMobSpawner tileentitymobspawner =
+                    (TileEntityMobSpawner) world.getTileEntity(placedX, placedY, placedZ);
             if (tileentitymobspawner != null) {
                 setDefaultTag(itemstack);
                 String mobtype = IDtoNameMap.get(itemstack.getItemDamage());
@@ -83,12 +93,12 @@ public class ItemMobSpawner extends ItemBlock
             loadSpawners(world);
             Class<?> clazz = (Class<?>) EntityList.IDtoClassMapping.get(ID);
             try {
-                e = (EntityLiving) clazz.getConstructor(new Class[]{World.class}).newInstance(world);
+                e = (EntityLiving)
+                        clazz.getConstructor(new Class[] {World.class}).newInstance(world);
             } catch (Throwable t) {
-                if(clazz == null)
-                    NEIClientConfig.logger.error("Null class for entity ("+ID+", "+IDtoNameMap.get(ID));
-                else
-                    NEIClientConfig.logger.error("Error creating instance of entity: " + clazz.getName(), t);
+                if (clazz == null)
+                    NEIClientConfig.logger.error("Null class for entity (" + ID + ", " + IDtoNameMap.get(ID));
+                else NEIClientConfig.logger.error("Error creating instance of entity: " + clazz.getName(), t);
                 e = getEntity(idPig);
             }
             entityHashMap.put(ID, e);
@@ -101,45 +111,43 @@ public class ItemMobSpawner extends ItemBlock
     }
 
     private void setDefaultTag(ItemStack itemstack) {
-        if (!IDtoNameMap.containsKey(itemstack.getItemDamage()))
-            itemstack.setItemDamage(idPig);
+        if (!IDtoNameMap.containsKey(itemstack.getItemDamage())) itemstack.setItemDamage(idPig);
     }
 
     public static void loadSpawners(World world) {
         if (loaded) return;
         loaded = true;
-        HashMap<Class<Entity>, String> classToStringMapping = (HashMap<Class<Entity>, String>) EntityList.classToStringMapping;
-        HashMap<Class<Entity>, Integer> classToIDMapping = (HashMap<Class<Entity>, Integer>) EntityList.classToIDMapping;
+        HashMap<Class<Entity>, String> classToStringMapping =
+                (HashMap<Class<Entity>, String>) EntityList.classToStringMapping;
+        HashMap<Class<Entity>, Integer> classToIDMapping =
+                (HashMap<Class<Entity>, Integer>) EntityList.classToIDMapping;
         for (Class<Entity> eclass : classToStringMapping.keySet()) {
-            if (!EntityLiving.class.isAssignableFrom(eclass))
-                continue;
+            if (!EntityLiving.class.isAssignableFrom(eclass)) continue;
             try {
-                EntityLiving entityliving = (EntityLiving) eclass.getConstructor(new Class[]{World.class}).newInstance(world);
+                EntityLiving entityliving = (EntityLiving)
+                        eclass.getConstructor(new Class[] {World.class}).newInstance(world);
                 entityliving.isChild();
 
                 int id = classToIDMapping.get(eclass);
                 String name = classToStringMapping.get(eclass);
 
-                if (name.equals("EnderDragon"))
-                    continue;
+                if (name.equals("EnderDragon")) continue;
 
                 IDtoNameMap.put(id, name);
 
-                if (name.equals("Pig"))
-                    idPig = id;
+                if (name.equals("Pig")) idPig = id;
             } catch (Throwable ignored) {
             }
         }
 
-        IDtoNameMap.entrySet().removeIf(e -> getEntity(e.getKey()).getClass() == EntityPig.class && !e.getValue().equals("Pig"));
+        IDtoNameMap.entrySet()
+                .removeIf(e -> getEntity(e.getKey()).getClass() == EntityPig.class
+                        && !e.getValue().equals("Pig"));
     }
 
     @Override
     public void getSubItems(Item item, CreativeTabs tab, List list) {
-        if(!NEIClientConfig.hasSMPCounterPart())
-            list.add(new ItemStack(item));
-        else
-            for(int i : IDtoNameMap.keySet())
-                list.add(new ItemStack(item, 1, i));
+        if (!NEIClientConfig.hasSMPCounterPart()) list.add(new ItemStack(item));
+        else for (int i : IDtoNameMap.keySet()) list.add(new ItemStack(item, 1, i));
     }
 }

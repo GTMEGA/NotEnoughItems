@@ -1,22 +1,17 @@
 package codechicken.nei;
 
-import codechicken.nei.api.LayoutStyle;
-import codechicken.nei.drawable.DrawableBuilder;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import org.lwjgl.opengl.GL11;
-
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.LayoutManager.bookmarkPanel;
 import static codechicken.nei.LayoutManager.bookmarksButton;
 import static codechicken.nei.LayoutManager.delete;
 import static codechicken.nei.LayoutManager.dropDown;
-import static codechicken.nei.LayoutManager.presetsPanel;
 import static codechicken.nei.LayoutManager.gamemode;
 import static codechicken.nei.LayoutManager.heal;
 import static codechicken.nei.LayoutManager.itemPanel;
 import static codechicken.nei.LayoutManager.itemPresenceOverlays;
 import static codechicken.nei.LayoutManager.magnet;
 import static codechicken.nei.LayoutManager.options;
+import static codechicken.nei.LayoutManager.presetsPanel;
 import static codechicken.nei.LayoutManager.rain;
 import static codechicken.nei.LayoutManager.searchField;
 import static codechicken.nei.LayoutManager.timeButtons;
@@ -25,8 +20,12 @@ import static codechicken.nei.NEIClientConfig.disabledActions;
 import static codechicken.nei.NEIClientConfig.getMagnetMode;
 import static codechicken.nei.NEIClientConfig.isEnabled;
 
-public class LayoutStyleMinecraft extends LayoutStyle
-{
+import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.drawable.DrawableBuilder;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import org.lwjgl.opengl.GL11;
+
+public class LayoutStyleMinecraft extends LayoutStyle {
     public int buttonCount;
     public int leftSize;
     public int numButtons;
@@ -66,52 +65,40 @@ public class LayoutStyleMinecraft extends LayoutStyle
         numButtons = Math.max(leftSize / 18, 1);
 
         delete.state = 0x4;
-        if (NEIController.getDeleteMode())
-            delete.state |= 1;
-        else if (!visiblity.enableDeleteMode)
-            delete.state |= 2;
+        if (NEIController.getDeleteMode()) delete.state |= 1;
+        else if (!visiblity.enableDeleteMode) delete.state |= 2;
 
         rain.state = 0x4;
-        if (disabledActions.contains("rain"))
-            rain.state |= 2;
-        else if (NEIClientUtils.isRaining())
-            rain.state |= 1;
+        if (disabledActions.contains("rain")) rain.state |= 2;
+        else if (NEIClientUtils.isRaining()) rain.state |= 1;
 
         gamemode.state = 0x4;
         if (NEIClientUtils.getGamemode() != 0) {
             gamemode.state |= 0x1;
             gamemode.index = NEIClientUtils.getGamemode() - 1;
         } else {
-            if (NEIClientUtils.isValidGamemode("creative"))
-                gamemode.index = 0;
-            else if (NEIClientUtils.isValidGamemode("creative+"))
-                gamemode.index = 1;
-            else if (NEIClientUtils.isValidGamemode("adventure"))
-                gamemode.index = 2;
+            if (NEIClientUtils.isValidGamemode("creative")) gamemode.index = 0;
+            else if (NEIClientUtils.isValidGamemode("creative+")) gamemode.index = 1;
+            else if (NEIClientUtils.isValidGamemode("adventure")) gamemode.index = 2;
         }
         bookmarksButton.index = NEIClientConfig.isBookmarkPanelHidden() ? 0 : 1;
         options.index = NEIClientConfig.getCheatMode();
 
         magnet.state = 0x4 | (getMagnetMode() ? 1 : 0);
 
-        if (canPerformAction("delete"))
-            layoutButton(delete);
-        if (canPerformAction("rain"))
-            layoutButton(rain);
-        if (NEIClientUtils.isValidGamemode("creative") ||
-            NEIClientUtils.isValidGamemode("creative+") ||
-            NEIClientUtils.isValidGamemode("adventure"))
-            layoutButton(gamemode);
-        if (canPerformAction("magnet"))
-            layoutButton(magnet);
+        if (canPerformAction("delete")) layoutButton(delete);
+        if (canPerformAction("rain")) layoutButton(rain);
+        if (NEIClientUtils.isValidGamemode("creative")
+                || NEIClientUtils.isValidGamemode("creative+")
+                || NEIClientUtils.isValidGamemode("adventure")) layoutButton(gamemode);
+        if (canPerformAction("magnet")) layoutButton(magnet);
         if (canPerformAction("time")) {
             for (int i = 0; i < 4; i++) {
                 timeButtons[i].state = disabledActions.contains(NEIActions.timeZones[i]) ? 2 : 0;
                 layoutButton(timeButtons[i]);
             }
         }
-        if (canPerformAction("heal"))
-            layoutButton(heal);
+        if (canPerformAction("heal")) layoutButton(heal);
 
         itemPanel.resize(gui);
         bookmarkPanel.resize(gui);
@@ -135,7 +122,7 @@ public class LayoutStyleMinecraft extends LayoutStyle
         presetsPanel.w = 150;
         presetsPanel.y = 2;
         presetsPanel.x = (gui.width - gui.xSize) / 2 + gui.xSize - presetsPanel.w;
-        
+
         searchField.h = 20;
         searchField.w = 150;
         searchField.x = (gui.width - searchField.w) / 2;
@@ -144,7 +131,6 @@ public class LayoutStyleMinecraft extends LayoutStyle
         if (!visiblity.showItemSection) {
             searchField.setFocus(false);
         }
-
     }
 
     public void layoutButton(Button button) {
@@ -163,13 +149,12 @@ public class LayoutStyleMinecraft extends LayoutStyle
         GL11.glColor4f(1, 1, 1, 1);
 
         int tex;
-        if ((b.state & 0x3) == 2)
-            tex = 0;
-        else if ((b.state & 0x4) == 0 && b.contains(mousex, mousey) ||//not a state button and mouseover
-            (b.state & 0x3) == 1)//state active
-            tex = 2;
-        else
-            tex = 1;
+        if ((b.state & 0x3) == 2) tex = 0;
+        else if ((b.state & 0x4) == 0 && b.contains(mousex, mousey)
+                || // not a state button and mouseover
+                (b.state & 0x3) == 1) // state active
+        tex = 2;
+        else tex = 1;
         LayoutManager.drawButtonBackground(b.x, b.y, b.w, b.h, true, tex);
 
         Image icon = b.getRenderIcon();
@@ -189,12 +174,9 @@ public class LayoutStyleMinecraft extends LayoutStyle
 
     @Override
     public void drawSubsetTag(String text, int x, int y, int w, int h, int state, boolean mouseover) {
-        if(state == 1)
-            GL11.glColor4f(0.65F, 0.65F, 0.65F, 1.0F);
-        else
-            GL11.glColor4f(1, 1, 1, 1);
+        if (state == 1) GL11.glColor4f(0.65F, 0.65F, 0.65F, 1.0F);
+        else GL11.glColor4f(1, 1, 1, 1);
         LayoutManager.drawButtonBackground(x, y, w, h, false, state == 0 ? 0 : 1);
-        if(text != null)
-            drawStringC(text, x, y, w, h, state == 2 ? 0xFFE0E0E0 : 0xFFA0A0A0);
+        if (text != null) drawStringC(text, x, y, w, h, state == 2 ? 0xFFE0E0E0 : 0xFFA0A0A0);
     }
 }

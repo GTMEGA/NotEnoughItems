@@ -9,13 +9,10 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-
-public class CheatItemHandler extends INEIGuiAdapter
-{
+public class CheatItemHandler extends INEIGuiAdapter {
 
     @Override
-    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button)
-    {
+    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
         final Slot overSlot = gui.getSlotAtPosition(mouseX, mouseY);
 
         if (overSlot != null && overSlot.isItemValid(draggedStack)) {
@@ -28,10 +25,12 @@ public class CheatItemHandler extends INEIGuiAdapter
                     contents = 0;
                 }
 
-                final int total = Math.min(contents + add, Math.min(overSlot.getSlotStackLimit(), draggedStack.getMaxStackSize()));
+                final int total = Math.min(
+                        contents + add, Math.min(overSlot.getSlotStackLimit(), draggedStack.getMaxStackSize()));
 
                 if (total > contents) {
-                    NEIClientUtils.setSlotContents(overSlot.slotNumber, NEIServerUtils.copyStack(draggedStack, total), true);
+                    NEIClientUtils.setSlotContents(
+                            overSlot.slotNumber, NEIServerUtils.copyStack(draggedStack, total), true);
                     NEICPH.sendGiveItem(NEIServerUtils.copyStack(draggedStack, total), false, false);
                     draggedStack.stackSize -= total - contents;
                 }
@@ -45,6 +44,4 @@ public class CheatItemHandler extends INEIGuiAdapter
 
         return false;
     }
-
 }
-    

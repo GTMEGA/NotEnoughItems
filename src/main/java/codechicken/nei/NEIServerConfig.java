@@ -5,6 +5,17 @@ import codechicken.core.ServerUtils;
 import codechicken.lib.config.ConfigFile;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.packet.PacketCustom;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -18,20 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-public class NEIServerConfig
-{
+public class NEIServerConfig {
     private static MinecraftServer server;
 
     public static Logger logger = LogManager.getLogger("NotEnoughItems");
@@ -62,7 +60,7 @@ public class NEIServerConfig
         try {
             File file = new File(getSaveDir(world), "world.dat");
             NBTTagCompound tag = NEIServerUtils.readNBT(file);
-            if(tag == null) tag = new NBTTagCompound();
+            if (tag == null) tag = new NBTTagCompound();
             dimTags.put(CommonUtils.getDimension(world), tag);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -75,7 +73,9 @@ public class NEIServerConfig
 
         serverConfig.setNewLineMode(1);
         serverConfig.getTag("permissions").useBraces();
-        serverConfig.getTag("permissions").setComment("List of players who can use these features.\nEg. time=CodeChicken, Friend1");
+        serverConfig
+                .getTag("permissions")
+                .setComment("List of players who can use these features.\nEg. time=CodeChicken, Friend1");
 
         setDefaultFeature("time");
         setDefaultFeature("rain");
@@ -93,13 +93,11 @@ public class NEIServerConfig
     }
 
     private static void setDefaultFeature(String featurename, String... names) {
-        if (names.length == 0)
-            names = new String[]{"OP"};
+        if (names.length == 0) names = new String[] {"OP"};
 
         StringBuilder list = new StringBuilder();
         for (int i = 0; i < names.length; i++) {
-            if (i >= 1)
-                list.append(", ");
+            if (i >= 1) list.append(", ");
             list.append(names[i]);
         }
         serverConfig.getTag("permissions." + featurename).setDefaultValue(list.toString());
@@ -119,14 +117,12 @@ public class NEIServerConfig
     }
 
     public static boolean isPlayerInList(String playername, Set<String> list, boolean allowCards) {
-        if (playername.equals("CONSOLE"))
-            return list.contains(playername);
+        if (playername.equals("CONSOLE")) return list.contains(playername);
 
         playername = playername.toLowerCase();
 
         if (allowCards) {
-            if (list.contains("ALL"))
-                return true;
+            if (list.contains("ALL")) return true;
             if ((ServerUtils.isPlayerOP(playername) || ServerUtils.isPlayerOwner(playername)) && list.contains("OP"))
                 return true;
         }
@@ -173,8 +169,7 @@ public class NEIServerConfig
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Iterator<String> iterator = list.iterator(); iterator.hasNext(); i++) {
-            if (i != 0)
-                sb.append(", ");
+            if (i != 0) sb.append(", ");
 
             sb.append(iterator.next());
         }
@@ -185,7 +180,7 @@ public class NEIServerConfig
     private static void loadBannedItems() {
         bannedItems.clear();
         File file = new File(saveDir, "banneditems.cfg");
-        if(!file.exists()) {
+        if (!file.exists()) {
             bannedItems.put(new ItemStack(Blocks.command_block), new HashSet<>(Collections.singletonList("NONE")));
             saveBannedItems();
             return;
@@ -193,22 +188,20 @@ public class NEIServerConfig
         try {
             FileReader r = new FileReader(file);
             int line = 0;
-            for(String s : IOUtils.readLines(r)) {
-                if(s.charAt(0) == '#' || s.trim().length() == 0)
-                    continue;
+            for (String s : IOUtils.readLines(r)) {
+                if (s.charAt(0) == '#' || s.trim().length() == 0) continue;
                 int delim = s.lastIndexOf('=');
-                if(delim < 0) {
-                    logger.error("line "+line+": Missing =");
+                if (delim < 0) {
+                    logger.error("line " + line + ": Missing =");
                     continue;
                 }
                 try {
                     NBTTagCompound key = (NBTTagCompound) JsonToNBT.func_150315_a(s.substring(0, delim));
                     Set<String> values = new HashSet<>();
-                    for(String s2 : s.substring(delim+1).split(","))
-                        values.add(s2.trim());
+                    for (String s2 : s.substring(delim + 1).split(",")) values.add(s2.trim());
                     bannedItems.put(InventoryUtils.loadPersistant(key), values);
                 } catch (Exception e) {
-                    logger.error("line "+line+": "+e.getMessage());
+                    logger.error("line " + line + ": " + e.getMessage());
                 }
             }
             r.close();
@@ -220,22 +213,22 @@ public class NEIServerConfig
     public static void saveBannedItems() {
         File file = new File(saveDir, "banneditems.cfg");
         try {
-            if(!file.exists())
-                file.createNewFile();
+            if (!file.exists()) file.createNewFile();
 
             PrintWriter p = new PrintWriter(file);
-            p.println("#Saved in this format for external editing. The format isn't that hard to figure out. If you think you're up to it, modify it here!");
+            p.println(
+                    "#Saved in this format for external editing. The format isn't that hard to figure out. If you think you're up to it, modify it here!");
 
             for (ItemStackMap.Entry<Set<String>> entry : bannedItems.entries()) {
                 NBTTagCompound key = InventoryUtils.savePersistant(entry.key, new NBTTagCompound());
                 key.removeTag("Count");
-                if(key.getByte("Damage") == 0) key.removeTag("Damage");
+                if (key.getByte("Damage") == 0) key.removeTag("Damage");
 
                 p.print(key.toString());
                 p.print("=[");
                 int i = 0;
                 for (String s : entry.value) {
-                    if(i++ != 0) p.print(", ");
+                    if (i++ != 0) p.print(", ");
                     p.print(s);
                 }
                 p.println("]");
@@ -252,14 +245,15 @@ public class NEIServerConfig
 
     public static void loadPlayer(EntityPlayer player) {
         logger.debug("Loading Player: " + player.getGameProfile().getName());
-        playerSaves.put(player.getCommandSenderName(), new PlayerSave(player.getCommandSenderName(), new File(saveDir, "players")));
+        playerSaves.put(
+                player.getCommandSenderName(),
+                new PlayerSave(player.getCommandSenderName(), new File(saveDir, "players")));
     }
 
     public static void unloadPlayer(EntityPlayer player) {
         logger.debug("Unloading Player: " + player.getCommandSenderName());
         PlayerSave playerSave = playerSaves.remove(player.getCommandSenderName());
-        if (playerSave != null)
-            playerSave.save();
+        if (playerSave != null) playerSave.save();
     }
 
     public static boolean authenticatePacket(EntityPlayerMP sender, PacketCustom packet) {

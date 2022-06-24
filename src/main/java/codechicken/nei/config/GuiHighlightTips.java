@@ -1,27 +1,25 @@
 package codechicken.nei.config;
 
+import static codechicken.lib.gui.GuiDraw.displaySize;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.nei.NEIClientUtils.translate;
+
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.HUDRenderer;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.Arrays;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.util.Arrays;
-import java.util.List;
-
-import static codechicken.lib.gui.GuiDraw.displaySize;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-import static codechicken.nei.NEIClientUtils.translate;
-
-public class GuiHighlightTips extends GuiScreenWidget
-{
+public class GuiHighlightTips extends GuiScreenWidget {
     private final String name;
     private GuiCCButton toggleButton;
     private final Option opt;
@@ -73,17 +71,20 @@ public class GuiHighlightTips extends GuiScreenWidget
         super.drawScreen(mousex, mousey, f);
         if (show()) {
             ItemStack stack = new ItemStack(Blocks.redstone_block);
-            List<String> tip = Arrays.asList(stack.getDisplayName(), EnumChatFormatting.RED+translate("options."+name+".sample"));
+            List<String> tip = Arrays.asList(
+                    stack.getDisplayName(), EnumChatFormatting.RED + translate("options." + name + ".sample"));
             HUDRenderer.renderOverlay(stack, tip, renderPos());
         }
     }
 
     public Point getPos() {
-        return new Point(opt.renderTag(name + ".x").getIntValue(), opt.renderTag(name + ".y").getIntValue());
+        return new Point(
+                opt.renderTag(name + ".x").getIntValue(),
+                opt.renderTag(name + ".y").getIntValue());
     }
 
-    public Dimension sampleSize()//copied from HUDManager when running with the sample for this gui
-    {
+    public Dimension sampleSize() // copied from HUDManager when running with the sample for this gui
+            {
         return new Dimension(101, 30);
     }
 
@@ -110,12 +111,10 @@ public class GuiHighlightTips extends GuiScreenWidget
             pos.y += drag.y;
         }
 
-        for (int i = 25; i < 100; i += 25)//snapping
+        for (int i = 25; i < 100; i += 25) // snapping
         {
-            if (pos.x / 100 == i)
-                pos.x = i * 100;
-            if (pos.y / 100 == i)
-                pos.y = i * 100;
+            if (pos.x / 100 == i) pos.x = i * 100;
+            if (pos.y / 100 == i) pos.y = i * 100;
         }
 
         return pos;
@@ -136,19 +135,18 @@ public class GuiHighlightTips extends GuiScreenWidget
         return new Rectangle4i(
                 (size.width - rect.width) * pos.x / 10000,
                 (size.height - rect.height) * pos.y / 10000,
-                rect.width, rect.height);
+                rect.width,
+                rect.height);
     }
 
     @Override
     protected void mouseClicked(int x, int y, int button) {
-        if (button == 0 && selectionBox().contains(x, y))
-            dragDown = getMousePosition();
-        else
-            super.mouseClicked(x, y, button);
+        if (button == 0 && selectionBox().contains(x, y)) dragDown = getMousePosition();
+        else super.mouseClicked(x, y, button);
     }
 
     private void setPos(Point p) {
-        opt.getTag(name).setBooleanValue(show());//duplicates global tag for the option gui if in world mode
+        opt.getTag(name).setBooleanValue(show()); // duplicates global tag for the option gui if in world mode
         opt.getTag(name + ".x").setIntValue(p.x);
         opt.getTag(name + ".y").setIntValue(p.y);
     }

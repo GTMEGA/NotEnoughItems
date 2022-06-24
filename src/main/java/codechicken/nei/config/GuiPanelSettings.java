@@ -1,59 +1,50 @@
 package codechicken.nei.config;
 
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.ItemsGrid;
+import codechicken.nei.guihook.GuiContainerManager;
+import java.awt.Point;
+import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-import codechicken.nei.guihook.GuiContainerManager;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-
-public class GuiPanelSettings extends GuiScreenWidget
-{
+public class GuiPanelSettings extends GuiScreenWidget {
     private final Option opt;
 
     private PanelPlaceholder bookmarksPanel;
     private PanelPlaceholder itemsPanel;
 
-    protected static class PanelResizeButton
-    {
+    protected static class PanelResizeButton {
         private int x;
         private int y;
         private int w;
         private int h;
 
-        public PanelResizeButton(int w, int h)
-        {
+        public PanelResizeButton(int w, int h) {
             this.w = w;
             this.h = h;
         }
 
-        public void draw(int mousex, int mousey)
-        {
+        public void draw(int mousex, int mousey) {
             drawRect(x, y, x + w, y + h, 0xbbaaaaaa);
-            drawRect(x + 2, y + 2, x + w - 2, y + h - 2, contains(mousex, mousey)? 0xFF000000: 0xbb000000);
+            drawRect(x + 2, y + 2, x + w - 2, y + h - 2, contains(mousex, mousey) ? 0xFF000000 : 0xbb000000);
         }
 
-        public boolean contains(int pointX, int pointY) 
-        {
+        public boolean contains(int pointX, int pointY) {
             return (new Rectangle4i(x, y, w, h)).contains(pointX, pointY);
         }
-
     }
 
-    protected static class PanelPlaceholder
-    {
+    protected static class PanelPlaceholder {
         protected static int PANEL_SIZE = 16;
 
         private final Option opt;
@@ -71,20 +62,18 @@ public class GuiPanelSettings extends GuiScreenWidget
         private PanelResizeButton rightButton = new PanelResizeButton(PANEL_SIZE, PANEL_SIZE * 2);
         private PanelResizeButton bottomButton = new PanelResizeButton(PANEL_SIZE * 2, PANEL_SIZE);
 
-        public PanelPlaceholder(Option opt, String name)
-        {
+        public PanelPlaceholder(Option opt, String name) {
             this.opt = opt;
             this.name = name;
         }
 
-        public void resize(Rectangle4i margin)
-        {
+        public void resize(Rectangle4i margin) {
             this.margin = margin;
             int[] padding = getPaddings();
 
             x = margin.x + padding[0];
             y = margin.y + padding[1];
-            w = margin.w - padding[2] - padding[0]; 
+            w = margin.w - padding[2] - padding[0];
             h = margin.h - padding[3] - padding[1];
 
             leftButton.x = x;
@@ -100,16 +89,15 @@ public class GuiPanelSettings extends GuiScreenWidget
             bottomButton.y = y + h - PANEL_SIZE;
         }
 
-        public void draw(int mousex, int mousey)
-        {
-            drawRect(x, y, x + w, y + PANEL_SIZE, 0xbbaaaaaa); //top-panel
-            drawRect(x, y + h - PANEL_SIZE, x + w, y + h, 0xbbaaaaaa); //bottom-panel
-    
-            drawRect(x, y, x + 2, y + h, 0xbbaaaaaa); //border left
-            drawRect(x + w, y, x + w - 2, y + h, 0xbbaaaaaa); //border right
-    
-            drawRect(x, y, x + w, y + 2, 0xbbaaaaaa); //border top
-            drawRect(x, y + h, x + w, y + h - 2, 0xbbaaaaaa); //border bottom
+        public void draw(int mousex, int mousey) {
+            drawRect(x, y, x + w, y + PANEL_SIZE, 0xbbaaaaaa); // top-panel
+            drawRect(x, y + h - PANEL_SIZE, x + w, y + h, 0xbbaaaaaa); // bottom-panel
+
+            drawRect(x, y, x + 2, y + h, 0xbbaaaaaa); // border left
+            drawRect(x + w, y, x + w - 2, y + h, 0xbbaaaaaa); // border right
+
+            drawRect(x, y, x + w, y + 2, 0xbbaaaaaa); // border top
+            drawRect(x, y + h, x + w, y + h - 2, 0xbbaaaaaa); // border bottom
 
             drawItems();
 
@@ -119,28 +107,35 @@ public class GuiPanelSettings extends GuiScreenWidget
             bottomButton.draw(mousex, mousey);
         }
 
-        protected int[] getPaddings()
-        {
+        protected int[] getPaddings() {
             final int minWidth = 5 * ItemsGrid.SLOT_SIZE;
             final int minHeight = 9 * ItemsGrid.SLOT_SIZE;
 
-            int paddingLeft = (int)Math.ceil(margin.w * opt.renderTag(name + ".left").getIntValue() / 100000.0);
-            int paddingTop = (int)Math.ceil(margin.h * opt.renderTag(name + ".top").getIntValue() / 100000.0);
-            int paddingRight = (int)Math.ceil(margin.w * opt.renderTag(name + ".right").getIntValue() / 100000.0);
-            int paddingBottom = (int)Math.ceil(margin.h * opt.renderTag(name + ".bottom").getIntValue() / 100000.0);
+            int paddingLeft =
+                    (int) Math.ceil(margin.w * opt.renderTag(name + ".left").getIntValue() / 100000.0);
+            int paddingTop =
+                    (int) Math.ceil(margin.h * opt.renderTag(name + ".top").getIntValue() / 100000.0);
+            int paddingRight =
+                    (int) Math.ceil(margin.w * opt.renderTag(name + ".right").getIntValue() / 100000.0);
+            int paddingBottom =
+                    (int) Math.ceil(margin.h * opt.renderTag(name + ".bottom").getIntValue() / 100000.0);
 
             if (dragDir != null) {
                 final Point mouse = getMousePosition();
                 Point drag = new Point(mouse.x - dragDown.x, mouse.y - dragDown.y);
 
                 if (dragDir == "left") {
-                    paddingLeft = Math.min(Math.max(0, margin.w - paddingRight - minWidth), Math.max(0, paddingLeft + drag.x));
+                    paddingLeft = Math.min(
+                            Math.max(0, margin.w - paddingRight - minWidth), Math.max(0, paddingLeft + drag.x));
                 } else if (dragDir == "right") {
-                    paddingRight = Math.min(Math.max(0, margin.w - paddingLeft - minWidth), Math.max(0, paddingRight - drag.x));
+                    paddingRight = Math.min(
+                            Math.max(0, margin.w - paddingLeft - minWidth), Math.max(0, paddingRight - drag.x));
                 } else if (dragDir == "top") {
-                    paddingTop = Math.min(Math.max(0, margin.h - paddingBottom - minHeight), Math.max(0, paddingTop + drag.y));
+                    paddingTop = Math.min(
+                            Math.max(0, margin.h - paddingBottom - minHeight), Math.max(0, paddingTop + drag.y));
                 } else if (dragDir == "bottom") {
-                    paddingBottom = Math.min(Math.max(0, margin.h - paddingTop - minHeight), Math.max(0, paddingBottom - drag.y));
+                    paddingBottom = Math.min(
+                            Math.max(0, margin.h - paddingTop - minHeight), Math.max(0, paddingBottom - drag.y));
                 } else if (dragDir == "move") {
                     int width = margin.w - paddingRight - paddingLeft;
                     int height = margin.h - paddingTop - paddingBottom;
@@ -151,7 +146,6 @@ public class GuiPanelSettings extends GuiScreenWidget
                     paddingRight = margin.w - paddingLeft - width;
                     paddingBottom = margin.h - paddingTop - height;
                 }
-    
             }
 
             int deltaHeight = Math.min(0, margin.h - paddingTop - paddingBottom - minHeight) / 2;
@@ -161,42 +155,35 @@ public class GuiPanelSettings extends GuiScreenWidget
             paddingTop = Math.min(margin.h - minHeight, Math.max(0, paddingTop + deltaHeight));
             paddingBottom = Math.min(margin.h - paddingTop - minHeight, Math.max(0, paddingBottom - deltaHeight));
 
-
-            return new int[]{ paddingLeft, paddingTop, paddingRight, paddingBottom };
+            return new int[] {paddingLeft, paddingTop, paddingRight, paddingBottom};
         }
 
-        protected void drawItems()
-        {
+        protected void drawItems() {
             final int columns = w / ItemsGrid.SLOT_SIZE;
             final int rows = (h - (PANEL_SIZE + 2) * 2) / ItemsGrid.SLOT_SIZE;
             final int paddingLeft = (w % ItemsGrid.SLOT_SIZE) / 2;
             final ArrayList<ItemStack> items = ItemPanels.itemPanel.getItems();
-    
-            for (int r = 0; r < rows; r ++) {
-                for (int c = 0; c < columns; c++) {   
-                    
-                    GuiContainerManager.drawItem(
-                        x + paddingLeft + ItemsGrid.SLOT_SIZE * c + 1, 
-                        y + PANEL_SIZE + 2 + ItemsGrid.SLOT_SIZE * r + 1, 
-                        items.get((r * columns + c) % items.size())
-                    );
 
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < columns; c++) {
+
+                    GuiContainerManager.drawItem(
+                            x + paddingLeft + ItemsGrid.SLOT_SIZE * c + 1,
+                            y + PANEL_SIZE + 2 + ItemsGrid.SLOT_SIZE * r + 1,
+                            items.get((r * columns + c) % items.size()));
                 }
             }
-
         }
 
-        public boolean contains(int pointX, int pointY) 
-        {
+        public boolean contains(int pointX, int pointY) {
             return (new Rectangle4i(x, y, w, h)).contains(pointX, pointY);
         }
 
-        protected void mouseClicked(int x, int y, int button)
-        {
+        protected void mouseClicked(int x, int y, int button) {
 
             if (contains(x, y)) {
                 dragDown = getMousePosition();
- 
+
                 if (leftButton.contains(x, y)) {
                     dragDir = "left";
                 } else if (rightButton.contains(x, y)) {
@@ -209,11 +196,9 @@ public class GuiPanelSettings extends GuiScreenWidget
                     dragDir = "move";
                 }
             }
-    
         }
-    
-        protected void mouseMovedOrUp(int x, int y, int button)
-        {
+
+        protected void mouseMovedOrUp(int x, int y, int button) {
 
             if (button == 0 && dragDown != null) {
                 int[] padding = getPaddings();
@@ -226,9 +211,7 @@ public class GuiPanelSettings extends GuiScreenWidget
                 dragDir = null;
                 dragDown = null;
             }
-
         }
-            
     }
 
     public GuiPanelSettings(Option opt) {
@@ -240,14 +223,12 @@ public class GuiPanelSettings extends GuiScreenWidget
     }
 
     @Override
-    public boolean doesGuiPauseGame()
-    {
+    public boolean doesGuiPauseGame() {
         return true;
     }
 
     @Override
-    public void keyTyped(char c, int keycode)
-    {
+    public void keyTyped(char c, int keycode) {
 
         if (keycode == Keyboard.KEY_ESCAPE || keycode == Keyboard.KEY_BACK) {
             Minecraft.getMinecraft().displayGuiScreen(opt.slot.getGui());
@@ -256,7 +237,6 @@ public class GuiPanelSettings extends GuiScreenWidget
 
         super.keyTyped(c, keycode);
     }
-
 
     protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
         GL11.glColor4f(1, 1, 1, 1);
@@ -269,9 +249,8 @@ public class GuiPanelSettings extends GuiScreenWidget
     }
 
     @Override
-    public void drawScreen(int mousex, int mousey, float f)
-    {
-        
+    public void drawScreen(int mousex, int mousey, float f) {
+
         drawGuiContainerBackgroundLayer(f, mousex, mousey);
         drawDefaultBackground();
 
@@ -290,28 +269,23 @@ public class GuiPanelSettings extends GuiScreenWidget
         RenderHelper.enableStandardItemLighting();
     }
 
-    private Rectangle4i getBookmarkDefaultSize()
-    {
+    private Rectangle4i getBookmarkDefaultSize() {
         return new Rectangle4i(2, 2, guiLeft - 4, height - 4);
     }
 
-    protected Rectangle4i getItemsDefaultSize()
-    {
+    protected Rectangle4i getItemsDefaultSize() {
         return new Rectangle4i(guiLeft + xSize + 2, 2, width - (guiLeft + xSize + 4), height - 4);
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button)
-    {
+    protected void mouseClicked(int x, int y, int button) {
         bookmarksPanel.mouseClicked(x, y, button);
         itemsPanel.mouseClicked(x, y, button);
     }
 
     @Override
-    protected void mouseMovedOrUp(int x, int y, int button)
-    {
+    protected void mouseMovedOrUp(int x, int y, int button) {
         bookmarksPanel.mouseMovedOrUp(x, y, button);
         itemsPanel.mouseMovedOrUp(x, y, button);
     }
-
 }

@@ -1,7 +1,6 @@
 package codechicken.nei;
 
-public class ItemQuantityField extends TextField
-{
+public class ItemQuantityField extends TextField {
     public ItemQuantityField(String ident) {
         super(ident);
         centered = true;
