@@ -1,85 +1,35 @@
 package codechicken.nei.recipe;
 
-import codechicken.core.TaskProfiler;
-import codechicken.nei.ItemList;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
-public class GuiUsageRecipe extends GuiRecipe {
+public class GuiUsageRecipe extends GuiRecipe<IUsageHandler> {
+    public static ArrayList<IUsageHandler> usagehandlers = new ArrayList<>();
+    public static ArrayList<IUsageHandler> serialUsageHandlers = new ArrayList<>();
+
     public static boolean openRecipeGui(String inputId, Object... ingredients) {
-        Minecraft mc = NEIClientUtils.mc();
-        GuiContainer prevscreen = mc.currentScreen instanceof GuiContainer ? (GuiContainer) mc.currentScreen : null;
-
-        ArrayList<IUsageHandler> handlers;
-        TaskProfiler profiler = ProfilerRecipeHandler.getProfiler();
-
-        // Pre-find the fuels so we're not fighting over it
-        FuelRecipeHandler.findFuelsOnceParallel();
-
-        profiler.start("recipe.concurrent.usage");
-        try {
-            handlers = serialUsageHandlers.stream()
-                    .map(h -> getUsageOrCatalystHandler(h, inputId, ingredients))
-                    .filter(h -> h.numRecipes() > 0)
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-            handlers.addAll(ItemList.forkJoinPool
-                    .submit(() -> usagehandlers.parallelStream()
-                            .map(h -> getUsageOrCatalystHandler(h, inputId, ingredients))
-                            .filter(h -> h.numRecipes() > 0)
-                            .collect(Collectors.toCollection(ArrayList::new)))
-                    .get());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-            if (player != null) {
-                IChatComponent chat = new ChatComponentTranslation("nei.chat.recipe.error");
-                chat.getChatStyle().setColor(EnumChatFormatting.RED);
-                player.addChatComponentMessage(chat);
-            }
-            return false;
-        } finally {
-            profiler.end();
-        }
-
+        RecipeHandlerQuery<IUsageHandler> recipeQuery = new RecipeHandlerQuery<>(
+                h -> getUsageOrCatalystHandler(h, inputId, ingredients), usagehandlers, serialUsageHandlers);
+        ArrayList<IUsageHandler> handlers = recipeQuery.runWithProfiling("recipe.concurrent.usage");
         if (handlers.isEmpty()) return false;
 
-        handlers.sort(NEIClientConfig.HANDLER_COMPARATOR);
+        BookmarkRecipeId recipeId = getCurrentRecipe();
+        GuiUsageRecipe gui = new GuiUsageRecipe(handlers, recipeId);
 
-        BookmarkRecipeId recipeId = null;
-
-        if (prevscreen instanceof GuiRecipe && ((GuiRecipe) prevscreen).recipeId != null) {
-            recipeId = (((GuiRecipe) prevscreen).recipeId).copy();
-        }
-
-        GuiUsageRecipe gui = new GuiUsageRecipe(prevscreen, handlers, recipeId);
-
-        mc.displayGuiScreen(gui);
+        NEIClientUtils.mc().displayGuiScreen(gui);
 
         if (!NEIClientUtils.shiftKey()) {
-            gui.openTargetRecipe(recipeId);
+            gui.openTargetRecipe(gui.recipeId);
         }
 
         return true;
     }
 
-    private GuiUsageRecipe(GuiContainer prevgui, ArrayList<IUsageHandler> handlers, BookmarkRecipeId recipeId) {
-        this(prevgui, handlers);
+    private GuiUsageRecipe(ArrayList<IUsageHandler> handlers, BookmarkRecipeId recipeId) {
+        super(NEIClientUtils.mc().currentScreen);
+        this.currenthandlers = handlers;
         this.recipeId = recipeId;
-    }
-
-    private GuiUsageRecipe(GuiContainer prevgui, ArrayList<IUsageHandler> handlers) {
-        super(prevgui);
-        currenthandlers = handlers;
     }
 
     public static void registerUsageHandler(IUsageHandler handler) {
@@ -89,10 +39,6 @@ public class GuiUsageRecipe extends GuiRecipe {
 
         if (NEIClientConfig.serialHandlers.contains(handlerId)) serialUsageHandlers.add(handler);
         else usagehandlers.add(handler);
-    }
-
-    public ArrayList<? extends IRecipeHandler> getCurrentRecipeHandlers() {
-        return currenthandlers;
     }
 
     private static IUsageHandler getUsageOrCatalystHandler(
@@ -105,8 +51,8 @@ public class GuiUsageRecipe extends GuiRecipe {
         }
     }
 
-    public ArrayList<IUsageHandler> currenthandlers;
-
-    public static ArrayList<IUsageHandler> usagehandlers = new ArrayList<>();
-    public static ArrayList<IUsageHandler> serialUsageHandlers = new ArrayList<>();
+    @Override
+    public ArrayList<IUsageHandler> getCurrentRecipeHandlers() {
+        return currenthandlers;
+    }
 }

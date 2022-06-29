@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -38,7 +39,7 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-public abstract class GuiRecipe extends GuiContainer
+public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer
         implements IGuiContainerOverlay,
                 IGuiClientSide,
                 IGuiHandleMouseWheel,
@@ -66,7 +67,7 @@ public abstract class GuiRecipe extends GuiContainer
     final DrawableResource bgBottom =
             new DrawableBuilder("nei:textures/gui/recipebg.png", 0, BG_BOTTOM_Y, 176, BG_BOTTOM_HEIGHT).build();
 
-    public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
+    public ArrayList<H> currenthandlers = new ArrayList<>();
 
     public int page;
     public int recipetype;
@@ -80,13 +81,13 @@ public abstract class GuiRecipe extends GuiContainer
     private GuiButton nexttype;
     private GuiButton prevtype;
 
-    private int OVERLAY_BUTTON_ID_START = 4;
+    private final int OVERLAY_BUTTON_ID_START = 4;
     private GuiButton[] overlayButtons;
 
     private final Rectangle area = new Rectangle();
     private final GuiRecipeTabs recipeTabs;
     private final GuiRecipeCatalyst guiRecipeCatalyst;
-    private IRecipeHandler handler;
+    private H handler;
     private HandlerInfo handlerInfo;
 
     private int yShift = 0;
@@ -236,7 +237,7 @@ public abstract class GuiRecipe extends GuiContainer
             if (recipeId.handlerName != null) {
 
                 for (int j = 0; j < currenthandlers.size(); j++) {
-                    IRecipeHandler localHandler = currenthandlers.get(j);
+                    H localHandler = currenthandlers.get(j);
                     HandlerInfo localHandlerInfo = GuiRecipeTab.getHandlerInfo(localHandler);
 
                     if (localHandlerInfo.getHandlerName().equals(recipeId.handlerName)) {
@@ -293,7 +294,7 @@ public abstract class GuiRecipe extends GuiContainer
         return handlerInfo.getHandlerName();
     }
 
-    public IRecipeHandler getHandler() {
+    public H getHandler() {
         return handler;
     }
 
@@ -686,7 +687,7 @@ public abstract class GuiRecipe extends GuiContainer
         return new Point(5, 32 + yShift + ((recipe % getRecipesPerPage()) * handlerInfo.getHeight()));
     }
 
-    public abstract ArrayList<? extends IRecipeHandler> getCurrentRecipeHandlers();
+    public abstract ArrayList<H> getCurrentRecipeHandlers();
 
     @Override
     public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
@@ -712,5 +713,16 @@ public abstract class GuiRecipe extends GuiContainer
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
         // Because some of the handlers *cough avaritia* are oversized
         return area.intersects(x, y, w, h);
+    }
+
+    static BookmarkRecipeId getCurrentRecipe() {
+        Minecraft mc = NEIClientUtils.mc();
+        if (mc.currentScreen instanceof GuiRecipe) {
+            GuiRecipe<?> gui = (GuiRecipe<?>) mc.currentScreen;
+            return new BookmarkRecipeId(
+                    gui.handlerInfo.getHandlerName(),
+                    gui.getHandler().getIngredientStacks(gui.page * gui.getRecipesPerPage()));
+        }
+        return null;
     }
 }

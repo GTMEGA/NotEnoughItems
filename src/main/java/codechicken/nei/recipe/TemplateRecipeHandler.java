@@ -172,8 +172,10 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
 
         /**
          * This will perform default cycling of ingredients, mulitItem capable
-         *
-         * @return
+         * @param cycle Current cycle step
+         * @param ingredients List of ItemStacks to cycle
+         * @return The provided list of ingredients, with their permutations cycled to a different permutation, if one
+         *         is available
          */
         public List<PositionedStack> getCycledIngredients(int cycle, List<PositionedStack> ingredients) {
             for (int itemIndex = 0; itemIndex < ingredients.size(); itemIndex++)
@@ -187,11 +189,6 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
             stack.setPermutationToRender(Math.abs(rand.nextInt()) % stack.items.length);
         }
 
-        /**
-         * Set all variable ingredients to this permutation.
-         *
-         * @param ingredient
-         */
         public void setIngredientPermutation(Collection<PositionedStack> ingredients, ItemStack ingredient) {
             for (PositionedStack stack : ingredients) {
                 for (int i = 0; i < stack.items.length; i++) {
@@ -211,8 +208,9 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         }
 
         /**
-         * @param ingredient
-         * @return true if any of the permutations of any of the ingredients contain this stack
+         * @param ingredients Collection of ItemStacks
+         * @param ingredient ItemStack we're looking for
+         * @return true if any of the permutations of the ingredients contain this ItemStack
          */
         public boolean contains(Collection<PositionedStack> ingredients, ItemStack ingredient) {
             for (PositionedStack stack : ingredients) if (stack.contains(ingredient)) return true;
@@ -230,11 +228,12 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
         }
 
         /**
-         * @param ingred
-         * @return true if any of the permutations of any of the ingredients contain this stack
+         * @param ingredients Collection of ItemStacks
+         * @param ingredient Item we're looking for
+         * @return true if any of the permutations of the ingredients contain this Item
          */
-        public boolean contains(Collection<PositionedStack> ingredients, Item ingred) {
-            for (PositionedStack stack : ingredients) if (stack.contains(ingred)) return true;
+        public boolean contains(Collection<PositionedStack> ingredients, Item ingredient) {
+            for (PositionedStack stack : ingredients) if (stack.contains(ingredient)) return true;
             return false;
         }
     }
@@ -266,7 +265,8 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     public static class RecipeTransferRectHandler implements IContainerInputHandler, IContainerTooltipHandler {
-        private static HashMap<Class<? extends GuiContainer>, HashSet<RecipeTransferRect>> guiMap = new HashMap<>();
+        private static final HashMap<Class<? extends GuiContainer>, HashSet<RecipeTransferRect>> guiMap =
+                new HashMap<>();
 
         public static void registerRectsToGuis(
                 List<Class<? extends GuiContainer>> classes, List<RecipeTransferRect> rects) {
@@ -630,7 +630,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     @Override
-    public List<String> handleTooltip(GuiRecipe gui, List<String> currenttip, int recipe) {
+    public List<String> handleTooltip(GuiRecipe<?> gui, List<String> currenttip, int recipe) {
         if (GuiContainerManager.shouldShowTooltip(gui) && currenttip.size() == 0) {
             Point offset = gui.getRecipePosition(recipe);
             currenttip = transferRectTooltip(gui, transferRects, offset.x, offset.y, currenttip);
@@ -639,12 +639,12 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     @Override
-    public List<String> handleItemTooltip(GuiRecipe gui, ItemStack stack, List<String> currenttip, int recipe) {
+    public List<String> handleItemTooltip(GuiRecipe<?> gui, ItemStack stack, List<String> currenttip, int recipe) {
         return currenttip;
     }
 
     @Override
-    public boolean keyTyped(GuiRecipe gui, char keyChar, int keyCode, int recipe) {
+    public boolean keyTyped(GuiRecipe<?> gui, char keyChar, int keyCode, int recipe) {
         if (keyCode == NEIClientConfig.getKeyBinding("gui.recipe")) return transferRect(gui, recipe, false);
         else if (keyCode == NEIClientConfig.getKeyBinding("gui.usage")) return transferRect(gui, recipe, true);
 
@@ -652,7 +652,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     @Override
-    public boolean mouseClicked(GuiRecipe gui, int button, int recipe) {
+    public boolean mouseClicked(GuiRecipe<?> gui, int button, int recipe) {
         if (button == 0) return transferRect(gui, recipe, false);
         else if (button == 1) return transferRect(gui, recipe, true);
 
@@ -660,11 +660,11 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     @Override
-    public boolean mouseScrolled(GuiRecipe gui, int scroll, int recipe) {
+    public boolean mouseScrolled(GuiRecipe<?> gui, int scroll, int recipe) {
         return false;
     }
 
-    private boolean transferRect(GuiRecipe gui, int recipe, boolean usage) {
+    private boolean transferRect(GuiRecipe<?> gui, int recipe, boolean usage) {
         Point offset = gui.getRecipePosition(recipe);
         return transferRect(gui, transferRects, offset.x, offset.y, usage);
     }
