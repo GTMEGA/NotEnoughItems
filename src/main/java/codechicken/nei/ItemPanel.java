@@ -73,6 +73,11 @@ public class ItemPanel extends PanelWidget {
                 super.drawSlotOutline(focused, slotIdx, rect);
             }
         }
+
+        @Override
+        public String getMessageOnEmpty() {
+            return ItemList.loadFinished ? null : NEIClientUtils.translate("itempanel.loading");
+        }
     }
 
     public ItemPanel() {

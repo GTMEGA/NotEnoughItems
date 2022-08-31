@@ -41,6 +41,8 @@ public class ItemsGrid {
 
     protected boolean[] invalidSlotMap;
 
+    protected Label messageLabel = new Label(getMessageOnEmpty(), true);
+
     @Nullable
     private Framebuffer framebuffer = null;
 
@@ -104,6 +106,9 @@ public class ItemsGrid {
         rows = height / SLOT_SIZE;
 
         paddingLeft = (width % SLOT_SIZE) / 2;
+
+        messageLabel.x = marginLeft + width / 2;
+        messageLabel.y = marginTop + height / 2;
     }
 
     public void shiftPage(int shift) {
@@ -305,6 +310,12 @@ public class ItemsGrid {
         }
     }
 
+    public void setVisible() {
+        if (getItems().isEmpty() && getMessageOnEmpty() != null) {
+            LayoutManager.addWidget(messageLabel);
+        }
+    }
+
     protected void drawItem(Rectangle4i rect, int idx) {
         GuiContainerManager.drawItem(rect.x + 1, rect.y + 1, getItem(idx));
     }
@@ -344,5 +355,9 @@ public class ItemsGrid {
         final int slt = columns * r + c;
 
         return r >= rows || c >= columns || !isInvalidSlot(slt);
+    }
+
+    public String getMessageOnEmpty() {
+        return null;
     }
 }
