@@ -1,17 +1,19 @@
 package codechicken.nei.config;
 
-import codechicken.lib.config.ConfigTag;
-import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
+import codechicken.lib.config.ConfigTag;
+import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
+
 public abstract class Option {
+
     public static void playClickSound() {
-        Minecraft.getMinecraft()
-                .getSoundHandler()
+        Minecraft.getMinecraft().getSoundHandler()
                 .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
     }
 
@@ -46,9 +48,9 @@ public abstract class Option {
     }
 
     private <T> T assertParentOverride(T elem) {
-        if (elem == null)
-            throw new IllegalStateException("Option " + fullName()
-                    + " does not have a defined parent list. Use OptionList.setOptionList to insert a parent");
+        if (elem == null) throw new IllegalStateException(
+                "Option " + fullName()
+                        + " does not have a defined parent list. Use OptionList.setOptionList to insert a parent");
         return elem;
     }
 
@@ -164,7 +166,8 @@ public abstract class Option {
     }
 
     /**
-     * Called when world specific is activated for this option. Should copy the global value into a world specific override
+     * Called when world specific is activated for this option. Should copy the global value into a world specific
+     * override
      */
     public void copyGlobals() {
         copyGlobal(configName(), true);

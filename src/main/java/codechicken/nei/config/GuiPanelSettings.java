@@ -2,28 +2,33 @@ package codechicken.nei.config;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.ItemsGrid;
 import codechicken.nei.guihook.GuiContainerManager;
-import java.awt.Point;
-import java.util.ArrayList;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class GuiPanelSettings extends GuiScreenWidget {
+
     private final Option opt;
 
     private PanelPlaceholder bookmarksPanel;
     private PanelPlaceholder itemsPanel;
 
     protected static class PanelResizeButton {
+
         private int x;
         private int y;
         private int w;
@@ -45,6 +50,7 @@ public class GuiPanelSettings extends GuiScreenWidget {
     }
 
     protected static class PanelPlaceholder {
+
         protected static int PANEL_SIZE = 16;
 
         private final Option opt;
@@ -111,31 +117,27 @@ public class GuiPanelSettings extends GuiScreenWidget {
             final int minWidth = 5 * ItemsGrid.SLOT_SIZE;
             final int minHeight = 9 * ItemsGrid.SLOT_SIZE;
 
-            int paddingLeft =
-                    (int) Math.ceil(margin.w * opt.renderTag(name + ".left").getIntValue() / 100000.0);
-            int paddingTop =
-                    (int) Math.ceil(margin.h * opt.renderTag(name + ".top").getIntValue() / 100000.0);
-            int paddingRight =
-                    (int) Math.ceil(margin.w * opt.renderTag(name + ".right").getIntValue() / 100000.0);
-            int paddingBottom =
-                    (int) Math.ceil(margin.h * opt.renderTag(name + ".bottom").getIntValue() / 100000.0);
+            int paddingLeft = (int) Math.ceil(margin.w * opt.renderTag(name + ".left").getIntValue() / 100000.0);
+            int paddingTop = (int) Math.ceil(margin.h * opt.renderTag(name + ".top").getIntValue() / 100000.0);
+            int paddingRight = (int) Math.ceil(margin.w * opt.renderTag(name + ".right").getIntValue() / 100000.0);
+            int paddingBottom = (int) Math.ceil(margin.h * opt.renderTag(name + ".bottom").getIntValue() / 100000.0);
 
             if (dragDir != null) {
                 final Point mouse = getMousePosition();
                 Point drag = new Point(mouse.x - dragDown.x, mouse.y - dragDown.y);
 
                 if (dragDir == "left") {
-                    paddingLeft = Math.min(
-                            Math.max(0, margin.w - paddingRight - minWidth), Math.max(0, paddingLeft + drag.x));
+                    paddingLeft = Math
+                            .min(Math.max(0, margin.w - paddingRight - minWidth), Math.max(0, paddingLeft + drag.x));
                 } else if (dragDir == "right") {
-                    paddingRight = Math.min(
-                            Math.max(0, margin.w - paddingLeft - minWidth), Math.max(0, paddingRight - drag.x));
+                    paddingRight = Math
+                            .min(Math.max(0, margin.w - paddingLeft - minWidth), Math.max(0, paddingRight - drag.x));
                 } else if (dragDir == "top") {
-                    paddingTop = Math.min(
-                            Math.max(0, margin.h - paddingBottom - minHeight), Math.max(0, paddingTop + drag.y));
+                    paddingTop = Math
+                            .min(Math.max(0, margin.h - paddingBottom - minHeight), Math.max(0, paddingTop + drag.y));
                 } else if (dragDir == "bottom") {
-                    paddingBottom = Math.min(
-                            Math.max(0, margin.h - paddingTop - minHeight), Math.max(0, paddingBottom - drag.y));
+                    paddingBottom = Math
+                            .min(Math.max(0, margin.h - paddingTop - minHeight), Math.max(0, paddingBottom - drag.y));
                 } else if (dragDir == "move") {
                     int width = margin.w - paddingRight - paddingLeft;
                     int height = margin.h - paddingTop - paddingBottom;
@@ -155,7 +157,7 @@ public class GuiPanelSettings extends GuiScreenWidget {
             paddingTop = Math.min(margin.h - minHeight, Math.max(0, paddingTop + deltaHeight));
             paddingBottom = Math.min(margin.h - paddingTop - minHeight, Math.max(0, paddingBottom - deltaHeight));
 
-            return new int[] {paddingLeft, paddingTop, paddingRight, paddingBottom};
+            return new int[] { paddingLeft, paddingTop, paddingRight, paddingBottom };
         }
 
         protected void drawItems() {

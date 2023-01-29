@@ -1,10 +1,5 @@
 package codechicken.nei;
 
-import codechicken.core.ClientUtils;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
@@ -12,7 +7,14 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
+import codechicken.core.ClientUtils;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
+import cpw.mods.fml.relauncher.Side;
+
 public class NEICPH implements IClientPacketHandler {
+
     public static final String channel = "NEI";
 
     @Override
@@ -38,14 +40,14 @@ public class NEICPH implements IClientPacketHandler {
                 break;
             case 21:
                 ClientUtils.openSMPGui(
-                        packet.readUByte(), new GuiEnchantmentModifier(mc.thePlayer.inventory, mc.theWorld, 0, 0, 0));
+                        packet.readUByte(),
+                        new GuiEnchantmentModifier(mc.thePlayer.inventory, mc.theWorld, 0, 0, 0));
                 break;
             case 23:
-                if (packet.readBoolean())
-                    ClientUtils.openSMPGui(
-                            packet.readUByte(),
-                            new GuiExtendedCreativeInv(new ContainerCreativeInv(
-                                    mc.thePlayer, new ExtendedCreativeInv(null, Side.CLIENT))));
+                if (packet.readBoolean()) ClientUtils.openSMPGui(
+                        packet.readUByte(),
+                        new GuiExtendedCreativeInv(
+                                new ContainerCreativeInv(mc.thePlayer, new ExtendedCreativeInv(null, Side.CLIENT))));
                 else mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
                 break;
             case 24:
@@ -143,8 +145,7 @@ public class NEICPH implements IClientPacketHandler {
 
     public static void sendRequestContainer() {
         PacketCustom packet = new PacketCustom(channel, 16);
-        packet.writeInt(
-                Minecraft.getMinecraft().thePlayer.openContainer.getInventory().size());
+        packet.writeInt(Minecraft.getMinecraft().thePlayer.openContainer.getInventory().size());
         packet.sendToServer();
     }
 

@@ -5,15 +5,19 @@ import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
-import codechicken.nei.LayoutManager;
-import codechicken.nei.NEIClientUtils;
 import java.awt.Rectangle;
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.nei.LayoutManager;
+import codechicken.nei.NEIClientUtils;
+
 public abstract class OptionButton extends Option {
+
     protected static final ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
 
     public final String prefix;

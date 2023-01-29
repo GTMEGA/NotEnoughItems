@@ -3,11 +3,14 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 
-import codechicken.nei.NEIClientUtils;
 import java.awt.Rectangle;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
+
 import org.lwjgl.input.Keyboard;
+
+import codechicken.nei.NEIClientUtils;
 
 public class OptionKeyBind extends OptionButton {
 

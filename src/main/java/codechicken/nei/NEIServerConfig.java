@@ -1,10 +1,5 @@
 package codechicken.nei;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.ServerUtils;
-import codechicken.lib.config.ConfigFile;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
@@ -16,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -25,11 +21,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import codechicken.core.CommonUtils;
+import codechicken.core.ServerUtils;
+import codechicken.lib.config.ConfigFile;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
+
 public class NEIServerConfig {
+
     private static MinecraftServer server;
 
     public static Logger logger = LogManager.getLogger("NotEnoughItems");
@@ -73,8 +77,7 @@ public class NEIServerConfig {
 
         serverConfig.setNewLineMode(1);
         serverConfig.getTag("permissions").useBraces();
-        serverConfig
-                .getTag("permissions")
+        serverConfig.getTag("permissions")
                 .setComment("List of players who can use these features.\nEg. time=CodeChicken, Friend1");
 
         setDefaultFeature("time");
@@ -93,7 +96,7 @@ public class NEIServerConfig {
     }
 
     private static void setDefaultFeature(String featurename, String... names) {
-        if (names.length == 0) names = new String[] {"OP"};
+        if (names.length == 0) names = new String[] { "OP" };
 
         StringBuilder list = new StringBuilder();
         for (int i = 0; i < names.length; i++) {

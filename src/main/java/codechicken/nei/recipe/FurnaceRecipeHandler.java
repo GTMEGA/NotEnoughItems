@@ -1,21 +1,25 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+
 public class FurnaceRecipeHandler extends TemplateRecipeHandler {
+
     public class SmeltingPair extends CachedRecipe {
+
         public SmeltingPair(ItemStack ingred, ItemStack result) {
             ingred.stackSize = 1;
             this.ingred = new PositionedStack(ingred, 51, 6);
@@ -39,6 +43,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler {
     }
 
     public static class FuelPair {
+
         public FuelPair(ItemStack ingred, int burnTime) {
             this.stack = new PositionedStack(ingred, 51, 42, false);
             this.burnTime = burnTime;
@@ -77,10 +82,9 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler {
 
     @Override
     public void loadCraftingRecipes(String outputId, Object... results) {
-        if (outputId.equals("smelting")
-                && getClass() == FurnaceRecipeHandler.class) { // don't want subclasses getting a hold of this
-            Map<ItemStack, ItemStack> recipes =
-                    (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        if (outputId.equals("smelting") && getClass() == FurnaceRecipeHandler.class) { // don't want subclasses getting
+                                                                                       // a hold of this
+            Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
             for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
                 arecipes.add(new SmeltingPair(recipe.getKey(), recipe.getValue()));
         } else super.loadCraftingRecipes(outputId, results);
@@ -88,8 +92,7 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler {
 
     @Override
     public void loadCraftingRecipes(ItemStack result) {
-        Map<ItemStack, ItemStack> recipes =
-                (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
         for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
             if (NEIServerUtils.areStacksSameType(recipe.getValue(), result))
                 arecipes.add(new SmeltingPair(recipe.getKey(), recipe.getValue()));
@@ -97,16 +100,15 @@ public class FurnaceRecipeHandler extends TemplateRecipeHandler {
 
     @Override
     public void loadUsageRecipes(String inputId, Object... ingredients) {
-        if (inputId.equals("fuel")
-                && getClass() == FurnaceRecipeHandler.class) // don't want subclasses getting a hold of this
-        loadCraftingRecipes("smelting");
+        if (inputId.equals("fuel") && getClass() == FurnaceRecipeHandler.class) // don't want subclasses getting a hold
+                                                                                // of this
+            loadCraftingRecipes("smelting");
         else super.loadUsageRecipes(inputId, ingredients);
     }
 
     @Override
     public void loadUsageRecipes(ItemStack ingredient) {
-        Map<ItemStack, ItemStack> recipes =
-                (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+        Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
         for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet())
             if (NEIServerUtils.areStacksSameTypeCrafting(recipe.getKey(), ingredient)) {
                 SmeltingPair arecipe = new SmeltingPair(recipe.getKey(), recipe.getValue());

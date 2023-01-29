@@ -1,16 +1,20 @@
 package codechicken.nei.config;
 
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
+
 public class OptionList extends OptionButton {
+
     public static final OptionList root = new RootOptionList();
 
     private static class RootOptionList extends OptionList {
+
         public RootOptionList() {
             super(null);
         }
@@ -111,9 +115,10 @@ public class OptionList extends OptionButton {
 
     /**
      * Create an instance of a GuiOptionList subclass for the given parameter list
+     * 
      * @param parent The parent screen for the back button
-     * @param list The option list to be displayed in the gui
-     * @param world true if in world config mode, false for global
+     * @param list   The option list to be displayed in the gui
+     * @param world  true if in world config mode, false for global
      */
     public GuiOptionList getGui(GuiScreen parent, OptionList list, boolean world) {
         return this.parent.getGui(parent, list, world);

@@ -5,9 +5,6 @@ import static codechicken.lib.gui.GuiDraw.fontRenderer;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.lib.gui.GuiDraw.renderEngine;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.recipe.StackInfo;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,25 +25,31 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.recipe.StackInfo;
+
 public class GuiContainerManager {
+
     public GuiContainer window;
 
     public static RenderItem drawItems = new RenderItem();
-    public static final LinkedList<IContainerTooltipHandler> tooltipHandlers =
-            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerInputHandler> inputHandlers =
-            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerDrawHandler> drawHandlers =
-            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerObjectHandler> objectHandlers =
-            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
-    public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers =
-            new HideousLinkedList<>(new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerTooltipHandler> tooltipHandlers = new HideousLinkedList<>(
+            new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerInputHandler> inputHandlers = new HideousLinkedList<>(
+            new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerDrawHandler> drawHandlers = new HideousLinkedList<>(
+            new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerObjectHandler> objectHandlers = new HideousLinkedList<>(
+            new CopyOnWriteArrayList<>());
+    public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers = new HideousLinkedList<>(
+            new CopyOnWriteArrayList<>());
 
     static {
         addSlotClickHandler(new DefaultSlotClickHandler());
@@ -98,7 +102,8 @@ public class GuiContainerManager {
     }
 
     /**
-     * Care needs to be taken with this method. It will insert your handler at the start of the list to be called first. You may need to simply edit the list yourself.
+     * Care needs to be taken with this method. It will insert your handler at the start of the list to be called first.
+     * You may need to simply edit the list yourself.
      *
      * @param handler The handler to register.
      */
@@ -115,10 +120,12 @@ public class GuiContainerManager {
     }
 
     /**
-     * Extra lines are often used for more information. For example enchantments, potion effects and mob spawner contents.
+     * Extra lines are often used for more information. For example enchantments, potion effects and mob spawner
+     * contents.
      *
-     * @param stack       The item to get the name for.
-     * @param gui             An instance of the currentscreen passed to tooltip handlers. If null, only gui inspecific handlers should respond
+     * @param stack           The item to get the name for.
+     * @param gui             An instance of the currentscreen passed to tooltip handlers. If null, only gui inspecific
+     *                        handlers should respond
      * @param includeHandlers If true tooltip handlers will add to the item tip
      * @return A list of Strings representing the text to be displayed on each line of the tool tip.
      */
@@ -128,8 +135,7 @@ public class GuiContainerManager {
             namelist = stack.getTooltip(
                     Minecraft.getMinecraft().thePlayer,
                     includeHandlers && Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) {}
 
         if (namelist == null) namelist = new ArrayList<>();
 
@@ -200,7 +206,8 @@ public class GuiContainerManager {
     }
 
     /**
-     * Concatenates the multiline display name into one line for easy searching using string and {@link Pattern} functions.
+     * Concatenates the multiline display name into one line for easy searching using string and {@link Pattern}
+     * functions.
      *
      * @param itemstack The stack to get the name for
      * @return The multiline display name of this item separated by '#'
@@ -239,8 +246,8 @@ public class GuiContainerManager {
     private static int modelviewDepth = -1;
     private static final HashSet<String> stackTraces = new HashSet<>();
 
-    public static void drawItem(
-            int i, int j, ItemStack itemstack, FontRenderer fontRenderer, boolean smallAmount, String stackSize) {
+    public static void drawItem(int i, int j, ItemStack itemstack, FontRenderer fontRenderer, boolean smallAmount,
+            String stackSize) {
         enable3DRender();
         // for lighting correction
         boolean glRescale = GL11.glGetBoolean(GL12.GL_RESCALE_NORMAL);
@@ -295,8 +302,8 @@ public class GuiContainerManager {
         enable2DRender();
         GL11.glScaled(scaleFactor, scaleFactor, scaleFactor);
 
-        final int X = (int)
-                (((float) offsetX + 16.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor) * inverseScaleFactor);
+        final int X = (int) (((float) offsetX + 16.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor)
+                * inverseScaleFactor);
         final int Y = (int) (((float) offsetY + 16.0f - 7.0f * scaleFactor) * inverseScaleFactor);
         fontRenderer.drawStringWithShadow(stackSize, X, Y, 16777215);
 
@@ -611,13 +618,11 @@ public class GuiContainerManager {
     public void handleSlotClick(int slotIndex, int button, int modifiers) {
         if (slotIndex == -1) return;
 
-        if (window
-                instanceof
-                IGuiClientSide) // send the calls directly to the container bypassing the MPController window send
-        window.mc.thePlayer.openContainer.slotClick(slotIndex, button, modifiers, window.mc.thePlayer);
-        else
-            window.mc.playerController.windowClick(
-                    window.inventorySlots.windowId, slotIndex, button, modifiers, window.mc.thePlayer);
+        if (window instanceof IGuiClientSide) // send the calls directly to the container bypassing the MPController
+                                              // window send
+            window.mc.thePlayer.openContainer.slotClick(slotIndex, button, modifiers, window.mc.thePlayer);
+        else window.mc.playerController
+                .windowClick(window.inventorySlots.windowId, slotIndex, button, modifiers, window.mc.thePlayer);
     }
 
     /**

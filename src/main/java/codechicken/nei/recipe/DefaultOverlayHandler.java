@@ -1,22 +1,25 @@
 package codechicken.nei.recipe;
 
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.nei.FastTransferManager;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.api.IOverlayHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.nei.FastTransferManager;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.IOverlayHandler;
+
 @SuppressWarnings("rawtypes, unchecked")
 public class DefaultOverlayHandler implements IOverlayHandler {
+
     public static Class gtItem;
 
     static {
@@ -28,6 +31,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
     }
 
     public static class DistributedIngred {
+
         public DistributedIngred(ItemStack item) {
             stack = InventoryUtils.copyStack(item, 1);
         }
@@ -40,6 +44,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
     }
 
     public static class IngredientDistribution {
+
         public IngredientDistribution(DistributedIngred distrib, ItemStack permutation) {
             this.distrib = distrib;
             this.permutation = permutation;
@@ -82,14 +87,13 @@ public class DefaultOverlayHandler implements IOverlayHandler {
 
     @SuppressWarnings("unchecked")
     private boolean clearIngredients(GuiContainer gui, List<PositionedStack> ingreds) {
-        for (PositionedStack pstack : ingreds)
-            for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots)
-                if (slot.xDisplayPosition == pstack.relx + offsetx && slot.yDisplayPosition == pstack.rely + offsety) {
-                    if (!slot.getHasStack()) continue;
+        for (PositionedStack pstack : ingreds) for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots)
+            if (slot.xDisplayPosition == pstack.relx + offsetx && slot.yDisplayPosition == pstack.rely + offsety) {
+                if (!slot.getHasStack()) continue;
 
-                    FastTransferManager.clickSlot(gui, slot.slotNumber, 0, 1);
-                    if (slot.getHasStack()) return false;
-                }
+                FastTransferManager.clickSlot(gui, slot.slotNumber, 0, 1);
+                if (slot.getHasStack()) return false;
+            }
 
         return true;
     }
@@ -152,8 +156,8 @@ public class DefaultOverlayHandler implements IOverlayHandler {
         return quantity;
     }
 
-    private Slot[][] assignIngredSlots(
-            GuiContainer gui, List<PositionedStack> ingredients, List<IngredientDistribution> assignedIngredients) {
+    private Slot[][] assignIngredSlots(GuiContainer gui, List<PositionedStack> ingredients,
+            List<IngredientDistribution> assignedIngredients) {
         Slot[][] recipeSlots = mapIngredSlots(gui, ingredients); // setup the slot map
 
         HashMap<Slot, Integer> distribution = new HashMap<>();
@@ -169,7 +173,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
         }
 
         while (avaliableSlots.size() > 0 && remainingIngreds.size() > 0) {
-            for (Iterator<Integer> iterator = remainingIngreds.iterator(); iterator.hasNext(); ) {
+            for (Iterator<Integer> iterator = remainingIngreds.iterator(); iterator.hasNext();) {
                 int i = iterator.next();
                 boolean assigned = false;
                 DistributedIngred istack = assignedIngredients.get(i).distrib;
@@ -196,8 +200,8 @@ public class DefaultOverlayHandler implements IOverlayHandler {
         return recipeSlots;
     }
 
-    private List<IngredientDistribution> assignIngredients(
-            List<PositionedStack> ingredients, List<DistributedIngred> ingredStacks) {
+    private List<IngredientDistribution> assignIngredients(List<PositionedStack> ingredients,
+            List<DistributedIngred> ingredStacks) {
         ArrayList<IngredientDistribution> assignedIngredients = new ArrayList<>();
         for (PositionedStack posstack : ingredients) // assign what we need and have
         {
@@ -206,10 +210,10 @@ public class DefaultOverlayHandler implements IOverlayHandler {
             int biggestSize = 0;
             for (ItemStack pstack : posstack.items) {
                 for (DistributedIngred istack : ingredStacks) {
-                    if (!canStack(pstack, istack.stack)
-                            || istack.invAmount - istack.distributed < pstack.stackSize
+                    if (!canStack(pstack, istack.stack) || istack.invAmount - istack.distributed < pstack.stackSize
                             || istack.recipeAmount == 0
-                            || pstack.stackSize == 0) continue;
+                            || pstack.stackSize == 0)
+                        continue;
 
                     int relsize = (istack.invAmount - istack.invAmount / istack.recipeAmount * istack.distributed)
                             / pstack.stackSize;
@@ -223,7 +227,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
             }
 
             if (biggestIngred == null) // not enough ingreds
-            return null;
+                return null;
 
             biggestIngred.distributed += permutation.stackSize;
             assignedIngredients.add(new IngredientDistribution(biggestIngred, permutation));
@@ -234,7 +238,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
 
     @SuppressWarnings("unchecked")
     private void findInventoryQuantities(GuiContainer gui, List<DistributedIngred> ingredStacks) {
-        for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots) /*work out how much we have to go round*/ {
+        for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots) /* work out how much we have to go round */ {
             if (slot.getHasStack() && canMoveFrom(slot, gui)) {
                 ItemStack pstack = slot.getStack();
                 DistributedIngred istack = findIngred(ingredStacks, pstack);
@@ -245,7 +249,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
 
     private List<DistributedIngred> getPermutationIngredients(List<PositionedStack> ingredients) {
         ArrayList<DistributedIngred> ingredStacks = new ArrayList<>();
-        for (PositionedStack posstack : ingredients) /*work out what we need*/ {
+        for (PositionedStack posstack : ingredients) /* work out what we need */ {
             for (ItemStack pstack : posstack.items) {
                 DistributedIngred istack = findIngred(ingredStacks, pstack);
                 if (istack == null) ingredStacks.add(istack = new DistributedIngred(pstack));
@@ -262,7 +266,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
     @SuppressWarnings("unchecked")
     public Slot[][] mapIngredSlots(GuiContainer gui, List<PositionedStack> ingredients) {
         Slot[][] recipeSlotList = new Slot[ingredients.size()][];
-        for (int i = 0; i < ingredients.size(); i++) /*identify slots*/ {
+        for (int i = 0; i < ingredients.size(); i++) /* identify slots */ {
             LinkedList<Slot> recipeSlots = new LinkedList<>();
             PositionedStack pstack = ingredients.get(i);
             for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots) {
@@ -289,8 +293,9 @@ public class DefaultOverlayHandler implements IOverlayHandler {
             // GT Items don't have any NBT set for the recipe, so if either of the stacks has a NULL nbt, and the other
             // doesn't, pretend they stack
             if (((gtItem != null && gtItem.isInstance(stack1.getItem()))
-                            || (stack1.getMaxStackSize() == 1 && stack2.getMaxStackSize() == 1))
-                    && (stack1.stackTagCompound == null ^ stack2.stackTagCompound == null)) return true;
+                    || (stack1.getMaxStackSize() == 1 && stack2.getMaxStackSize() == 1))
+                    && (stack1.stackTagCompound == null ^ stack2.stackTagCompound == null))
+                return true;
         }
         return false;
     }

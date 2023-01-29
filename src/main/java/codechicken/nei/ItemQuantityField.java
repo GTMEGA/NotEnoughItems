@@ -3,6 +3,7 @@ package codechicken.nei;
 import static codechicken.nei.NEIClientUtils.translate;
 
 public class ItemQuantityField extends TextField {
+
     public ItemQuantityField(String ident) {
         super(ident);
         centered = true;

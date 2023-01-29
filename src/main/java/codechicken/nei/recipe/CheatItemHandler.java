@@ -1,13 +1,14 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.NEICPH;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.api.INEIGuiAdapter;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
 public class CheatItemHandler extends INEIGuiAdapter {
 
@@ -25,12 +26,12 @@ public class CheatItemHandler extends INEIGuiAdapter {
                     contents = 0;
                 }
 
-                final int total = Math.min(
-                        contents + add, Math.min(overSlot.getSlotStackLimit(), draggedStack.getMaxStackSize()));
+                final int total = Math
+                        .min(contents + add, Math.min(overSlot.getSlotStackLimit(), draggedStack.getMaxStackSize()));
 
                 if (total > contents) {
-                    NEIClientUtils.setSlotContents(
-                            overSlot.slotNumber, NEIServerUtils.copyStack(draggedStack, total), true);
+                    NEIClientUtils
+                            .setSlotContents(overSlot.slotNumber, NEIServerUtils.copyStack(draggedStack, total), true);
                     NEICPH.sendGiveItem(NEIServerUtils.copyStack(draggedStack, total), false, false);
                     draggedStack.stackSize -= total - contents;
                 }

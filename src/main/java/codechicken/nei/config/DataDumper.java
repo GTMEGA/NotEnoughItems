@@ -3,19 +3,23 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
+
+import org.lwjgl.opengl.GL11;
+
 import codechicken.core.CommonUtils;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
-import org.lwjgl.opengl.GL11;
 
 public abstract class DataDumper extends Option {
+
     public DataDumper(String name) {
         super(name);
     }
@@ -52,7 +56,9 @@ public abstract class DataDumper extends Option {
 
     public IChatComponent dumpMessage(File file) {
         return new ChatComponentTranslation(
-                "nei.options.tools.dump.dumped", translateN(name), "dumps/" + file.getName());
+                "nei.options.tools.dump.dumped",
+                translateN(name),
+                "dumps/" + file.getName());
     }
 
     public void dumpTo(File file) throws IOException {

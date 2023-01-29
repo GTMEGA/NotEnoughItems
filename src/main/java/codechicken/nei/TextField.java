@@ -2,9 +2,11 @@ package codechicken.nei;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+
 import org.lwjgl.input.Keyboard;
 
 public abstract class TextField extends Widget {
+
     protected GuiTextField field;
 
     private static final int maxSearchLength = 256;
@@ -23,7 +25,7 @@ public abstract class TextField extends Widget {
     public TextField(String ident) {
         identifier = ident;
         initInternalTextField();
-        //        Keyboard.enableRepeatEvents(true);
+        // Keyboard.enableRepeatEvents(true);
     }
 
     public int getTextColour() {

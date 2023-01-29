@@ -2,18 +2,22 @@ package codechicken.nei.recipe;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.PositionedStack;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
+
 public class FuelRecipeHandler extends FurnaceRecipeHandler {
+
     public class CachedFuelRecipe extends CachedRecipe {
+
         public final FuelPair fuel;
 
         public CachedFuelRecipe(FuelPair fuel) {
@@ -50,10 +54,9 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler {
     @SuppressWarnings("unchecked")
     private void loadAllSmelting() {
         // Note: Not safe as written for parallelStream
-        final Map<ItemStack, ItemStack> smeltingRecipes =
-                (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
-        smeltingRecipes.entrySet().stream()
-                .map(recipe -> new SmeltingPair(recipe.getKey(), recipe.getValue()))
+        final Map<ItemStack, ItemStack> smeltingRecipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting()
+                .getSmeltingList();
+        smeltingRecipes.entrySet().stream().map(recipe -> new SmeltingPair(recipe.getKey(), recipe.getValue()))
                 .collect(Collectors.toCollection(() -> mfurnace));
     }
 
@@ -66,10 +69,8 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler {
 
     public void loadUsageRecipes(ItemStack ingredient) {
         // Note: Not safe as written for parallelStream
-        afuels.stream()
-                .filter(fuel -> fuel != null && fuel.stack != null && fuel.stack.contains(ingredient))
-                .map(CachedFuelRecipe::new)
-                .collect(Collectors.toCollection(() -> arecipes));
+        afuels.stream().filter(fuel -> fuel != null && fuel.stack != null && fuel.stack.contains(ingredient))
+                .map(CachedFuelRecipe::new).collect(Collectors.toCollection(() -> arecipes));
     }
 
     @Override
@@ -89,8 +90,7 @@ public class FuelRecipeHandler extends FurnaceRecipeHandler {
         NumberFormat numberInstance = NumberFormat.getNumberInstance();
         numberInstance.setMaximumFractionDigits(2);
         String smeltCount = numberInstance.format(fuel.burnTime / 200f);
-        Minecraft.getMinecraft()
-                .fontRenderer
+        Minecraft.getMinecraft().fontRenderer
                 .drawString(translate("recipe.fuel.smeltCount", smeltCount), 73, 51, 0xFF000000);
     }
 }

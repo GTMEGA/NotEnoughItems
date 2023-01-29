@@ -1,10 +1,12 @@
 package codechicken.nei;
 
-import codechicken.nei.api.IInfiniteItemHandler;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import codechicken.nei.api.IInfiniteItemHandler;
+
 public class InfiniteToolHandler implements IInfiniteItemHandler {
+
     @Override
     public void onPickup(ItemStack heldItem) {
         heldItem.setItemDamage(0);

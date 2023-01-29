@@ -2,10 +2,11 @@ package codechicken.nei.recipe;
 
 import static codechicken.nei.LayoutManager.searchField;
 
-import codechicken.nei.api.INEIGuiAdapter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+
+import codechicken.nei.api.INEIGuiAdapter;
 
 public class SearchInputDropHandler extends INEIGuiAdapter {
 

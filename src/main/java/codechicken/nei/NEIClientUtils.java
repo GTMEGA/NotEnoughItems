@@ -8,13 +8,6 @@ import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
 import static codechicken.nei.NEIClientConfig.invCreativeMode;
 import static codechicken.nei.NEIClientConfig.world;
 
-import codechicken.lib.inventory.InventoryRange;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.util.LangProxy;
-import codechicken.nei.api.GuiInfo;
-import codechicken.nei.api.IInfiniteItemHandler;
-import codechicken.nei.api.ItemInfo;
-import com.google.common.collect.Iterables;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigInteger;
@@ -33,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
@@ -46,9 +40,20 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.input.Keyboard;
 
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.util.LangProxy;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.IInfiniteItemHandler;
+import codechicken.nei.api.ItemInfo;
+
+import com.google.common.collect.Iterables;
+
 public class NEIClientUtils extends NEIServerUtils {
+
     public static LangProxy lang = new LangProxy("nei");
 
     /** Formats a number with group separator and at most 2 fraction digits. */
@@ -110,8 +115,7 @@ public class NEIClientUtils extends NEIServerUtils {
     }
 
     public static void decreaseSlotStack(int slotNumber) {
-        ItemStack stack = slotNumber == -999
-                ? getHeldItem()
+        ItemStack stack = slotNumber == -999 ? getHeldItem()
                 : mc().thePlayer.openContainer.getSlot(slotNumber).getStack();
         if (stack == null) return;
 
@@ -152,7 +156,7 @@ public class NEIClientUtils extends NEIServerUtils {
     }
 
     /**
-     * @param mode      -1 = normal cheats, 0 = no infinites, 1 = replenish stack
+     * @param mode -1 = normal cheats, 0 = no infinites, 1 = replenish stack
      */
     public static void cheatItem(ItemStack stack, int button, int mode) {
         if (!canCheatItem(stack)) return;
@@ -191,16 +195,14 @@ public class NEIClientUtils extends NEIServerUtils {
         ItemStack stack = copyStack(base, i);
         if (hasSMPCounterPart()) {
             ItemStack typestack = copyStack(stack, 1);
-            if (!infinite
-                    && !canItemFitInInventory(mc().thePlayer, stack)
+            if (!infinite && !canItemFitInInventory(mc().thePlayer, stack)
                     && (mc().currentScreen instanceof GuiContainer)) {
                 GuiContainer gui = getGuiContainer();
                 final List<Iterable<Integer>> handlerSlots;
                 try {
                     GuiInfo.readLock.lock();
                     handlerSlots = GuiInfo.guiHandlers.stream()
-                            .map(handler -> handler.getItemSpawnSlots(gui, typestack))
-                            .filter(x -> x != null)
+                            .map(handler -> handler.getItemSpawnSlots(gui, typestack)).filter(x -> x != null)
                             .collect(Collectors.toCollection(LinkedList::new));
                 } finally {
                     GuiInfo.readLock.unlock();
@@ -225,7 +227,7 @@ public class NEIClientUtils extends NEIServerUtils {
                 if (given > 0) NEICPH.sendGiveItem(copyStack(typestack, given), false, false);
             } else NEICPH.sendGiveItem(stack, infinite, true);
         } else {
-            for (int given = 0; given < stack.stackSize; ) {
+            for (int given = 0; given < stack.stackSize;) {
                 int qty = Math.min(stack.stackSize - given, stack.getMaxStackSize());
                 sendCommand(
                         getStringSetting("command.item"),
@@ -261,9 +263,7 @@ public class NEIClientUtils extends NEIServerUtils {
 
     public static boolean isValidGamemode(String s) {
         return s.equals("survival")
-                || canPerformAction(s)
-                        && Arrays.asList(getStringArrSetting("inventory.gamemodes"))
-                                .contains(s);
+                || canPerformAction(s) && Arrays.asList(getStringArrSetting("inventory.gamemodes")).contains(s);
     }
 
     public static int getNextGamemode() {
@@ -282,11 +282,10 @@ public class NEIClientUtils extends NEIServerUtils {
         if (mode == nmode) return;
 
         if (hasSMPCounterPart()) NEICPH.sendGamemode(nmode);
-        else
-            sendCommand(
-                    getStringSetting("command.creative"),
-                    getGameType(nmode),
-                    mc().thePlayer.getCommandSenderName());
+        else sendCommand(
+                getStringSetting("command.creative"),
+                getGameType(nmode),
+                mc().thePlayer.getCommandSenderName());
     }
 
     public static long getTime() {
@@ -311,9 +310,8 @@ public class NEIClientUtils extends NEIServerUtils {
         NumberFormat numberformat = NumberFormat.getIntegerInstance();
         numberformat.setGroupingUsed(false);
         MessageFormat messageformat = new MessageFormat(command);
-        for (int i = 0; i < args.length; i++)
-            if (args[i] instanceof Integer || args[i] instanceof Long)
-                messageformat.setFormatByArgumentIndex(i, numberformat);
+        for (int i = 0; i < args.length; i++) if (args[i] instanceof Integer || args[i] instanceof Long)
+            messageformat.setFormatByArgumentIndex(i, numberformat);
 
         mc().thePlayer.sendChatMessage(messageformat.format(args));
     }
@@ -349,13 +347,13 @@ public class NEIClientUtils extends NEIServerUtils {
                 continue;
             }
             if (next + 1 != i) {
-                ranges.add(new int[] {start, next});
+                ranges.add(new int[] { start, next });
                 start = next = i;
                 continue;
             }
             next = i;
         }
-        ranges.add(new int[] {start, next});
+        ranges.add(new int[] { start, next });
         return ranges;
     }
 
@@ -433,8 +431,7 @@ public class NEIClientUtils extends NEIServerUtils {
         if (Keyboard.getEventKeyState()) {
             final int keycode = Keyboard.getEventKey();
 
-            if (keycode != Keyboard.KEY_LSHIFT
-                    && keycode != Keyboard.KEY_RSHIFT
+            if (keycode != Keyboard.KEY_LSHIFT && keycode != Keyboard.KEY_RSHIFT
                     && keycode != Keyboard.KEY_LCONTROL
                     && keycode != Keyboard.KEY_RCONTROL
                     && keycode != Keyboard.KEY_LMENU

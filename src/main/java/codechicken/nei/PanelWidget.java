@@ -1,5 +1,10 @@
 package codechicken.nei;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.ItemPanel.ItemPanelSlot;
 import codechicken.nei.api.GuiInfo;
@@ -8,11 +13,9 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
-import java.util.ArrayList;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
 
 public abstract class PanelWidget extends Widget {
+
     protected static final int PADDING = 2;
 
     public ItemStack draggedStack;
@@ -36,6 +39,7 @@ public abstract class PanelWidget extends Widget {
         pageLabel = new Label("0/0", true);
 
         pagePrev = new Button("Prev") {
+
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
                     grid.shiftPage(-1);
@@ -50,6 +54,7 @@ public abstract class PanelWidget extends Widget {
             }
         };
         pageNext = new Button("Next") {
+
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
                     grid.shiftPage(1);
@@ -78,21 +83,24 @@ public abstract class PanelWidget extends Widget {
     public abstract int getHeight(GuiContainer gui);
 
     public void resize(GuiContainer gui) {
-        final Rectangle4i margin =
-                new Rectangle4i(getMarginLeft(gui), getMarginTop(gui), getWidth(gui), getHeight(gui));
+        final Rectangle4i margin = new Rectangle4i(
+                getMarginLeft(gui),
+                getMarginTop(gui),
+                getWidth(gui),
+                getHeight(gui));
 
         final int minWidth = 5 * ItemsGrid.SLOT_SIZE;
         final int minHeight = 9 * ItemsGrid.SLOT_SIZE;
 
         final String settingName = getPositioningSettingName();
-        int paddingLeft = (int) Math.ceil(
-                margin.w * NEIClientConfig.getSetting(settingName + ".left").getIntValue() / 100000.0);
-        int paddingTop = (int) Math.ceil(
-                margin.h * NEIClientConfig.getSetting(settingName + ".top").getIntValue() / 100000.0);
-        int paddingRight = (int) Math.ceil(
-                margin.w * NEIClientConfig.getSetting(settingName + ".right").getIntValue() / 100000.0);
-        int paddingBottom = (int) Math.ceil(
-                margin.h * NEIClientConfig.getSetting(settingName + ".bottom").getIntValue() / 100000.0);
+        int paddingLeft = (int) Math
+                .ceil(margin.w * NEIClientConfig.getSetting(settingName + ".left").getIntValue() / 100000.0);
+        int paddingTop = (int) Math
+                .ceil(margin.h * NEIClientConfig.getSetting(settingName + ".top").getIntValue() / 100000.0);
+        int paddingRight = (int) Math
+                .ceil(margin.w * NEIClientConfig.getSetting(settingName + ".right").getIntValue() / 100000.0);
+        int paddingBottom = (int) Math
+                .ceil(margin.h * NEIClientConfig.getSetting(settingName + ".bottom").getIntValue() / 100000.0);
 
         int deltaHeight = Math.min(0, margin.h - paddingTop - paddingBottom - minHeight) / 2;
 
@@ -118,20 +126,19 @@ public abstract class PanelWidget extends Widget {
         int paddingLeft = 0;
         int paddingRight = 0;
 
-        while (paddingLeft < w
-                && GuiInfo.hideItemPanelSlot(
-                        gui, new Rectangle4i(x + paddingLeft, y, ItemsGrid.SLOT_SIZE, ItemsGrid.SLOT_SIZE))) {
+        while (paddingLeft < w && GuiInfo.hideItemPanelSlot(
+                gui,
+                new Rectangle4i(x + paddingLeft, y, ItemsGrid.SLOT_SIZE, ItemsGrid.SLOT_SIZE))) {
             paddingLeft += ItemsGrid.SLOT_SIZE;
         }
 
-        while (paddingRight < w
-                && GuiInfo.hideItemPanelSlot(
-                        gui,
-                        new Rectangle4i(
-                                x + w - paddingRight - ItemsGrid.SLOT_SIZE,
-                                y,
-                                ItemsGrid.SLOT_SIZE,
-                                ItemsGrid.SLOT_SIZE))) {
+        while (paddingRight < w && GuiInfo.hideItemPanelSlot(
+                gui,
+                new Rectangle4i(
+                        x + w - paddingRight - ItemsGrid.SLOT_SIZE,
+                        y,
+                        ItemsGrid.SLOT_SIZE,
+                        ItemsGrid.SLOT_SIZE))) {
             paddingRight += ItemsGrid.SLOT_SIZE;
         }
 
@@ -180,8 +187,7 @@ public abstract class PanelWidget extends Widget {
 
     @Override
     public void mouseDragged(int mousex, int mousey, int button, long heldTime) {
-        if (mouseDownSlot >= 0
-                && draggedStack == null
+        if (mouseDownSlot >= 0 && draggedStack == null
                 && NEIClientUtils.getHeldItem() == null
                 && NEIClientConfig.hasSMPCounterPart()) {
             ItemPanelSlot mouseOverSlot = getSlotMouseOver(mousex, mousey);
@@ -278,8 +284,7 @@ public abstract class PanelWidget extends Widget {
         }
 
         final GuiContainer gui = NEIClientUtils.getGuiContainer();
-        if (mouseX < gui.guiLeft
-                || mouseY < gui.guiTop
+        if (mouseX < gui.guiLeft || mouseY < gui.guiTop
                 || mouseX >= gui.guiLeft + gui.xSize
                 || mouseY >= gui.guiTop + gui.ySize) {
             draggedStack = null;

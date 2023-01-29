@@ -1,7 +1,7 @@
 package codechicken.nei;
 
-import codechicken.lib.render.CCRenderState;
 import java.util.ArrayList;
+
 import net.minecraft.client.gui.Gui;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,13 +13,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+
 import org.lwjgl.opengl.GL11;
+
+import codechicken.lib.render.CCRenderState;
 
 /**
  * This is crap code, don't ever do this.
  */
 public class ContainerEnchantmentModifier extends ContainerEnchantment {
+
     public static class EnchantmentHash {
+
         public EnchantmentHash(Enchantment e, int i, int l) {
             enchantment = e;
             state = i;
@@ -101,9 +106,7 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment {
         int barempty = height - getScrollBarHeight();
         int sbary = rely + (int) (barempty * percentscrolled + 0.5);
 
-        if (button == 0
-                && getScrollBarHeight() < height
-                && // the scroll bar can move (not full length)
+        if (button == 0 && getScrollBarHeight() < height && // the scroll bar can move (not full length)
                 mousex >= relx + cwidth
                 && mousex < relx + cwidth + getScrollBarWidth()
                 && mousey >= rely
@@ -217,10 +220,10 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment {
             if (NEIServerUtils.stackHasEnchantment(toolstack, e.effectId)) {
                 state = 2;
                 level = NEIServerUtils.getEnchantmentLevel(toolstack, e.effectId);
-            } else if (NEIServerUtils.doesEnchantmentConflict(NEIServerUtils.getEnchantments(toolstack), e)
-                    && validate) {
-                state = 1;
-            }
+            } else
+                if (NEIServerUtils.doesEnchantmentConflict(NEIServerUtils.getEnchantments(toolstack), e) && validate) {
+                    state = 1;
+                }
             slotEnchantment.add(new EnchantmentHash(e, state, level));
         }
         if (numoptions != slotEnchantment.size()) {
@@ -255,7 +258,12 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment {
             GL11.glColor3f(1, 1, 1);
             if (hasScrollBar()) {
                 gui.drawTexturedModalRect(
-                        relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth - 30, slotheight);
+                        relx,
+                        rely + slot * slotheight,
+                        0,
+                        gui.ySize + slotheight * shade,
+                        cwidth - 30,
+                        slotheight);
                 gui.drawTexturedModalRect(
                         relx + cwidth - 30,
                         rely + slot * slotheight,
@@ -265,7 +273,12 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment {
                         slotheight);
             } else {
                 gui.drawTexturedModalRect(
-                        relx, rely + slot * slotheight, 0, gui.ySize + slotheight * shade, cwidth + 7, slotheight);
+                        relx,
+                        rely + slot * slotheight,
+                        0,
+                        gui.ySize + slotheight * shade,
+                        cwidth + 7,
+                        slotheight);
             }
 
             gui.getFontRenderer().drawString(text, relx + 4, rely + slot * slotheight + 5, textColourFromState(shade));
@@ -284,12 +297,8 @@ public class ContainerEnchantmentModifier extends ContainerEnchantment {
 
         Gui.drawRect(sbarx, rely, sbarx + getScrollBarWidth(), rely + height, 0xFF202020); // background
         Gui.drawRect(sbarx, sbary, sbarx + getScrollBarWidth(), sbary + getScrollBarHeight(), 0xFF8B8B8B); // corners
-        Gui.drawRect(
-                sbarx,
-                sbary,
-                sbarx + getScrollBarWidth() - 1,
-                sbary + getScrollBarHeight() - 1,
-                0xFFF0F0F0); // topleft up
+        Gui.drawRect(sbarx, sbary, sbarx + getScrollBarWidth() - 1, sbary + getScrollBarHeight() - 1, 0xFFF0F0F0); // topleft
+                                                                                                                   // up
         Gui.drawRect(
                 sbarx + 1,
                 sbary + 1,

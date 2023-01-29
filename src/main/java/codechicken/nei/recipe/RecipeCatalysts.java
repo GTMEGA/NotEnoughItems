@@ -1,10 +1,5 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import com.google.common.base.Objects;
-import cpw.mods.fml.common.Loader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,12 +15,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.minecraft.item.ItemStack;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+
+import com.google.common.base.Objects;
+import cpw.mods.fml.common.Loader;
+
 public class RecipeCatalysts {
+
     private static final Map<String, CatalystInfoList> catalystsAdderFromAPI = new HashMap<>();
     private static final Map<String, List<ItemStack>> catalystsRemoverFromAPI = new HashMap<>();
     public static final Map<String, CatalystInfoList> catalystsAdderFromIMC = new HashMap<>();
@@ -89,8 +94,11 @@ public class RecipeCatalysts {
                 ItemStack catalyst = catalysts.get(index).getStack();
                 int column = index / rowCount;
                 int row = index % rowCount;
-                newStacks.add(new PositionedStack(
-                        catalyst, -column * GuiRecipeCatalyst.ingredientSize, row * GuiRecipeCatalyst.ingredientSize));
+                newStacks.add(
+                        new PositionedStack(
+                                catalyst,
+                                -column * GuiRecipeCatalyst.ingredientSize,
+                                row * GuiRecipeCatalyst.ingredientSize));
             }
             newMap.put(entry.getKey(), newStacks);
         }
@@ -239,9 +247,9 @@ public class RecipeCatalysts {
     }
 
     /**
-     * Basically {@link NEIClientConfig#HANDLER_ID_FUNCTION}.
-     * Force using {@link IRecipeHandler#getHandlerId()} if specified in catalysts.csv.
-     * In other words, refuse to share handlerID defined in {@link TemplateRecipeHandler#getOverlayIdentifier()}.
+     * Basically {@link NEIClientConfig#HANDLER_ID_FUNCTION}. Force using {@link IRecipeHandler#getHandlerId()} if
+     * specified in catalysts.csv. In other words, refuse to share handlerID defined in
+     * {@link TemplateRecipeHandler#getOverlayIdentifier()}.
      */
     public static String getRecipeID(IRecipeHandler handler) {
         if (forceClassNameList.stream().anyMatch(s -> s.equals(handler.getHandlerId()))) {

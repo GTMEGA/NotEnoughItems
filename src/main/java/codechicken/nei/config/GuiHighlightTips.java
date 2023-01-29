@@ -4,22 +4,26 @@ import static codechicken.lib.gui.GuiDraw.displaySize;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.nei.NEIClientUtils.translate;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.Arrays;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.HUDRenderer;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.util.Arrays;
-import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
 
 public class GuiHighlightTips extends GuiScreenWidget {
+
     private final String name;
     private GuiCCButton toggleButton;
     private final Option opt;
@@ -71,20 +75,18 @@ public class GuiHighlightTips extends GuiScreenWidget {
         super.drawScreen(mousex, mousey, f);
         if (show()) {
             ItemStack stack = new ItemStack(Blocks.redstone_block);
-            List<String> tip = Arrays.asList(
-                    stack.getDisplayName(), EnumChatFormatting.RED + translate("options." + name + ".sample"));
+            List<String> tip = Arrays
+                    .asList(stack.getDisplayName(), EnumChatFormatting.RED + translate("options." + name + ".sample"));
             HUDRenderer.renderOverlay(stack, tip, renderPos());
         }
     }
 
     public Point getPos() {
-        return new Point(
-                opt.renderTag(name + ".x").getIntValue(),
-                opt.renderTag(name + ".y").getIntValue());
+        return new Point(opt.renderTag(name + ".x").getIntValue(), opt.renderTag(name + ".y").getIntValue());
     }
 
     public Dimension sampleSize() // copied from HUDManager when running with the sample for this gui
-            {
+    {
         return new Dimension(101, 30);
     }
 

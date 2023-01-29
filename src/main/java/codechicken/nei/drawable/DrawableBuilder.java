@@ -3,6 +3,7 @@ package codechicken.nei.drawable;
 import net.minecraft.util.ResourceLocation;
 
 public class DrawableBuilder {
+
     private final ResourceLocation resourceLocation;
     private int u;
     private int v;

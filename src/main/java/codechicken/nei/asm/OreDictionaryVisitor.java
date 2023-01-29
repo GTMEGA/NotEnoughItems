@@ -10,49 +10,54 @@ import org.objectweb.asm.MethodVisitor;
 
 /**
  * Code without this patch
+ * 
  * <pre>
  * public class OreDictionary {
- * public static int getOreID(String name) {
- * Integer val = nameToId.get(name);
- * if (val == null)
- * {
- * idToName.add(name);
- * val = idToName.size() - 1; //0 indexed
- * nameToId.put(name, val);
- * idToStack.add(new ArrayList<ItemStack>());
- * idToStackUn.add(new UnmodifiableArrayList(idToStack.get(val)));
- * }
- * return val;
- * }
+ * 
+ *     public static int getOreID(String name) {
+ *         Integer val = nameToId.get(name);
+ *         if (val == null) {
+ *             idToName.add(name);
+ *             val = idToName.size() - 1; // 0 indexed
+ *             nameToId.put(name, val);
+ *             idToStack.add(new ArrayList<ItemStack>());
+ *             idToStackUn.add(new UnmodifiableArrayList(idToStack.get(val)));
+ *         }
+ *         return val;
+ *     }
  * }
  * </pre>
+ * 
  * Code with this patch
+ * 
  * <pre>
  * public class OreDictionary {
- * private static final Object emptyEntryCreationLock = new Object();
- * public static int getOreID(String name) {
- * Integer val = nameToId.get(name);
- * if (val == null)
- * {
- * synchronized (emptyEntryCreationLock) {
- * if ((val = nameToId.get(name)) != null)
- * return val;
- * idToName.add(name);
- * val = idToName.size() - 1; //0 indexed
- * nameToId.put(name, val);
- * idToStack.add(new ArrayList<ItemStack>());
- * idToStackUn.add(new UnmodifiableArrayList(idToStack.get(val)));
- * }
- * }
- * return val;
- * }
+ * 
+ *     private static final Object emptyEntryCreationLock = new Object();
+ * 
+ *     public static int getOreID(String name) {
+ *         Integer val = nameToId.get(name);
+ *         if (val == null) {
+ *             synchronized (emptyEntryCreationLock) {
+ *                 if ((val = nameToId.get(name)) != null) return val;
+ *                 idToName.add(name);
+ *                 val = idToName.size() - 1; // 0 indexed
+ *                 nameToId.put(name, val);
+ *                 idToStack.add(new ArrayList<ItemStack>());
+ *                 idToStackUn.add(new UnmodifiableArrayList(idToStack.get(val)));
+ *             }
+ *         }
+ *         return val;
+ *     }
  * }
  * </pre>
  */
 public class OreDictionaryVisitor extends ClassVisitor {
+
     private static final Logger logger = LogManager.getLogger("OreDictionaryVisitor");
 
     private static class GetOreIDVisitor extends MethodVisitor {
+
         Label jumpEnd;
         Label catchStart = new Label();
         Label exitStart = new Label();
@@ -118,6 +123,7 @@ public class OreDictionaryVisitor extends ClassVisitor {
     }
 
     private static class ClassInitializerVisitor extends MethodVisitor {
+
         public ClassInitializerVisitor(int api, MethodVisitor mv) {
             super(api, mv);
         }

@@ -1,21 +1,25 @@
 package codechicken.nei;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+
 import codechicken.lib.config.ConfigTagParent;
 import codechicken.nei.ItemList.ItemsLoadedCallback;
 import codechicken.nei.api.API;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.config.GuiItemSorter;
 import codechicken.nei.config.OptionOpenGui;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback {
+
     public static class SortEntry {
+
         public final String name;
         public final Comparator<ItemStack> comparator;
 
@@ -44,7 +48,7 @@ public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback {
 
     public static void sort(ArrayList<ItemStack> items) {
         try {
-            //            items = (ArrayList<ItemStack>)
+            // items = (ArrayList<ItemStack>)
             // items.parallelStream().sorted(instance).collect(Collectors.toList());
             items.sort(instance);
         } catch (Exception e) {
@@ -125,6 +129,7 @@ public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback {
         });
         tag.getTag("inventory.itemsort").setDefaultValue(getSaveString(list));
         API.addOption(new OptionOpenGui("inventory.itemsort", GuiItemSorter.class) {
+
             @Override
             public void useGlobals() {
                 super.useGlobals();

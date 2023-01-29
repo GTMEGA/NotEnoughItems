@@ -4,8 +4,10 @@ import com.google.common.base.Objects;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ThreadOperationTimer extends Thread {
+
     @SuppressWarnings("serial")
     public static class TimeoutException extends RuntimeException {
+
         public final Object operation;
 
         public TimeoutException(String msg, Object op) {
@@ -48,10 +50,13 @@ public class ThreadOperationTimer extends Thread {
     @SuppressWarnings("deprecation")
     @Override
     public void run() {
-        if (FMLCommonHandler.instance()
-                .findContainerFor("NotEnoughItems")
-                .getVersion()
-                .contains("$")) return; // don't run this thread in a source environment
+        if (FMLCommonHandler.instance().findContainerFor("NotEnoughItems").getVersion().contains("$")) return; // don't
+                                                                                                               // run
+                                                                                                               // this
+                                                                                                               // thread
+                                                                                                               // in a
+                                                                                                               // source
+                                                                                                               // environment
 
         while (thread.isAlive()) {
             synchronized (this) {
@@ -63,8 +68,7 @@ public class ThreadOperationTimer extends Thread {
             }
             try {
                 Thread.sleep(50);
-            } catch (InterruptedException ie) {
-            }
+            } catch (InterruptedException ie) {}
         }
     }
 

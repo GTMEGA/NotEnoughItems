@@ -1,11 +1,14 @@
 package codechicken.nei.config;
 
-import codechicken.lib.config.ConfigTagParent;
-import codechicken.nei.NEIServerUtils;
 import java.io.File;
+
 import net.minecraft.nbt.NBTTagCompound;
 
+import codechicken.lib.config.ConfigTagParent;
+import codechicken.nei.NEIServerUtils;
+
 public class ConfigSet {
+
     private final File nbtFile;
     public NBTTagCompound nbt;
     public final ConfigTagParent config;

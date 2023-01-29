@@ -2,18 +2,6 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import codechicken.core.gui.GuiScrollSlot;
-import codechicken.lib.gui.GuiDraw;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemList.AnyMultiItemFilter;
-import codechicken.nei.ItemList.ItemsLoadedCallback;
-import codechicken.nei.ItemList.NothingItemFilter;
-import codechicken.nei.SearchField.ISearchProvider;
-import codechicken.nei.api.API;
-import codechicken.nei.api.ItemFilter;
-import codechicken.nei.api.ItemFilter.ItemFilterProvider;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.guihook.GuiContainerManager;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,24 +15,42 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 
+import codechicken.core.gui.GuiScrollSlot;
+import codechicken.lib.gui.GuiDraw;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemList.AnyMultiItemFilter;
+import codechicken.nei.ItemList.ItemsLoadedCallback;
+import codechicken.nei.ItemList.NothingItemFilter;
+import codechicken.nei.SearchField.ISearchProvider;
+import codechicken.nei.api.API;
+import codechicken.nei.api.ItemFilter;
+import codechicken.nei.api.ItemFilter.ItemFilterProvider;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+
 public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoadedCallback, ISearchProvider {
+
     public static ReentrantReadWriteLock hiddenItemLock = new ReentrantReadWriteLock();
     public static Lock writeLock = hiddenItemLock.writeLock();
     public static Lock readLock = hiddenItemLock.readLock();
 
     public static class SubsetState {
+
         int state = 2;
         ArrayList<ItemStack> items = new ArrayList<>();
     }
 
     public static class SubsetTag {
+
         protected class SubsetSlot extends GuiScrollSlot {
+
             public SubsetSlot() {
                 super(0, 0, 0, 0);
                 setSmoothScroll(false);
@@ -190,10 +196,9 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             } else {
                 String childname = name.substring(0, idx);
                 SubsetTag child = children.get(childname.toLowerCase());
-                if (child == null)
-                    children.put(
-                            childname.toLowerCase(),
-                            child = new SubsetTag(fullname == null ? childname : fullname + '.' + childname));
+                if (child == null) children.put(
+                        childname.toLowerCase(),
+                        child = new SubsetTag(fullname == null ? childname : fullname + '.' + childname));
                 recacheChildren();
                 child.addTag(tag);
             }
@@ -533,6 +538,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     }
 
     private static final RestartableTask prepareDirtyHiddenItems = new RestartableTask("NEI Subset Save Thread") {
+
         private List<ItemStack> getList() {
             try {
                 if (readLock.tryLock(5, TimeUnit.SECONDS)) {
@@ -566,6 +572,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
     private static final UpdateStateTask updateState = new UpdateStateTask();
 
     private static class UpdateStateTask extends RestartableTask {
+
         private volatile boolean reallocate;
 
         public UpdateStateTask() {
@@ -599,9 +606,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
                 for (ItemStack item : ItemList.items) {
                     if (interrupted()) return;
                     if (ItemInfo.isHidden(item)) continue;
-                    for (SubsetTag tag : tags)
-                        if (tag.filter.matches(item))
-                            state.get(tag.fullname).items.add(item);
+                    for (SubsetTag tag : tags) if (tag.filter.matches(item)) state.get(tag.fullname).items.add(item);
                 }
             }
 

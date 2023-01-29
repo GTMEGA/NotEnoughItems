@@ -1,17 +1,19 @@
 package codechicken.nei.asm;
 
+import java.io.File;
+import java.util.Map;
+
 import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.lib.asm.ASMInit;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
-import java.io.File;
-import java.util.Map;
 
-@TransformerExclusions(value = {"codechicken.nei.asm"})
+@TransformerExclusions(value = { "codechicken.nei.asm" })
 @MCVersion("1.7.10")
 public class NEICorePlugin implements IFMLLoadingPlugin, IFMLCallHook {
+
     public static File location;
 
     public NEICorePlugin() {
@@ -21,7 +23,7 @@ public class NEICorePlugin implements IFMLLoadingPlugin, IFMLCallHook {
     @Override
     public String[] getASMTransformerClass() {
         CodeChickenCorePlugin.versionCheck(CodeChickenCorePlugin.mcVersion, "NotEnoughItems");
-        return new String[] {"codechicken.nei.asm.NEITransformer"};
+        return new String[] { "codechicken.nei.asm.NEITransformer" };
     }
 
     @Override
@@ -38,11 +40,7 @@ public class NEICorePlugin implements IFMLLoadingPlugin, IFMLCallHook {
     public void injectData(Map<String, Object> data) {
         location = (File) data.get("coremodLocation");
         if (location == null)
-            location = new File(getClass()
-                    .getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .getPath());
+            location = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
     }
 
     @Override

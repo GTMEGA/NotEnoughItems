@@ -1,18 +1,22 @@
 package codechicken.nei;
 
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.api.INEIGuiHandler;
-import codechicken.nei.api.TaggedInventoryArea;
 import java.util.Collections;
 import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.TaggedInventoryArea;
+
 public class GuiExtendedCreativeInv extends GuiContainer implements INEIGuiHandler {
+
     public GuiExtendedCreativeInv(Container par1Container) {
         super(par1Container);
         ySize = 198;

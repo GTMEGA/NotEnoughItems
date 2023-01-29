@@ -1,13 +1,15 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class HandlerInfo {
+
     public static int DEFAULT_HEIGHT = 65;
     public static int DEFAULT_WIDTH = 166;
     public static int DEFAULT_MAX_PER_PAGE = 1;
@@ -111,6 +113,7 @@ public class HandlerInfo {
     }
 
     public static class Builder {
+
         private final HandlerInfo info;
 
         public Builder(String handlerName, String modName, String modId) {
@@ -128,8 +131,8 @@ public class HandlerInfo {
             return this;
         }
 
-        public Builder setDisplayImage(
-                ResourceLocation location, int imageX, int imageY, int imageWidth, int imageHeight) {
+        public Builder setDisplayImage(ResourceLocation location, int imageX, int imageY, int imageWidth,
+                int imageHeight) {
             info.itemStack = null;
             info.setImage(location.toString(), imageX, imageY, imageWidth, imageHeight);
             return this;

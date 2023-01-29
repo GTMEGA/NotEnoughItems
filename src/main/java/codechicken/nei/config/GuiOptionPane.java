@@ -5,18 +5,23 @@ import static codechicken.lib.gui.GuiDraw.fontRenderer;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static net.minecraft.util.StatCollector.translateToLocal;
 
-import codechicken.core.gui.GuiCCButton;
-import codechicken.core.gui.GuiScreenWidget;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+
 import org.lwjgl.input.Keyboard;
 
+import codechicken.core.gui.GuiCCButton;
+import codechicken.core.gui.GuiScreenWidget;
+
 public abstract class GuiOptionPane extends GuiScreenWidget {
+
     public class ScrollPane extends OptionScrollPane {
+
         @Override
         public int contentHeight() {
             return GuiOptionPane.this.contentHeight();

@@ -20,12 +20,15 @@ import static codechicken.nei.NEIClientConfig.disabledActions;
 import static codechicken.nei.NEIClientConfig.getMagnetMode;
 import static codechicken.nei.NEIClientConfig.isEnabled;
 
-import codechicken.nei.api.LayoutStyle;
-import codechicken.nei.drawable.DrawableBuilder;
 import net.minecraft.client.gui.inventory.GuiContainer;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.drawable.DrawableBuilder;
+
 public class LayoutStyleMinecraft extends LayoutStyle {
+
     public int buttonCount;
     public int leftSize;
     public int numButtons;
@@ -88,9 +91,9 @@ public class LayoutStyleMinecraft extends LayoutStyle {
 
         if (canPerformAction("delete")) layoutButton(delete);
         if (canPerformAction("rain")) layoutButton(rain);
-        if (NEIClientUtils.isValidGamemode("creative")
-                || NEIClientUtils.isValidGamemode("creative+")
-                || NEIClientUtils.isValidGamemode("adventure")) layoutButton(gamemode);
+        if (NEIClientUtils.isValidGamemode("creative") || NEIClientUtils.isValidGamemode("creative+")
+                || NEIClientUtils.isValidGamemode("adventure"))
+            layoutButton(gamemode);
         if (canPerformAction("magnet")) layoutButton(magnet);
         if (canPerformAction("time")) {
             for (int i = 0; i < 4; i++) {
@@ -150,10 +153,9 @@ public class LayoutStyleMinecraft extends LayoutStyle {
 
         int tex;
         if ((b.state & 0x3) == 2) tex = 0;
-        else if ((b.state & 0x4) == 0 && b.contains(mousex, mousey)
-                || // not a state button and mouseover
+        else if ((b.state & 0x4) == 0 && b.contains(mousex, mousey) || // not a state button and mouseover
                 (b.state & 0x3) == 1) // state active
-        tex = 2;
+            tex = 2;
         else tex = 1;
         LayoutManager.drawButtonBackground(b.x, b.y, b.w, b.h, true, tex);
 

@@ -5,6 +5,7 @@ import static codechicken.lib.gui.GuiDraw.getStringWidth;
 import java.util.List;
 
 public abstract class Button extends Widget {
+
     public Button(String s) {
         label = s;
     }
@@ -60,10 +61,7 @@ public abstract class Button extends Widget {
     public Image icon;
 
     /**
-     * 0x4 = state flag, as opposed to 1 click
-     * 0 = normal
-     * 1 = on
-     * 2 = disabled
+     * 0x4 = state flag, as opposed to 1 click 0 = normal 1 = on 2 = disabled
      */
     public int state;
 }

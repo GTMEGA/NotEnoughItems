@@ -4,6 +4,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
 public interface IInfiniteItemHandler {
+
     void onPickup(ItemStack heldItem);
 
     void onPlaceInfinite(ItemStack heldItem);

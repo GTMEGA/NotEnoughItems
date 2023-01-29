@@ -1,11 +1,13 @@
 package codechicken.nei;
 
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import cpw.mods.fml.relauncher.Side;
+
 public class ExtendedCreativeInv implements IInventory {
+
     final PlayerSave playerSave;
     final Side side;
 

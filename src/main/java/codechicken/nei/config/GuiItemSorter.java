@@ -3,18 +3,23 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.gui.GuiScreen;
+
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.math.MathHelper;
 import codechicken.nei.ItemSorter;
 import codechicken.nei.ItemSorter.SortEntry;
 import codechicken.nei.LayoutManager;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.opengl.GL11;
 
 public class GuiItemSorter extends GuiOptionPane {
+
     public class SortItem {
+
         public double ya;
         public double y;
         public final SortEntry e;

@@ -2,15 +2,12 @@ package codechicken.nei;
 
 import static codechicken.lib.gui.GuiDraw.drawRect;
 
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.api.GuiInfo;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.StackInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -18,9 +15,17 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.StackInfo;
+
 public class ItemsGrid {
+
     public static final int SLOT_SIZE = 18;
 
     protected int width;
@@ -178,8 +183,7 @@ public class ItemsGrid {
 
             for (int r = 0; r < rows; r++) {
                 final int idx = columns * r + c;
-                if (GuiInfo.hideItemPanelSlot(gui, getSlotRect(r, c))
-                        && idx >= 0
+                if (GuiInfo.hideItemPanelSlot(gui, getSlotRect(r, c)) && idx >= 0
                         && idx < invalidSlotMap.length
                         && !invalidSlotMap[idx]) {
                     invalidSlotMap[idx] = true;
@@ -208,7 +212,10 @@ public class ItemsGrid {
 
     public Rectangle4i getSlotRect(int row, int column) {
         return new Rectangle4i(
-                marginLeft + paddingLeft + column * SLOT_SIZE, marginTop + row * SLOT_SIZE, SLOT_SIZE, SLOT_SIZE);
+                marginLeft + paddingLeft + column * SLOT_SIZE,
+                marginTop + row * SLOT_SIZE,
+                SLOT_SIZE,
+                SLOT_SIZE);
     }
 
     public boolean isInvalidSlot(int index) {
@@ -302,7 +309,10 @@ public class ItemsGrid {
                 GL11.glDisable(GL11.GL_BLEND);
                 GL11.glDepthMask(true);
                 OpenGlHelper.glBlendFunc(
-                        GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                        GL11.GL_SRC_ALPHA,
+                        GL11.GL_ONE_MINUS_SRC_ALPHA,
+                        GL11.GL_SRC_ALPHA,
+                        GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 drawItems();

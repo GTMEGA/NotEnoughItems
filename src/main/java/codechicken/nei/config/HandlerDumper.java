@@ -1,5 +1,15 @@
 package codechicken.nei.config;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
+
+import org.apache.commons.io.IOUtils;
+
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.GuiUsageRecipe;
@@ -7,25 +17,19 @@ import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import codechicken.nei.util.NBTJson;
+
 import com.google.common.base.Objects;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.LinkedList;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
-import org.apache.commons.io.IOUtils;
 
 public class HandlerDumper extends DataDumper {
+
     public HandlerDumper(String name) {
         super(name);
     }
 
     @Override
     public String[] header() {
-        return new String[] {
-            "Handler Recipe Name", "Handler Class", "Overlay Identifier", "Mod DisplayName", "ItemStack"
-        };
+        return new String[] { "Handler Recipe Name", "Handler Class", "Overlay Identifier", "Mod DisplayName",
+                "ItemStack" };
     }
 
     @Override
@@ -34,21 +38,15 @@ public class HandlerDumper extends DataDumper {
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String handlerName = handler.getHandlerId();
             final String handlerId = Objects.firstNonNull(
-                    handler instanceof TemplateRecipeHandler
-                            ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
+                    handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
                             : null,
                     "null");
             HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
 
-            list.add(new String[] {
-                handler.getRecipeName(),
-                handlerName,
-                handlerId,
-                info != null ? info.getModName() : "Unknown",
-                info != null && info.getItemStack() != null
-                        ? info.getItemStack().toString()
-                        : "Unknown"
-            });
+            list.add(
+                    new String[] { handler.getRecipeName(), handlerName, handlerId,
+                            info != null ? info.getModName() : "Unknown",
+                            info != null && info.getItemStack() != null ? info.getItemStack().toString() : "Unknown" });
         }
         return list;
     }

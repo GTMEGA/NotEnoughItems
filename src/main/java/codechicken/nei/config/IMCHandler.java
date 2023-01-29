@@ -1,5 +1,14 @@
 package codechicken.nei.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import codechicken.core.CommonUtils;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIServerUtils;
@@ -11,15 +20,9 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class IMCHandler {
+
     private static final Set<String> processedCatalystSenders = new HashSet<>();
 
     private IMCHandler() {}
@@ -89,12 +92,11 @@ public class IMCHandler {
         info.setYShift(yShift);
 
         try {
-            final int imageHeight =
-                    tag.hasKey("handlerHeight") ? tag.getInteger("handlerHeight") : HandlerInfo.DEFAULT_HEIGHT;
-            final int imageWidth =
-                    tag.hasKey("handlerWidth") ? tag.getInteger("handlerWidth") : HandlerInfo.DEFAULT_WIDTH;
-            final int maxRecipesPerPage = tag.hasKey("maxRecipesPerPage")
-                    ? tag.getInteger("maxRecipesPerPage")
+            final int imageHeight = tag.hasKey("handlerHeight") ? tag.getInteger("handlerHeight")
+                    : HandlerInfo.DEFAULT_HEIGHT;
+            final int imageWidth = tag.hasKey("handlerWidth") ? tag.getInteger("handlerWidth")
+                    : HandlerInfo.DEFAULT_WIDTH;
+            final int maxRecipesPerPage = tag.hasKey("maxRecipesPerPage") ? tag.getInteger("maxRecipesPerPage")
                     : HandlerInfo.DEFAULT_MAX_PER_PAGE;
             info.setHandlerDimensions(imageHeight, imageWidth, maxRecipesPerPage);
         } catch (NumberFormatException ignored) {
@@ -146,10 +148,10 @@ public class IMCHandler {
         }
         final int priority = tag.getInteger("priority");
 
-        RecipeCatalysts.addOrPut(
-                RecipeCatalysts.catalystsAdderFromIMC, handlerID, new CatalystInfo(itemStack, priority));
-        NEIClientConfig.logger.info(
-                String.format("Added catalyst `%s` to handler %s", itemStack.getDisplayName(), handlerID));
+        RecipeCatalysts
+                .addOrPut(RecipeCatalysts.catalystsAdderFromIMC, handlerID, new CatalystInfo(itemStack, priority));
+        NEIClientConfig.logger
+                .info(String.format("Added catalyst `%s` to handler %s", itemStack.getDisplayName(), handlerID));
     }
 
     private static void handleRemoveCatalystInfo(IMCMessage message) {
@@ -180,15 +182,19 @@ public class IMCHandler {
         if (RecipeCatalysts.catalystsRemoverFromIMC.containsKey(handlerID)) {
             RecipeCatalysts.catalystsRemoverFromIMC.get(handlerID).add(itemStack);
         } else {
-            RecipeCatalysts.catalystsRemoverFromIMC.put(
-                    handlerID, new ArrayList<>(Collections.singletonList(itemStack)));
+            RecipeCatalysts.catalystsRemoverFromIMC
+                    .put(handlerID, new ArrayList<>(Collections.singletonList(itemStack)));
         }
-        NEIClientConfig.logger.info(
-                String.format("Removed catalyst `%s` from handler %s", itemStack.getDisplayName(), handlerID));
+        NEIClientConfig.logger
+                .info(String.format("Removed catalyst `%s` from handler %s", itemStack.getDisplayName(), handlerID));
     }
 
     private static void logInvalidMessage(FMLInterModComms.IMCMessage message, String type) {
-        FMLLog.bigWarning(String.format(
-                "Received invalid IMC '%s' from %s. Not a %s Message.", message.key, message.getSender(), type));
+        FMLLog.bigWarning(
+                String.format(
+                        "Received invalid IMC '%s' from %s. Not a %s Message.",
+                        message.key,
+                        message.getSender(),
+                        type));
     }
 }

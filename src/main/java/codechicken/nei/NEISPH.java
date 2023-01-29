@@ -1,14 +1,8 @@
 package codechicken.nei;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.SlotDummy;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
-import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
 import java.util.LinkedList;
 import java.util.Set;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryBasic;
@@ -19,7 +13,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 
+import codechicken.core.CommonUtils;
+import codechicken.core.ServerUtils;
+import codechicken.lib.inventory.SlotDummy;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.relauncher.Side;
+
 public class NEISPH implements IServerPacketHandler {
+
     @Override
     public void handlePacket(PacketCustom packet, EntityPlayerMP sender, INetHandlerPlayServer netHandler) {
         if (!NEIServerConfig.authenticatePacket(sender, packet)) return;
@@ -120,7 +123,8 @@ public class NEISPH implements IServerPacketHandler {
                     new ContainerCreativeInv(
                             sender,
                             new ExtendedCreativeInv(
-                                    NEIServerConfig.forPlayer(sender.getCommandSenderName()), Side.SERVER)),
+                                    NEIServerConfig.forPlayer(sender.getCommandSenderName()),
+                                    Side.SERVER)),
                     (player, windowId) -> {
                         PacketCustom packet = new PacketCustom(channel, 23);
                         packet.writeBoolean(true);

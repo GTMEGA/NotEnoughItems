@@ -2,17 +2,20 @@ package codechicken.nei.config;
 
 import static codechicken.lib.gui.GuiDraw.drawString;
 
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.LayoutManager;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.LayoutManager;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 public abstract class OptionStringSet extends Option {
+
     public final LinkedList<String> options = new LinkedList<>();
     public final Multimap<String, String> dependants = ArrayListMultimap.create();
     public final Map<String, String> dependancies = new HashMap<>();

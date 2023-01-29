@@ -1,17 +1,9 @@
 package codechicken.nei.recipe;
 
-import codechicken.core.ReflectionManager;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.api.DefaultOverlayRenderer;
-import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.api.IRecipeOverlayRenderer;
-import codechicken.nei.api.IStackPositioner;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.inventory.Container;
@@ -21,8 +13,20 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import codechicken.core.ReflectionManager;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.DefaultOverlayRenderer;
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.api.IRecipeOverlayRenderer;
+import codechicken.nei.api.IStackPositioner;
+
 public class ShapedRecipeHandler extends TemplateRecipeHandler {
+
     public class CachedShapedRecipe extends CachedRecipe {
+
         public ArrayList<PositionedStack> ingredients;
         public PositionedStack result;
 
@@ -134,8 +138,7 @@ public class ShapedRecipeHandler extends TemplateRecipeHandler {
             int height = ReflectionManager.getField(ShapedOreRecipe.class, Integer.class, recipe, 5);
 
             Object[] items = recipe.getInput();
-            for (Object item : items)
-                if (item instanceof List && ((List<?>) item).isEmpty()) // ore handler, no ores
+            for (Object item : items) if (item instanceof List && ((List<?>) item).isEmpty()) // ore handler, no ores
                 return null;
 
             return new CachedShapedRecipe(width, height, items, recipe.getRecipeOutput());

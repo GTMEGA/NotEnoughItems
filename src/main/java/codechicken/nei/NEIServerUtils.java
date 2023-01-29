@@ -1,13 +1,5 @@
 package codechicken.nei;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.InventoryRange;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.nei.util.NBTHelper;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.registry.GameRegistry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipException;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,9 +34,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.oredict.OreDictionary;
+
 import org.apache.logging.log4j.Level;
 
+import codechicken.core.CommonUtils;
+import codechicken.core.ServerUtils;
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.nei.util.NBTHelper;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.registry.GameRegistry;
+
 public class NEIServerUtils {
+
     public static boolean isRaining(World world) {
         return world.getWorldInfo().isRaining();
     }
@@ -51,7 +55,7 @@ public class NEIServerUtils {
     public static void toggleRaining(World world, boolean notify) {
         boolean raining = !world.isRaining();
         if (!raining) // turn off
-        ((WorldServer) world).provider.resetRainAndThunder();
+            ((WorldServer) world).provider.resetRainAndThunder();
         else world.getWorldInfo().setRaining(!isRaining(world));
 
         if (notify)
@@ -114,17 +118,18 @@ public class NEIServerUtils {
     }
 
     public static void sendNotice(ICommandSender sender, IChatComponent msg, String permission) {
-        ChatComponentTranslation notice =
-                new ChatComponentTranslation("chat.type.admin", sender.getCommandSenderName(), msg.createCopy());
+        ChatComponentTranslation notice = new ChatComponentTranslation(
+                "chat.type.admin",
+                sender.getCommandSenderName(),
+                msg.createCopy());
         notice.getChatStyle().setColor(EnumChatFormatting.GRAY).setItalic(true);
 
         if (NEIServerConfig.canPlayerPerformAction("CONSOLE", permission))
             MinecraftServer.getServer().addChatMessage(notice);
 
-        for (EntityPlayer p : ServerUtils.getPlayers())
-            if (p == sender) p.addChatComponentMessage(msg);
-            else if (NEIServerConfig.canPlayerPerformAction(p.getCommandSenderName(), permission))
-                p.addChatComponentMessage(notice);
+        for (EntityPlayer p : ServerUtils.getPlayers()) if (p == sender) p.addChatComponentMessage(msg);
+        else if (NEIServerConfig.canPlayerPerformAction(p.getCommandSenderName(), permission))
+            p.addChatComponentMessage(notice);
     }
 
     /**
@@ -133,8 +138,7 @@ public class NEIServerUtils {
      * @return whether the two items are the same in terms of damage and itemID.
      */
     public static boolean areStacksSameType(ItemStack stack1, ItemStack stack2) {
-        return stack1 != null
-                && stack2 != null
+        return stack1 != null && stack2 != null
                 && (stack1.getItem() == stack2.getItem()
                         && (!stack2.getHasSubtypes() || stack2.getItemDamage() == stack1.getItemDamage())
                         && ItemStack.areItemStackTagsEqual(stack2, stack1));
@@ -142,28 +146,28 @@ public class NEIServerUtils {
 
     /**
      * NBT-friendly version of {@link #areStacksSameType(ItemStack, ItemStack)}
+     * 
      * @param stack1 The {@link ItemStack} being compared.
      * @param stack2 The {@link ItemStack} to compare to.
      * @return whether the two items are the same in terms of itemID, damage and NBT.
      */
     public static boolean areStacksSameTypeWithNBT(ItemStack stack1, ItemStack stack2) {
-        return stack1 != null
-                && stack2 != null
+        return stack1 != null && stack2 != null
                 && stack1.getItem() == stack2.getItem()
                 && (!stack2.getHasSubtypes() || stack2.getItemDamage() == stack1.getItemDamage())
                 && NBTHelper.matchTag(stack1.getTagCompound(), stack2.getTagCompound());
     }
 
     /**
-     * {@link ItemStack}s with damage -1 are wildcards allowing all damages. Eg all colours of wool are allowed to create Beds.
+     * {@link ItemStack}s with damage -1 are wildcards allowing all damages. Eg all colours of wool are allowed to
+     * create Beds.
      *
      * @param stack1 The {@link ItemStack} being compared.
      * @param stack2 The {@link ItemStack} to compare to.
      * @return whether the two items are the same from the perspective of a crafting inventory.
      */
     public static boolean areStacksSameTypeCrafting(ItemStack stack1, ItemStack stack2) {
-        return stack1 != null
-                && stack2 != null
+        return stack1 != null && stack2 != null
                 && stack1.getItem() == stack2.getItem()
                 && (stack1.getItemDamage() == stack2.getItemDamage()
                         || stack1.getItemDamage() == OreDictionary.WILDCARD_VALUE
@@ -173,13 +177,13 @@ public class NEIServerUtils {
 
     /**
      * NBT-friendly version of {@link #areStacksSameTypeCrafting(ItemStack, ItemStack)}
+     * 
      * @param stack1 The {@link ItemStack} being compared.
      * @param stack2 The {@link ItemStack} to compare to.
      * @return whether the two items are the same from the perspective of a crafting inventory.
      */
     public static boolean areStacksSameTypeCraftingWithNBT(ItemStack stack1, ItemStack stack2) {
-        return stack1 != null
-                && stack2 != null
+        return stack1 != null && stack2 != null
                 && stack1.getItem() == stack2.getItem()
                 && (stack1.getItemDamage() == stack2.getItemDamage()
                         || stack1.getItemDamage() == OreDictionary.WILDCARD_VALUE
@@ -276,18 +280,16 @@ public class NEIServerUtils {
     }
 
     public static void setGamemode(EntityPlayerMP player, int mode) {
-        if (mode < 0
-                || mode >= NEIActions.gameModes.length
-                || NEIActions.nameActionMap.containsKey(NEIActions.gameModes[mode])
-                        && !NEIServerConfig.canPlayerPerformAction(
-                                player.getCommandSenderName(), NEIActions.gameModes[mode])) return;
+        if (mode < 0 || mode >= NEIActions.gameModes.length
+                || NEIActions.nameActionMap.containsKey(NEIActions.gameModes[mode]) && !NEIServerConfig
+                        .canPlayerPerformAction(player.getCommandSenderName(), NEIActions.gameModes[mode]))
+            return;
 
         // creative+
         NEIServerConfig.forPlayer(player.getCommandSenderName()).enableAction("creative+", mode == 2);
-        if (mode == 2
-                && !(player.openContainer
-                        instanceof ContainerCreativeInv)) // open the container immediately for the client
-        NEISPH.processCreativeInv(player, true);
+        if (mode == 2 && !(player.openContainer instanceof ContainerCreativeInv)) // open the container immediately for
+                                                                                  // the client
+            NEISPH.processCreativeInv(player, true);
 
         // change it on the server
         player.theItemInWorldManager.setGameType(getGameType(mode));
@@ -331,11 +333,10 @@ public class NEIServerUtils {
         ArrayList<int[]> arraylist = new ArrayList<>();
         if (itemstack != null) {
             NBTTagList nbttaglist = itemstack.getEnchantmentTagList();
-            if (nbttaglist != null)
-                for (int i = 0; i < nbttaglist.tagCount(); i++) {
-                    NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
-                    arraylist.add(new int[] {tag.getShort("id"), tag.getShort("lvl")});
-                }
+            if (nbttaglist != null) for (int i = 0; i < nbttaglist.tagCount(); i++) {
+                NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
+                arraylist.add(new int[] { tag.getShort("id"), tag.getShort("lvl") });
+            }
         }
         return arraylist;
     }
@@ -368,7 +369,7 @@ public class NEIServerUtils {
 
     @SuppressWarnings("unchecked")
     public static ItemStack[] extractRecipeItems(Object obj) {
-        if (obj instanceof ItemStack) return new ItemStack[] {(ItemStack) obj};
+        if (obj instanceof ItemStack) return new ItemStack[] { (ItemStack) obj };
         if (obj instanceof ItemStack[]) return (ItemStack[]) obj;
         if (obj instanceof List) return ((List<ItemStack>) obj).toArray(new ItemStack[0]);
 
@@ -377,6 +378,7 @@ public class NEIServerUtils {
 
     public static List<Integer> getRange(final int start, final int end) {
         return new AbstractList<Integer>() {
+
             @Override
             public Integer get(int index) {
                 return start + index;

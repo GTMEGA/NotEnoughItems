@@ -2,6 +2,13 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientConfig.world;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import net.minecraft.util.EnumChatFormatting;
+
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.ItemList.AnyMultiItemFilter;
 import codechicken.nei.ItemList.EverythingItemFilter;
@@ -10,17 +17,14 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.util.TextHistory;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import net.minecraft.util.EnumChatFormatting;
 
 public class SearchField extends TextField implements ItemFilterProvider {
+
     /**
      * Interface for returning a custom filter based on search field text
      */
     public static interface ISearchProvider {
+
         /**
          * @return false if this filter should only be used if no other non-default filters match the search string
          */
@@ -33,6 +37,7 @@ public class SearchField extends TextField implements ItemFilterProvider {
     }
 
     private static class DefaultSearchProvider implements ISearchProvider {
+
         @Override
         public boolean isPrimary() {
             return false;
@@ -145,8 +150,7 @@ public class SearchField extends TextField implements ItemFilterProvider {
         Pattern pattern = null;
         try {
             pattern = Pattern.compile(search);
-        } catch (PatternSyntaxException ignored) {
-        }
+        } catch (PatternSyntaxException ignored) {}
         return pattern == null || pattern.toString().length() == 0 ? null : pattern;
     }
 
@@ -178,12 +182,10 @@ public class SearchField extends TextField implements ItemFilterProvider {
 
     private boolean handleNavigateHistory(TextHistory.Direction direction) {
         if (focused()) {
-            return history.get(direction, text())
-                    .map(newText -> {
-                        setText(newText);
-                        return true;
-                    })
-                    .orElse(false);
+            return history.get(direction, text()).map(newText -> {
+                setText(newText);
+                return true;
+            }).orElse(false);
         }
         return false;
     }

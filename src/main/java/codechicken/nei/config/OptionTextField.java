@@ -3,19 +3,25 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
+import java.util.List;
+
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.TextField;
 import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
-import java.util.List;
 
 public class OptionTextField extends Option {
+
     private boolean focused = false;
     private TextField textField = new TextField("test") {
+
         @Override
         public void onTextChange(String oldText) {
-            if (focused() && isValidValue(text()))
-                if (!defaulting()
-                        || !text().equals(getTag().getValue())) // don't override global if text hasn't changed
+            if (focused() && isValidValue(text())) if (!defaulting() || !text().equals(getTag().getValue())) // don't
+                                                                                                             // override
+                                                                                                             // global
+                                                                                                             // if text
+                                                                                                             // hasn't
+                                                                                                             // changed
                 getTag().setValue(text());
         }
 

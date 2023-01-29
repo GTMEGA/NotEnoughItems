@@ -1,24 +1,28 @@
 package codechicken.nei.recipe;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.InventoryCraftingDummy;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.guihook.GuiContainerManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.RecipeFireworks;
 
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.InventoryCraftingDummy;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.guihook.GuiContainerManager;
+
 public class FireworkRecipeHandler extends ShapelessRecipeHandler {
+
     public class CachedFireworkRecipe extends CachedShapelessRecipe {
+
         final LinkedList<Object> itemList = new LinkedList<>();
 
         public final Object[] baseIngredients;
@@ -57,24 +61,15 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler {
 
     public FireworkRecipeHandler() {
         super();
-        stackorder = new int[][] {
-            {0, 0},
-            {1, 0},
-            {2, 0},
-            {0, 1},
-            {1, 1},
-            {2, 1},
-            {0, 2},
-            {1, 2},
-            {2, 2}
-        };
+        stackorder = new int[][] { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }, { 0, 2 }, { 1, 2 },
+                { 2, 2 } };
         loadAllFireworks();
     }
 
     private void loadAllFireworks() {
         // charges
-        Item[] shapes = new Item[] {null, Items.fire_charge, Items.gold_nugget, Items.feather, Items.skull};
-        Item[] effects = new Item[] {null, Items.diamond, Items.glowstone_dust};
+        Item[] shapes = new Item[] { null, Items.fire_charge, Items.gold_nugget, Items.feather, Items.skull };
+        Item[] effects = new Item[] { null, Items.diamond, Items.glowstone_dust };
         for (Item shape : shapes)
             for (Item effect : effects) genRecipe(Items.gunpowder, shape, effect, Items.dye, Items.dye, 0);
 
@@ -102,8 +97,8 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler {
         Object[] ingreds = new Object[numIngreds];
         for (int i = 0, j = 0; i < params.length - 2; i++) if (params[i] != null) ingreds[j++] = params[i];
 
-        mfireworks.add(
-                new CachedFireworkRecipe(ingreds, params[params.length - 2], (Integer) params[params.length - 1]));
+        mfireworks
+                .add(new CachedFireworkRecipe(ingreds, params[params.length - 2], (Integer) params[params.length - 1]));
     }
 
     @Override
@@ -155,11 +150,11 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler {
         Point mousepos = GuiDraw.getMousePosition();
         Point relMouse = new Point(mousepos.x - gui.guiLeft, mousepos.y - gui.guiTop);
         Point recipepos = gui.getRecipePosition(recipe);
-        if (currenttip.isEmpty()
-                && GuiContainerManager.getStackMouseOver(gui) == null
+        if (currenttip.isEmpty() && GuiContainerManager.getStackMouseOver(gui) == null
                 && new Rectangle(recipepos.x, recipepos.y, 166, 55).contains(relMouse))
-            currenttip.add(NEIClientUtils.translate(
-                    "recipe.firework.tooltip" + ((CachedFireworkRecipe) arecipes.get(recipe)).recipeType));
+            currenttip.add(
+                    NEIClientUtils.translate(
+                            "recipe.firework.tooltip" + ((CachedFireworkRecipe) arecipes.get(recipe)).recipeType));
         return currenttip;
     }
 }

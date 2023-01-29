@@ -1,9 +1,11 @@
 package codechicken.nei;
 
-import codechicken.nei.api.ItemFilter;
 import net.minecraft.item.ItemStack;
 
+import codechicken.nei.api.ItemFilter;
+
 public class DoubleFilteredFilter implements ItemFilter {
+
     private ItemFilter filter;
     private ItemList.PatternItemFilter patternFilter;
 

@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 public class Image {
+
     public int x;
     public int y;
     public int width;

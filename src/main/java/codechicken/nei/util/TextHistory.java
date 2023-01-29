@@ -8,6 +8,7 @@ import java.util.Optional;
  * Backported from JustEnoughItems/Core/src/main/java/mezz/jei/core/util/TextHistory.java
  */
 public class TextHistory {
+
     private static final int MAX_HISTORY = 100;
 
     public enum Direction {

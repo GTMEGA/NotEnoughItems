@@ -1,11 +1,14 @@
 package codechicken.nei.api;
 
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.config.OptionCycled;
 import java.util.LinkedList;
+
 import net.minecraft.world.World;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.config.OptionCycled;
+
 public class NEIInfo {
+
     public static final LinkedList<INEIModeHandler> modeHandlers = new LinkedList<>();
 
     public static void load(World world) {

@@ -1,15 +1,11 @@
 package codechicken.nei.config;
 
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanels;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,8 +15,15 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanels;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.guihook.GuiContainerManager;
+
 public class ItemPanelDumper extends DataDumper {
-    private static final int[] resolutions = new int[] {16, 32, 48, 64, 128, 256};
+
+    private static final int[] resolutions = new int[] { 16, 32, 48, 64, 128, 256 };
 
     public ItemPanelDumper(String name) {
         super(name);
@@ -28,20 +31,18 @@ public class ItemPanelDumper extends DataDumper {
 
     @Override
     public String[] header() {
-        return new String[] {"Item Name", "Item ID", "Item meta", "Has NBT", "Display Name"};
+        return new String[] { "Item Name", "Item ID", "Item meta", "Has NBT", "Display Name" };
     }
 
     @Override
     public Iterable<String[]> dump(int mode) {
         LinkedList<String[]> list = new LinkedList<>();
-        for (ItemStack stack : ItemPanels.itemPanel.getItems())
-            list.add(new String[] {
-                Item.itemRegistry.getNameForObject(stack.getItem()),
-                Integer.toString(Item.getIdFromItem(stack.getItem())),
-                Integer.toString(InventoryUtils.actualDamage(stack)),
-                stack.stackTagCompound == null ? "false" : "true",
-                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack))
-            });
+        for (ItemStack stack : ItemPanels.itemPanel.getItems()) list.add(
+                new String[] { Item.itemRegistry.getNameForObject(stack.getItem()),
+                        Integer.toString(Item.getIdFromItem(stack.getItem())),
+                        Integer.toString(InventoryUtils.actualDamage(stack)),
+                        stack.stackTagCompound == null ? "false" : "true", EnumChatFormatting
+                                .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack)) });
 
         return list;
     }

@@ -2,20 +2,6 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.gui.GuiScrollSlot;
-import codechicken.lib.gui.GuiDraw;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.api.ItemFilter;
-import codechicken.nei.recipe.GuiRecipe;
-import codechicken.nei.recipe.StackInfo;
-import codechicken.nei.util.NBTJson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import cpw.mods.fml.common.registry.GameRegistry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,15 +13,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.input.Keyboard;
+
+import codechicken.core.CommonUtils;
+import codechicken.core.gui.GuiScrollSlot;
+import codechicken.lib.gui.GuiDraw;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.api.ItemFilter;
+import codechicken.nei.recipe.GuiRecipe;
+import codechicken.nei.recipe.StackInfo;
+import codechicken.nei.util.NBTJson;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class PresetsWidget extends Widget {
 
     public static class PresetTag implements ItemFilter {
+
         public String filename = null;
         public String displayName = "";
         public boolean whitelist = true;
@@ -77,8 +82,7 @@ public class PresetsWidget extends Widget {
                 }
 
                 final JsonParser parser = new JsonParser();
-                final JsonObject metaObject =
-                        parser.parse(itemStrings.remove(0)).getAsJsonObject();
+                final JsonObject metaObject = parser.parse(itemStrings.remove(0)).getAsJsonObject();
                 final String displayName = metaObject.get("displayName").getAsString();
                 final boolean whitelist = metaObject.get("whitelist").getAsBoolean();
                 final HashSet<String> items = new HashSet<>();
@@ -149,6 +153,7 @@ public class PresetsWidget extends Widget {
     }
 
     protected static class SubsetListBox extends GuiScrollSlot {
+
         protected final List<PresetTag> presets = new ArrayList<>();
         protected final List<PresetTag> selected = new ArrayList<>();
         protected int lastSelectedIndex = 0;
@@ -159,12 +164,12 @@ public class PresetsWidget extends Widget {
 
             try {
 
-                presets.addAll(ItemList.forkJoinPool
-                        .submit(() -> Arrays.asList(presetsDir.listFiles()).parallelStream()
-                                .map(f -> PresetTag.loadFromFile(f))
-                                .filter(p -> p != null)
-                                .collect(Collectors.toCollection(ArrayList::new)))
-                        .get());
+                presets.addAll(
+                        ItemList.forkJoinPool.submit(
+                                () -> Arrays.asList(presetsDir.listFiles()).parallelStream()
+                                        .map(f -> PresetTag.loadFromFile(f)).filter(p -> p != null)
+                                        .collect(Collectors.toCollection(ArrayList::new)))
+                                .get());
 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
@@ -312,10 +317,10 @@ public class PresetsWidget extends Widget {
             final int directionState = direction.contains(x + mx, y + my) ? 1 : 2;
             final int deleteState = delete.contains(x + mx, y + my) ? 1 : 2;
 
-            final String displayName =
-                    NEIClientUtils.cropText(PresetsWidget.fontRenderer, tag.displayName, option.w - 6);
-            final String dirName =
-                    tag.whitelist ? translate("presets.whitelist.label") : translate("presets.blacklist.label");
+            final String displayName = NEIClientUtils
+                    .cropText(PresetsWidget.fontRenderer, tag.displayName, option.w - 6);
+            final String dirName = tag.whitelist ? translate("presets.whitelist.label")
+                    : translate("presets.blacklist.label");
 
             // blacklist or whitelist
             LayoutManager.getLayoutStyle()
@@ -408,6 +413,7 @@ public class PresetsWidget extends Widget {
     }
 
     protected static class MouseSelection {
+
         public int startX = -1;
         public int startY = -1;
         public int startIndex = -1;
@@ -520,8 +526,7 @@ public class PresetsWidget extends Widget {
 
         @Override
         public String getRenderLabel() {
-            return edit != null && edit.whitelist
-                    ? translate("presets.whitelist.label")
+            return edit != null && edit.whitelist ? translate("presets.whitelist.label")
                     : translate("presets.blacklist.label");
         }
 
@@ -529,8 +534,7 @@ public class PresetsWidget extends Widget {
         public void addTooltips(List<String> tooltip) {
             if (edit != null) {
                 tooltip.add(
-                        edit.whitelist
-                                ? translate("presets.whitelist.tooltip")
+                        edit.whitelist ? translate("presets.whitelist.tooltip")
                                 : translate("presets.blacklist.tooltip"));
             }
         }
@@ -627,8 +631,7 @@ public class PresetsWidget extends Widget {
     protected static String getModId(final ItemStack stack) {
         try {
             return GameRegistry.findUniqueIdentifierFor(stack.getItem()).modId;
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         return null;
     }
@@ -674,8 +677,7 @@ public class PresetsWidget extends Widget {
             final List<PresetTag> selected = listbox.getSelected();
             final int size = selected.size();
 
-            selectedValue.text = size > 1
-                    ? translate("presets.label.selected", size)
+            selectedValue.text = size > 1 ? translate("presets.label.selected", size)
                     : (size == 1 ? selected.get(0).displayName : "");
             selectedValue.y = y;
             selectedValue.h = h;
@@ -782,8 +784,7 @@ public class PresetsWidget extends Widget {
             return false;
         }
 
-        if (selectedDisplayName.focused()
-                && (keyID == Keyboard.KEY_RETURN || keyID == Keyboard.KEY_NUMPADENTER)
+        if (selectedDisplayName.focused() && (keyID == Keyboard.KEY_RETURN || keyID == Keyboard.KEY_NUMPADENTER)
                 && !selectedDisplayName.text().isEmpty()) {
             selectedDisplayName.handleKeyPress(keyID, keyChar);
             selectedDisplayName.setFocus(false);

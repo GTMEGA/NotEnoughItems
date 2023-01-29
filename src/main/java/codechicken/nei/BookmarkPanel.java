@@ -4,18 +4,6 @@ import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.nei.NEIClientUtils.translate;
 
-import codechicken.core.CommonUtils;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.BookmarkRecipeId;
-import codechicken.nei.recipe.StackInfo;
-import codechicken.nei.util.NBTJson;
-import codechicken.nei.util.ReadableNumberConverter;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,13 +13,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
+
+import codechicken.core.CommonUtils;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.BookmarkRecipeId;
+import codechicken.nei.recipe.StackInfo;
+import codechicken.nei.util.NBTJson;
+import codechicken.nei.util.ReadableNumberConverter;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 public class BookmarkPanel extends PanelWidget {
 
@@ -48,6 +53,7 @@ public class BookmarkPanel extends PanelWidget {
     protected int activeNamespaceIndex = 0;
 
     protected static class BookmarkStackMeta {
+
         public int factor;
         public BookmarkRecipeId recipeId;
         public boolean ingredient = false;
@@ -172,11 +178,8 @@ public class BookmarkPanel extends PanelWidget {
                     } else {
                         meta = getMetadata(idx);
 
-                        if (idx > 0
-                                && ((i % columns) == 0)
-                                        == (meta.recipeId != null
-                                                && meta.ingredient
-                                                && meta.recipeId.equals(getRecipeId(idx - 1)))) {
+                        if (idx > 0 && ((i % columns) == 0) == (meta.recipeId != null && meta.ingredient
+                                && meta.recipeId.equals(getRecipeId(idx - 1)))) {
                             pmask.add(null);
                         } else {
                             pmask.add(idx++);
@@ -207,7 +210,7 @@ public class BookmarkPanel extends PanelWidget {
             for (int idx = 0; idx < realItems.size(); idx++) {
                 final BookmarkStackMeta meta = getMetadata(idx);
                 if ((recipeId == null && meta.recipeId == null
-                                || recipeId != null && meta.recipeId != null && recipeId.equals(meta.recipeId))
+                        || recipeId != null && meta.recipeId != null && recipeId.equals(meta.recipeId))
                         && StackInfo.equalItemAndNBT(stackA, getItem(idx), useNBT)) {
                     return idx;
                 }
@@ -293,8 +296,7 @@ public class BookmarkPanel extends PanelWidget {
         }
 
         private boolean isPartOfFocusedRecipe(ItemPanelSlot focused, int myIdx) {
-            return NEIClientUtils.shiftKey()
-                    && focused != null
+            return NEIClientUtils.shiftKey() && focused != null
                     && LayoutManager.bookmarkPanel.sortedStackIndex == -1
                     && getRecipeId(focused.slotIndex) != null
                     && getRecipeId(myIdx) != null
@@ -310,12 +312,8 @@ public class BookmarkPanel extends PanelWidget {
             } else if (focus != null) {
                 BookmarkStackMeta meta = getMetadata(idx);
                 if (isPartOfFocusedRecipe(focus, idx)) {
-                    drawRect(
-                            rect.x,
-                            rect.y,
-                            rect.w,
-                            rect.h,
-                            meta.ingredient ? 0x88b3b300 : 0x88009933); // highlight recipe
+                    drawRect(rect.x, rect.y, rect.w, rect.h, meta.ingredient ? 0x88b3b300 : 0x88009933); // highlight
+                                                                                                         // recipe
                 } else if (focus.slotIndex == idx) {
                     drawRect(rect.x, rect.y, rect.w, rect.h, 0xee555555); // highlight
                 }
@@ -328,8 +326,7 @@ public class BookmarkPanel extends PanelWidget {
                     || LayoutManager.bookmarkPanel.sortedStackIndex != idx) {
                 final ItemStack stack = getItem(idx);
                 final BookmarkStackMeta meta = getMetadata(idx);
-                final String stackSize = meta.factor < 0 || meta.fluidDisplay
-                        ? ""
+                final String stackSize = meta.factor < 0 || meta.fluidDisplay ? ""
                         : ReadableNumberConverter.INSTANCE.toWideReadableForm(stack.stackSize);
                 if (animation.containsKey(stack) && animation.get(stack) < 1) {
                     final float currentScale = animation.get(stack) + SCALE_SPEED;
@@ -384,6 +381,7 @@ public class BookmarkPanel extends PanelWidget {
         namespaceLabel = new Label("1", true);
 
         namespacePrev = new Button("Prev") {
+
             public boolean onButtonPress(boolean rightclick) {
 
                 if (rightclick) {
@@ -400,6 +398,7 @@ public class BookmarkPanel extends PanelWidget {
         };
 
         namespaceNext = new Button("Next") {
+
             public boolean onButtonPress(boolean rightclick) {
                 if (rightclick) {
                     return false;
@@ -450,12 +449,8 @@ public class BookmarkPanel extends PanelWidget {
         addOrRemoveItem(stackA, null, null, false, false);
     }
 
-    public void addOrRemoveItem(
-            ItemStack stackover,
-            final String handlerName,
-            final List<PositionedStack> ingredients,
-            boolean saveIngredients,
-            boolean saveStackSize) {
+    public void addOrRemoveItem(ItemStack stackover, final String handlerName, final List<PositionedStack> ingredients,
+            boolean saveIngredients, boolean saveStackSize) {
         loadBookmarksIfNeeded();
 
         final Point mousePos = getMousePosition();
@@ -635,8 +630,7 @@ public class BookmarkPanel extends PanelWidget {
                     src.close();
                     dst.close();
 
-                } catch (IOException e) {
-                }
+                } catch (IOException e) {}
             }
         }
 
@@ -738,10 +732,8 @@ public class BookmarkPanel extends PanelWidget {
                     }
 
                     if (settings.get("viewmode") != null) {
-                        namespaces
-                                .get(namespaceIndex)
-                                .setViewMode(BookmarkViewMode.valueOf(
-                                        settings.get("viewmode").getAsString()));
+                        namespaces.get(namespaceIndex)
+                                .setViewMode(BookmarkViewMode.valueOf(settings.get("viewmode").getAsString()));
                     }
 
                     if (settings.get("active") != null && settings.get("active").getAsBoolean()) {
@@ -768,22 +760,14 @@ public class BookmarkPanel extends PanelWidget {
                 ItemStack itemStack = StackInfo.loadFromNBT(itemStackNBT);
 
                 if (itemStack != null) {
-                    namespaces
-                            .get(namespaceIndex)
-                            .addItem(
-                                    itemStack,
-                                    new BookmarkStackMeta(
-                                            recipeId,
-                                            jsonObject.has("factor")
-                                                    ? jsonObject.get("factor").getAsInt()
-                                                    : 0,
-                                            jsonObject.has("ingredient")
-                                                    ? jsonObject
-                                                            .get("ingredient")
-                                                            .getAsBoolean()
-                                                    : false,
-                                            itemStackNBT.hasKey("gtFluidName")),
-                                    false);
+                    namespaces.get(namespaceIndex).addItem(
+                            itemStack,
+                            new BookmarkStackMeta(
+                                    recipeId,
+                                    jsonObject.has("factor") ? jsonObject.get("factor").getAsInt() : 0,
+                                    jsonObject.has("ingredient") ? jsonObject.get("ingredient").getAsBoolean() : false,
+                                    itemStackNBT.hasKey("gtFluidName")),
+                            false);
                 } else {
                     NEIClientConfig.logger.warn(
                             "Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}",
@@ -947,8 +931,7 @@ public class BookmarkPanel extends PanelWidget {
                     } else if (sortedGrid.getViewMode() == BookmarkViewMode.TODO_LIST) {
                         final ItemStack stack = sortedGrid.getItem(sortedStackIndex);
                         final BookmarkStackMeta meta = sortedGrid.getMetadata(sortedStackIndex);
-                        final boolean isIngredient = sortedStackIndex > 0
-                                && meta.recipeId != null
+                        final boolean isIngredient = sortedStackIndex > 0 && meta.recipeId != null
                                 && meta.ingredient
                                 && meta.recipeId.equals(sortedGrid.getRecipeId(sortedStackIndex - 1));
 
@@ -960,13 +943,12 @@ public class BookmarkPanel extends PanelWidget {
                                 sortedStackIndex = sortedGrid.indexOf(stack, meta.recipeId);
                             }
 
-                        } else if (mouseOverSlot != null
-                                && meta.recipeId != null
+                        } else if (mouseOverSlot != null && meta.recipeId != null
                                 && sortedGrid.getMetadata(mouseOverSlot.slotIndex).ingredient
                                 && meta.recipeId.equals(sortedGrid.getRecipeId(mouseOverSlot.slotIndex))) {
-                            sortedGrid.moveItem(sortedStackIndex, mouseOverSlot.slotIndex);
-                            sortedStackIndex = sortedGrid.indexOf(stack, meta.recipeId);
-                        }
+                                    sortedGrid.moveItem(sortedStackIndex, mouseOverSlot.slotIndex);
+                                    sortedStackIndex = sortedGrid.indexOf(stack, meta.recipeId);
+                                }
                     }
                 }
             }
@@ -1005,10 +987,7 @@ public class BookmarkPanel extends PanelWidget {
             GuiContainerManager.drawItem(
                     mousex - 8,
                     mousey - 8,
-                    namespaces
-                            .get(sortedNamespaceIndex)
-                            .getItem(sortedStackIndex)
-                            .copy(),
+                    namespaces.get(sortedNamespaceIndex).getItem(sortedStackIndex).copy(),
                     true);
             GuiContainerManager.drawItems.zLevel -= 100;
         }
@@ -1074,11 +1053,10 @@ public class BookmarkPanel extends PanelWidget {
     public boolean onMouseWheel(int shift, int mousex, int mousey) {
 
         if (new Rectangle4i(
-                        namespacePrev.x,
-                        namespacePrev.y,
-                        namespaceNext.x + namespaceNext.w - namespacePrev.x,
-                        namespacePrev.h)
-                .contains(mousex, mousey)) {
+                namespacePrev.x,
+                namespacePrev.y,
+                namespaceNext.x + namespaceNext.w - namespacePrev.x,
+                namespacePrev.h).contains(mousex, mousey)) {
 
             if (shift > 0) {
                 prevNamespace();

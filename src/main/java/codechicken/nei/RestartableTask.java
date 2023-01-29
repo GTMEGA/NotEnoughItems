@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 public abstract class RestartableTask {
+
     public final String name;
     private Thread thread;
     private volatile boolean restart;
@@ -14,14 +15,13 @@ public abstract class RestartableTask {
 
     private void start() {
         thread = new Thread(name) {
+
             @Override
             public void run() {
                 do {
-                    while (stopped)
-                        try {
-                            Thread.sleep(1);
-                        } catch (InterruptedException ignored) {
-                        }
+                    while (stopped) try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ignored) {}
                     if (!restart) execute();
                 } while (!finish());
             }
@@ -52,7 +52,8 @@ public abstract class RestartableTask {
     }
 
     /**
-     * Stops execution until restart is called. If a thread is running, the restart flag will be set, and the thread will be paused once the execute method exits.
+     * Stops execution until restart is called. If a thread is running, the restart flag will be set, and the thread
+     * will be paused once the execute method exits.
      */
     public synchronized void stop() {
         if (thread != null) {

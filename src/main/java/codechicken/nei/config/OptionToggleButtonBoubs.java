@@ -1,16 +1,26 @@
 package codechicken.nei.config;
 
+import java.awt.Rectangle;
+
 import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import java.awt.Rectangle;
 
 public class OptionToggleButtonBoubs extends OptionButton {
-    private static final DrawableResource coolBoubs =
-            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 48, 16, 22, 22).build();
-    private static final DrawableResource angryBoubs =
-            new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 70, 16, 22, 22).build();
+
+    private static final DrawableResource coolBoubs = new DrawableBuilder(
+            "nei:textures/nei_tabbed_sprites.png",
+            48,
+            16,
+            22,
+            22).build();
+    private static final DrawableResource angryBoubs = new DrawableBuilder(
+            "nei:textures/nei_tabbed_sprites.png",
+            70,
+            16,
+            22,
+            22).build();
 
     public final boolean prefixed;
 

@@ -6,14 +6,14 @@ import java.text.DecimalFormatSymbols;
 import java.text.Format;
 
 /**
- * copy from ae2
- * Converter class to convert a large number into a SI system.
+ * copy from ae2 Converter class to convert a large number into a SI system.
  *
  * @author thatsIch
  * @version rv2
  * @since rv2
  */
 public enum ReadableNumberConverter {
+
     INSTANCE;
 
     /**

@@ -3,6 +3,15 @@ package codechicken.nei.recipe;
 import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
+
 import codechicken.core.TaskProfiler;
 import codechicken.core.TaskProfiler.ProfilerResult;
 import codechicken.nei.NEIClientConfig;
@@ -10,15 +19,9 @@ import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
 
 public class ProfilerRecipeHandler implements ICraftingHandler, IUsageHandler {
+
     private static final TaskProfiler profiler = new TaskProfiler();
 
     public static TaskProfiler getProfiler() {
@@ -52,7 +55,7 @@ public class ProfilerRecipeHandler implements ICraftingHandler, IUsageHandler {
     @Override
     public void drawForeground(int recipe) {
         List<ProfilerResult> results = profiler.getResults();
-        for (Iterator<ProfilerResult> it = results.iterator(); it.hasNext(); )
+        for (Iterator<ProfilerResult> it = results.iterator(); it.hasNext();)
             if (it.next().name.equals(getRecipeName())) it.remove();
 
         results.sort((o1, o2) -> o1.time < o2.time ? 1 : -1);

@@ -3,6 +3,7 @@ package codechicken.nei.recipe;
 import net.minecraft.item.ItemStack;
 
 public class CatalystInfo {
+
     private final ItemStack stack;
     private final int priority;
 

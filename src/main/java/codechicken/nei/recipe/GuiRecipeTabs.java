@@ -1,13 +1,15 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.Button;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import codechicken.nei.Button;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+
 public class GuiRecipeTabs {
+
     private final GuiRecipe<?> guiRecipe;
     private final List<GuiRecipeTab> tabs = new ArrayList<>();
     private final List<Button> buttons = new ArrayList<>();
@@ -82,6 +84,7 @@ public class GuiRecipeTabs {
         // Maybe add buttons
         if (numHandlers > categoriesPerPage) {
             Button prevTab = new Button("prevTab") {
+
                 @Override
                 public boolean onButtonPress(boolean rightClick) {
                     if (!rightClick) {
@@ -102,6 +105,7 @@ public class GuiRecipeTabs {
             buttons.add(prevTab);
 
             Button nextTab = new Button("nextTab") {
+
                 @Override
                 public boolean onButtonPress(boolean rightclick) {
                     if (!rightclick) {

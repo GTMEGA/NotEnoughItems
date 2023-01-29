@@ -1,11 +1,12 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.ItemPanels;
 import codechicken.nei.api.ShortcutInputHandler;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
 
 public class RecipeItemInputHandler implements IContainerInputHandler {
 
@@ -16,9 +17,9 @@ public class RecipeItemInputHandler implements IContainerInputHandler {
 
     @Override
     public boolean mouseClicked(GuiContainer gui, int mousex, int mousey, int button) {
-        if (!(gui instanceof GuiRecipe)
-                || ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.bookmarkPanel.contains(mousex, mousey)) return false;
+        if (!(gui instanceof GuiRecipe) || ItemPanels.itemPanel.contains(mousex, mousey)
+                || ItemPanels.bookmarkPanel.contains(mousex, mousey))
+            return false;
 
         ItemStack stackover = GuiContainerManager.getStackMouseOver(gui);
 

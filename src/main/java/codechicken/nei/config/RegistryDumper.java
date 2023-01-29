@@ -1,9 +1,11 @@
 package codechicken.nei.config;
 
 import java.util.LinkedList;
+
 import net.minecraft.util.RegistryNamespaced;
 
 public abstract class RegistryDumper<T> extends DataDumper {
+
     public RegistryDumper(String name) {
         super(name);
     }

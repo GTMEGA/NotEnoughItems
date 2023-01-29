@@ -4,6 +4,7 @@ import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;
 
 public class OptionGamemodes extends OptionStringSet {
+
     public OptionGamemodes(String name) {
         super(name);
 

@@ -2,19 +2,22 @@ package codechicken.nei.recipe;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.ItemPanel.ItemPanelSlot;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
 
 public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
+
     public static ArrayList<ICraftingHandler> craftinghandlers = new ArrayList<>();
     public static ArrayList<ICraftingHandler> serialCraftingHandlers = new ArrayList<>();
 
@@ -22,8 +25,8 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
         return openRecipeGui(outputId, false, false, results);
     }
 
-    public static boolean openRecipeGui(
-            String outputId, final Boolean overlay, final Boolean shift, Object... results) {
+    public static boolean openRecipeGui(String outputId, final Boolean overlay, final Boolean shift,
+            Object... results) {
         final Minecraft mc = NEIClientUtils.mc();
 
         final BookmarkRecipeId recipeId = "item".equals(outputId)
@@ -33,7 +36,9 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
         if (overlay && recipeId == null) return false;
 
         final RecipeHandlerQuery<ICraftingHandler> recipeQuery = new RecipeHandlerQuery<>(
-                h -> h.getRecipeHandler(outputId, results), craftinghandlers, serialCraftingHandlers);
+                h -> h.getRecipeHandler(outputId, results),
+                craftinghandlers,
+                serialCraftingHandlers);
 
         final ArrayList<ICraftingHandler> handlers = recipeQuery.runWithProfiling("recipe.concurrent.crafting");
 
@@ -86,8 +91,8 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
     public static void registerRecipeHandler(ICraftingHandler handler) {
         final String handlerId = handler.getHandlerId();
         if (craftinghandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId))
-                || serialCraftingHandlers.stream()
-                        .anyMatch(h -> h.getHandlerId().equals(handlerId))) return;
+                || serialCraftingHandlers.stream().anyMatch(h -> h.getHandlerId().equals(handlerId)))
+            return;
 
         if (NEIClientConfig.serialHandlers.contains(handlerId)) serialCraftingHandlers.add(handler);
         else craftinghandlers.add(handler);

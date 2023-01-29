@@ -32,6 +32,23 @@ import static codechicken.nei.NEIClientUtils.toggleMagnetMode;
 import static codechicken.nei.NEIClientUtils.toggleRaining;
 import static codechicken.nei.NEIClientUtils.translate;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeSet;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.KeyManager.IKeyStateTracker;
 import codechicken.nei.api.API;
@@ -48,27 +65,10 @@ import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.RecipeCatalysts;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
-public class LayoutManager
-        implements IContainerInputHandler,
-                IContainerTooltipHandler,
-                IContainerDrawHandler,
-                IContainerObjectHandler,
-                IKeyStateTracker {
+public class LayoutManager implements IContainerInputHandler, IContainerTooltipHandler, IContainerDrawHandler,
+        IContainerObjectHandler, IKeyStateTracker {
+
     private static LayoutManager instance;
 
     /** Note: this variable isn't actually used by this mod, but NEI add-ons might need it. */
@@ -113,10 +113,9 @@ public class LayoutManager
     public static HashMap<Integer, LayoutStyle> layoutStyles = new HashMap<>();
 
     /**
-     * This is set to true immediately after item loading thread is started,
-     * to prevent duplicated loading thread from being executed.
-     * If you want to know if item list is actually finished loading,
-     * Use {@link ItemList#loadFinished} instead.
+     * This is set to true immediately after item loading thread is started, to prevent duplicated loading thread from
+     * being executed. If you want to know if item list is actually finished loading, Use {@link ItemList#loadFinished}
+     * instead.
      */
     public static boolean itemsLoaded = false;
 
@@ -139,11 +138,8 @@ public class LayoutManager
 
     @Override
     public void onPreDraw(GuiContainer gui) {
-        if (!isHidden()
-                && isEnabled()
-                && gui
-                        instanceof
-                        InventoryEffectRenderer) // Reset the gui to the center of the screen, for potion effect offsets
+        if (!isHidden() && isEnabled() && gui instanceof InventoryEffectRenderer) // Reset the gui to the center of the
+                                                                                  // screen, for potion effect offsets
         // etc
         {
             gui.guiLeft = (gui.width - gui.xSize) / 2;
@@ -183,9 +179,9 @@ public class LayoutManager
 
         for (Widget widget : controlWidgets) {
             widget.onGuiClick(mousex, mousey);
-            if (widget.contains(mousex, mousey)
-                    ? widget.handleClick(mousex, mousey, button)
-                    : widget.handleClickExt(mousex, mousey, button)) return true;
+            if (widget.contains(mousex, mousey) ? widget.handleClick(mousex, mousey, button)
+                    : widget.handleClickExt(mousex, mousey, button))
+                return true;
         }
 
         return false;
@@ -304,8 +300,8 @@ public class LayoutManager
     }
 
     @Override
-    public List<String> handleItemTooltip(
-            GuiContainer gui, ItemStack itemstack, int mousex, int mousey, List<String> currenttip) {
+    public List<String> handleItemTooltip(GuiContainer gui, ItemStack itemstack, int mousex, int mousey,
+            List<String> currenttip) {
         return currenttip;
     }
 
@@ -350,6 +346,7 @@ public class LayoutManager
         searchField = new SearchField("search");
 
         options = new ButtonCycled(3) {
+
             @Override
             public void init() {
                 this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 32, 0, 16, 16).build();
@@ -360,14 +357,12 @@ public class LayoutManager
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
-                    if (Keyboard.getEventKeyState()
-                            && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL
-                                    || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+                    if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL
+                            || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
                         NEIClientConfig.cycleSetting("inventory.cheatmode", 3);
                     } else {
-                        if (Keyboard.getEventKeyState()
-                                && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT
-                                        || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT)) {
+                        if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT
+                                || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT)) {
                             GuiRecipeTab.loadHandlerInfo();
                             RecipeCatalysts.loadCatalystInfo();
                         }
@@ -397,6 +392,7 @@ public class LayoutManager
         };
 
         bookmarksButton = new ButtonCycled(2) {
+
             @Override
             public void init() {
                 this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 0, 16, 16).build();
@@ -423,6 +419,7 @@ public class LayoutManager
         less = ItemPanels.itemPanel.less;
         quantity = ItemPanels.itemPanel.quantity;
         delete = new Button() {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if ((state & 0x3) == 2) return false;
@@ -450,16 +447,16 @@ public class LayoutManager
 
             @Override
             public void postDraw(int mousex, int mousey) {
-                if (contains(mousex, mousey) && getHeldItem() != null && (state & 0x3) != 2)
-                    GuiDraw.drawTip(
-                            mousex + 9,
-                            mousey,
-                            translate(
-                                    "inventory.delete." + (shiftKey() ? "all" : "one"),
-                                    GuiContainerManager.itemDisplayNameShort(getHeldItem())));
+                if (contains(mousex, mousey) && getHeldItem() != null && (state & 0x3) != 2) GuiDraw.drawTip(
+                        mousex + 9,
+                        mousey,
+                        translate(
+                                "inventory.delete." + (shiftKey() ? "all" : "one"),
+                                GuiContainerManager.itemDisplayNameShort(getHeldItem())));
             }
         };
         gamemode = new ButtonCycled(3) {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
@@ -475,6 +472,7 @@ public class LayoutManager
             }
         };
         rain = new Button() {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (handleDisabledButtonPress("rain", rightclick)) return true;
@@ -491,6 +489,7 @@ public class LayoutManager
             }
         };
         magnet = new Button() {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
@@ -507,6 +506,7 @@ public class LayoutManager
         for (int i = 0; i < 4; i++) {
             final int zone = i;
             timeButtons[i] = new Button() {
+
                 @Override
                 public boolean onButtonPress(boolean rightclick) {
                     if (handleDisabledButtonPress(NEIActions.timeZones[zone], rightclick)) return true;
@@ -525,6 +525,7 @@ public class LayoutManager
             };
         }
         heal = new Button() {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
@@ -598,9 +599,9 @@ public class LayoutManager
 
         NEIController.load(gui);
 
-        if (checkCreativeInv(gui)
-                && gui.mc.currentScreen instanceof GuiContainerCreative) // override creative with creative+
-        gui.mc.displayGuiScreen(null); // close the screen and wait for the server to open it for us
+        if (checkCreativeInv(gui) && gui.mc.currentScreen instanceof GuiContainerCreative) // override creative with
+                                                                                           // creative+
+            gui.mc.displayGuiScreen(null); // close the screen and wait for the server to open it for us
     }
 
     @Override
@@ -730,10 +731,8 @@ public class LayoutManager
     @Override
     public void renderSlotOverlay(GuiContainer window, Slot slot) {
         ItemStack item = slot.getStack();
-        if (world.nbt.getBoolean("searchinventories")
-                && (item == null
-                        ? !getSearchExpression().equals("")
-                        : !((SearchField) searchField).getFilter().matches(item))) {
+        if (world.nbt.getBoolean("searchinventories") && (item == null ? !getSearchExpression().equals("")
+                : !((SearchField) searchField).getFilter().matches(item))) {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             GL11.glTranslatef(0, 0, 150);
@@ -753,7 +752,7 @@ public class LayoutManager
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         if (!isDrawableResource) drawTexturedModalRect(x, y, image.x, image.y, image.width, image.height);
-        else ((DrawableResource) image).draw(x, y);
+        else((DrawableResource) image).draw(x, y);
         GL11.glDisable(GL11.GL_BLEND);
     }
 

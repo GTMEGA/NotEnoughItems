@@ -4,20 +4,24 @@ import static codechicken.lib.inventory.InventoryUtils.actualDamage;
 import static codechicken.lib.inventory.InventoryUtils.newItemStack;
 import static net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE;
 
-import com.google.common.base.Objects;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import com.google.common.base.Objects;
 
 /**
  * A maplike class for ItemStack keys with wildcard damage/NBT. Optimised for lookup
  */
 public class ItemStackMap<T> {
+
     public static class StackMetaKey {
+
         public final int damage;
         public final NBTTagCompound tag;
 
@@ -42,6 +46,7 @@ public class ItemStackMap<T> {
     }
 
     public static class Entry<T> {
+
         public final ItemStack key;
         public final T value;
 
@@ -52,6 +57,7 @@ public class ItemStackMap<T> {
     }
 
     public class DetailMap {
+
         private boolean hasWildcard;
         private T wildcard;
         private HashMap<Integer, T> damageMap;
@@ -121,8 +127,7 @@ public class ItemStackMap<T> {
         }
 
         private void updateSize() {
-            int newSize = (hasWildcard ? 1 : 0)
-                    + (metaMap != null ? metaMap.size() : 0)
+            int newSize = (hasWildcard ? 1 : 0) + (metaMap != null ? metaMap.size() : 0)
                     + (tagMap != null ? tagMap.size() : 0)
                     + (damageMap != null ? damageMap.size() : 0);
 
@@ -151,16 +156,12 @@ public class ItemStackMap<T> {
 
         public void addEntries(Item item, List<Entry<T>> list) {
             if (wildcard != null) list.add(new Entry<>(newItemStack(item, 1, WILDCARD_VALUE, WILDCARD_TAG), wildcard));
-            if (damageMap != null)
-                for (Map.Entry<Integer, T> entry : damageMap.entrySet())
-                    list.add(new Entry<>(newItemStack(item, 1, entry.getKey(), WILDCARD_TAG), entry.getValue()));
-            if (tagMap != null)
-                for (Map.Entry<NBTTagCompound, T> entry : tagMap.entrySet())
-                    list.add(new Entry<>(newItemStack(item, 1, WILDCARD_VALUE, entry.getKey()), entry.getValue()));
-            if (metaMap != null)
-                for (Map.Entry<StackMetaKey, T> entry : metaMap.entrySet())
-                    list.add(new Entry<>(
-                            newItemStack(item, 1, entry.getKey().damage, entry.getKey().tag), entry.getValue()));
+            if (damageMap != null) for (Map.Entry<Integer, T> entry : damageMap.entrySet())
+                list.add(new Entry<>(newItemStack(item, 1, entry.getKey(), WILDCARD_TAG), entry.getValue()));
+            if (tagMap != null) for (Map.Entry<NBTTagCompound, T> entry : tagMap.entrySet())
+                list.add(new Entry<>(newItemStack(item, 1, WILDCARD_VALUE, entry.getKey()), entry.getValue()));
+            if (metaMap != null) for (Map.Entry<StackMetaKey, T> entry : metaMap.entrySet()) list.add(
+                    new Entry<>(newItemStack(item, 1, entry.getKey().damage, entry.getKey().tag), entry.getValue()));
         }
     }
 
@@ -223,8 +224,7 @@ public class ItemStackMap<T> {
 
     public List<ItemStack> keys() {
         LinkedList<ItemStack> list = new LinkedList<>();
-        for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet())
-            entry.getValue().addKeys(entry.getKey(), list);
+        for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet()) entry.getValue().addKeys(entry.getKey(), list);
         return list;
     }
 
@@ -236,8 +236,7 @@ public class ItemStackMap<T> {
 
     public List<Entry<T>> entries() {
         LinkedList<Entry<T>> list = new LinkedList<>();
-        for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet())
-            entry.getValue().addEntries(entry.getKey(), list);
+        for (Map.Entry<Item, DetailMap> entry : itemMap.entrySet()) entry.getValue().addEntries(entry.getKey(), list);
         return list;
     }
 

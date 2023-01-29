@@ -2,16 +2,19 @@ package codechicken.nei;
 
 import static codechicken.lib.gui.GuiDraw.drawRect;
 
-import codechicken.lib.vec.Rectangle4i;
 import java.util.ArrayList;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+
+import codechicken.lib.vec.Rectangle4i;
 
 public class ItemPanel extends PanelWidget {
 
     /**
-     *  Backwards compat :-/
+     * Backwards compat :-/
      */
     @SuppressWarnings("unused")
     @Deprecated
@@ -33,6 +36,7 @@ public class ItemPanel extends PanelWidget {
     public ItemQuantityField quantity;
 
     public static class ItemPanelSlot {
+
         public ItemStack item;
         public int slotIndex;
 
@@ -48,6 +52,7 @@ public class ItemPanel extends PanelWidget {
     }
 
     protected static class ItemPanelGrid extends ItemsGrid {
+
         public ArrayList<ItemStack> newItems;
 
         public void setItems(ArrayList<ItemStack> items) {
@@ -94,6 +99,7 @@ public class ItemPanel extends PanelWidget {
         super.init();
 
         more = new Button("+") {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (rightclick) return false;
@@ -110,6 +116,7 @@ public class ItemPanel extends PanelWidget {
             }
         };
         less = new Button("-") {
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (rightclick) return false;

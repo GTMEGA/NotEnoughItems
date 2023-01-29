@@ -1,14 +1,17 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.api.INEIGuiAdapter;
-import codechicken.nei.drawable.GuiElementDuex;
-import codechicken.nei.drawable.GuiElementScalable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.util.Rectangle;
 
+import codechicken.nei.api.INEIGuiAdapter;
+import codechicken.nei.drawable.GuiElementDuex;
+import codechicken.nei.drawable.GuiElementScalable;
+
 public class GuiRecipeCatalyst extends INEIGuiAdapter {
+
     private GuiRecipe<?> guiRecipe;
     public static final int ingredientSize = 16;
     public static final int ingredientBorder = 1;
@@ -24,8 +27,7 @@ public class GuiRecipeCatalyst extends INEIGuiAdapter {
 
     public void draw() {
         if (guiRecipe == null) return;
-        int catalystsSize =
-                RecipeCatalysts.getRecipeCatalysts(guiRecipe.getHandler()).size();
+        int catalystsSize = RecipeCatalysts.getRecipeCatalysts(guiRecipe.getHandler()).size();
         if (catalystsSize == 0) return;
 
         int availableHeight = RecipeCatalysts.getHeight();
@@ -50,8 +52,7 @@ public class GuiRecipeCatalyst extends INEIGuiAdapter {
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
         if (!(gui instanceof GuiRecipe)) return false;
         guiRecipe = (GuiRecipe<?>) gui;
-        int catalystsSize =
-                RecipeCatalysts.getRecipeCatalysts(guiRecipe.getHandler()).size();
+        int catalystsSize = RecipeCatalysts.getRecipeCatalysts(guiRecipe.getHandler()).size();
         if (catalystsSize == 0) return false;
 
         int availableHeight = RecipeCatalysts.getHeight();
@@ -68,30 +69,40 @@ public class GuiRecipeCatalyst extends INEIGuiAdapter {
         return targetRect.intersects(catalystRect);
     }
 
-    private void drawBordered(
-            String location,
-            int xPos,
-            int yPos,
-            int width,
-            int height,
-            int texWidth,
-            int texHeight,
-            int sliceLeft,
-            int sliceRight,
-            int sliceTop,
-            int sliceBottom) {
+    private void drawBordered(String location, int xPos, int yPos, int width, int height, int texWidth, int texHeight,
+            int sliceLeft, int sliceRight, int sliceTop, int sliceBottom) {
         Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(location));
 
         GuiElementDuex cornerTopLeft = new GuiElementDuex(0, 0, sliceLeft, sliceTop, texWidth, texHeight);
-        GuiElementDuex cornerTopRight =
-                new GuiElementDuex(texWidth - sliceRight, 0, sliceRight, sliceTop, texWidth, texHeight);
-        GuiElementDuex cornerBottomLeft =
-                new GuiElementDuex(0, texHeight - sliceBottom, sliceLeft, sliceBottom, texWidth, texHeight);
+        GuiElementDuex cornerTopRight = new GuiElementDuex(
+                texWidth - sliceRight,
+                0,
+                sliceRight,
+                sliceTop,
+                texWidth,
+                texHeight);
+        GuiElementDuex cornerBottomLeft = new GuiElementDuex(
+                0,
+                texHeight - sliceBottom,
+                sliceLeft,
+                sliceBottom,
+                texWidth,
+                texHeight);
         GuiElementDuex cornerBottomRight = new GuiElementDuex(
-                texWidth - sliceRight, texHeight - sliceBottom, sliceRight, sliceBottom, texWidth, texHeight);
+                texWidth - sliceRight,
+                texHeight - sliceBottom,
+                sliceRight,
+                sliceBottom,
+                texWidth,
+                texHeight);
 
-        GuiElementScalable borderTop =
-                new GuiElementScalable(sliceLeft, 0, texWidth - sliceLeft - sliceRight, sliceTop, texWidth, texHeight);
+        GuiElementScalable borderTop = new GuiElementScalable(
+                sliceLeft,
+                0,
+                texWidth - sliceLeft - sliceRight,
+                sliceTop,
+                texWidth,
+                texHeight);
         GuiElementScalable borderBottom = new GuiElementScalable(
                 sliceLeft,
                 texHeight - sliceBottom,
@@ -99,10 +110,20 @@ public class GuiRecipeCatalyst extends INEIGuiAdapter {
                 sliceBottom,
                 texWidth,
                 texHeight);
-        GuiElementScalable borderLeft =
-                new GuiElementScalable(0, sliceTop, sliceLeft, texHeight - sliceTop - sliceBottom, texWidth, texHeight);
+        GuiElementScalable borderLeft = new GuiElementScalable(
+                0,
+                sliceTop,
+                sliceLeft,
+                texHeight - sliceTop - sliceBottom,
+                texWidth,
+                texHeight);
         GuiElementScalable borderRight = new GuiElementScalable(
-                texWidth - sliceRight, sliceTop, sliceRight, texHeight - sliceTop - sliceBottom, texWidth, texHeight);
+                texWidth - sliceRight,
+                sliceTop,
+                sliceRight,
+                texHeight - sliceTop - sliceBottom,
+                texWidth,
+                texHeight);
         GuiElementScalable center = new GuiElementScalable(
                 sliceLeft,
                 sliceTop,

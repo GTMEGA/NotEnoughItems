@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 public abstract class ButtonCycled extends Button {
+
     public ButtonCycled() {}
 
     public ButtonCycled(int num) {

@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 public class VisiblityData {
+
     public boolean showUtilityButtons = true;
     /**
      * Item panel and associated buttons

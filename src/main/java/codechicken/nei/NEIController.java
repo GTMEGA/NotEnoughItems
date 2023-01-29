@@ -2,6 +2,16 @@ package codechicken.nei;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
+import java.awt.Point;
+import java.util.LinkedList;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.api.API;
 import codechicken.nei.api.GuiInfo;
 import codechicken.nei.api.IInfiniteItemHandler;
@@ -11,16 +21,9 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerSlotClickHandler;
 import codechicken.nei.recipe.GuiRecipe;
-import java.awt.Point;
-import java.util.LinkedList;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.inventory.SlotCrafting;
-import net.minecraft.item.ItemStack;
 
 public class NEIController implements IContainerSlotClickHandler, IContainerInputHandler {
+
     private static final NEIController instance = new NEIController();
 
     public static GuiContainerManager manager;
@@ -82,16 +85,15 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
     public static void processCreativeCycling(InventoryPlayer inventory) {
         if (NEIClientConfig.invCreativeMode() && NEIClientUtils.controlKey()) {
             if (selectedItem != inventory.currentItem) {
-                if (inventory.currentItem == selectedItem + 1
-                        || (inventory.currentItem == 0 && selectedItem == 8)) // foward
+                if (inventory.currentItem == selectedItem + 1 || (inventory.currentItem == 0 && selectedItem == 8)) // foward
                 {
                     NEICPH.sendCreativeScroll(1);
                     inventory.currentItem = selectedItem;
                 } else if (inventory.currentItem == selectedItem - 1
                         || (inventory.currentItem == 8 && selectedItem == 0)) {
-                    NEICPH.sendCreativeScroll(-1);
-                    inventory.currentItem = selectedItem;
-                }
+                            NEICPH.sendCreativeScroll(-1);
+                            inventory.currentItem = selectedItem;
+                        }
             }
         }
 
@@ -106,8 +108,8 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
     }
 
     @Override
-    public boolean handleSlotClick(
-            GuiContainer gui, int slotIndex, int button, Slot slot, int modifier, boolean eventconsumed) {
+    public boolean handleSlotClick(GuiContainer gui, int slotIndex, int button, Slot slot, int modifier,
+            boolean eventconsumed) {
         if (eventconsumed || !NEIClientConfig.isEnabled() || isSpreading(gui)) return eventconsumed;
 
         if (deleteMode && slotIndex >= 0 && slot != null) {
@@ -123,12 +125,12 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
         if (button == 1 && slot instanceof SlotCrafting) // right click
         {
             for (int i1 = 0; i1 < 64; i1++) // click this slot 64 times
-            manager.handleSlotClick(slot.slotNumber, button, 0);
+                manager.handleSlotClick(slot.slotNumber, button, 0);
             return true;
         }
 
-        if (NEIClientUtils.controlKey()
-                && modifier != 4 // Drop key pressed: net.minecraft.client.gui.inventory.GuiContainer.keyTyped
+        if (NEIClientUtils.controlKey() && modifier != 4 // Drop key pressed:
+                                                         // net.minecraft.client.gui.inventory.GuiContainer.keyTyped
                 && slot != null
                 && slot.getStack() != null
                 && slot.isItemValid(slot.getStack())) {
@@ -138,8 +140,7 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
 
         if (GuiInfo.hasCustomSlots(gui)) return false;
 
-        if (slotIndex >= 0
-                && NEIClientUtils.shiftKey()
+        if (slotIndex >= 0 && NEIClientUtils.shiftKey()
                 && NEIClientUtils.getHeldItem() != null
                 && !slot.getHasStack()) {
             ItemStack held = NEIClientUtils.getHeldItem();
@@ -167,8 +168,7 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
         if (firstheld != nowHeld) pickedUpFromSlot = slotIndex;
 
         if (NEIClientConfig.canPerformAction("item") && NEIClientConfig.hasSMPCounterPart()) {
-            if (heldStackInfinite != null
-                    && slot != null
+            if (heldStackInfinite != null && slot != null
                     && slot.inventory == NEIClientUtils.mc().thePlayer.inventory) {
                 ItemStack stack = slot.getStack();
                 if (stack != null) {
@@ -214,9 +214,9 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
 
     @Override
     public boolean mouseScrolled(GuiContainer gui, int mousex, int mousey, int scrolled) {
-        if (!NEIClientConfig.isEnabled()
-                || GuiInfo.hasCustomSlots(gui)
-                || !NEIClientConfig.isMouseScrollTransferEnabled()) return false;
+        if (!NEIClientConfig.isEnabled() || GuiInfo.hasCustomSlots(gui)
+                || !NEIClientConfig.isMouseScrollTransferEnabled())
+            return false;
 
         // slot in GuiRecipe does not contain actual stack
         // and scroll should be handled by GuiRecipe, not here

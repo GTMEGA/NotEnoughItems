@@ -1,18 +1,21 @@
 package codechicken.nei;
 
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.api.INEIGuiAdapter;
 import java.util.Collection;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.potion.PotionEffect;
 
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.api.INEIGuiAdapter;
+
 /**
  * Inspired by InventoryEffectRendererGuiHandler.java in JEI
  */
 public class NEIPotionGuiHandler extends INEIGuiAdapter {
+
     @Override
     public boolean hideItemPanelSlot(GuiContainer guiContainer, int slotX, int slotY, int slotW, int slotH) {
         if (NEIClientConfig.ignorePotionOverlap()) {

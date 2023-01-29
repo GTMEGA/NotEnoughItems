@@ -7,11 +7,13 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
- * A hideous LinkedList that is backed by an arbitrary list, for alternative characteristics while preserving
- * binary compatibility...
+ * A hideous LinkedList that is backed by an arbitrary list, for alternative characteristics while preserving binary
+ * compatibility...
+ * 
  * @param <E>
  */
 final class HideousLinkedList<E> extends LinkedList<E> {
+
     private final List<E> backing;
 
     HideousLinkedList(List<E> backing) {

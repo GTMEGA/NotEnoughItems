@@ -1,14 +1,11 @@
 package codechicken.nei.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
@@ -22,7 +19,13 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class NBTJson {
+
     private static final Pattern numberPattern = Pattern.compile("^([-+]?\\d+\\.?\\d*E*\\d*)([bBsSlLfFdD]?)$");
 
     public static String toJson(NBTTagCompound tag) {
@@ -166,9 +169,7 @@ public class NBTJson {
             }
 
             if (nbtList.stream().allMatch(n -> n instanceof NBTTagInt)) {
-                return new NBTTagIntArray(nbtList.stream()
-                        .mapToInt(i -> ((NBTTagInt) i).func_150287_d())
-                        .toArray());
+                return new NBTTagIntArray(nbtList.stream().mapToInt(i -> ((NBTTagInt) i).func_150287_d()).toArray());
             } else if (nbtList.stream().allMatch(n -> n instanceof NBTTagByte)) {
                 final byte[] abyte = new byte[nbtList.size()];
 
@@ -216,8 +217,7 @@ public class NBTJson {
             try {
                 final String className = obj.get("__custom_type").getAsString();
                 return (NBTBase) Class.forName(className).newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException th) {
-            }
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException th) {}
         }
 
         return null;

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NEIActions {
+
     public static final int protocol = 0;
 
     public static HashMap<String, NEIActions> nameActionMap = new HashMap<>();
@@ -61,8 +62,8 @@ public class NEIActions {
         canDisable.add("rain");
     }
 
-    public static final String[] timeZones = new String[] {"dawn", "noon", "dusk", "midnight"};
-    public static final String[] gameModes = new String[] {"survival", "creative", "creative+", "adventure"};
+    public static final String[] timeZones = new String[] { "dawn", "noon", "dusk", "midnight" };
+    public static final String[] gameModes = new String[] { "survival", "creative", "creative+", "adventure" };
 
     public String name;
     public String base;

@@ -1,11 +1,13 @@
 package codechicken.nei;
 
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.nei.api.IInfiniteItemHandler;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.nei.api.IInfiniteItemHandler;
+
 public class InfiniteStackSizeHandler implements IInfiniteItemHandler {
+
     @Override
     public void onPickup(ItemStack heldItem) {
         heldItem.stackSize = 1;

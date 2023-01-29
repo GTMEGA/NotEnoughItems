@@ -1,5 +1,26 @@
 package codechicken.nei;
 
+import java.io.File;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraftforge.common.MinecraftForge;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.input.Keyboard;
+
 import codechicken.core.CCUpdateChecker;
 import codechicken.core.ClassDiscoverer;
 import codechicken.core.ClientUtils;
@@ -31,35 +52,20 @@ import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
+
 import com.google.common.base.Objects;
-import java.io.File;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.SaveFormatComparator;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
 
 public class NEIClientConfig {
+
     private static boolean configLoaded;
     private static boolean enabledOverride;
     private static String worldPath;
 
     public static Logger logger = LogManager.getLogger("NotEnoughItems");
     public static File configDir = new File(CommonUtils.getMinecraftDir(), "config/NEI/");
-    public static ConfigSet global =
-            new ConfigSet(new File("saves/NEI/client.dat"), new ConfigFile(new File(configDir, "client.cfg")));
+    public static ConfigSet global = new ConfigSet(
+            new File("saves/NEI/client.dat"),
+            new ConfigFile(new File(configDir, "client.cfg")));
     public static ConfigSet world;
     public static final File handlerFile = new File(configDir, "handlers.csv");
     public static final File catalystFile = new File(configDir, "catalysts.csv");
@@ -84,8 +90,8 @@ public class NEIClientConfig {
 
     // Function that extracts the handler ID from a handler, with special logic for
     // TemplateRecipeHandler: prefer using the overlay ID if it exists.
-    public static final Function<IRecipeHandler, String> HANDLER_ID_FUNCTION =
-            handler -> Objects.firstNonNull(handler.getOverlayIdentifier(), handler.getHandlerId());
+    public static final Function<IRecipeHandler, String> HANDLER_ID_FUNCTION = handler -> Objects
+            .firstNonNull(handler.getOverlayIdentifier(), handler.getHandlerId());
 
     public static int getHandlerOrder(IRecipeHandler handler) {
         if (handlerOrdering.get(handler.getOverlayIdentifier()) != null) {
@@ -98,8 +104,8 @@ public class NEIClientConfig {
     }
 
     // Comparator that compares handlers using the handlerOrdering map.
-    public static final Comparator<IRecipeHandler> HANDLER_COMPARATOR =
-            Comparator.comparingInt(NEIClientConfig::getHandlerOrder);
+    public static final Comparator<IRecipeHandler> HANDLER_COMPARATOR = Comparator
+            .comparingInt(NEIClientConfig::getHandlerOrder);
 
     public static ItemStack[] creativeInv;
 
@@ -121,10 +127,8 @@ public class NEIClientConfig {
         tag.setComment(
                 "Main configuration of NEI.\nMost of these options can be changed ingame.\nDeleting any element will restore it to it's default value");
 
-        tag.getTag("command")
-                .useBraces()
-                .setComment(
-                        "Change these options if you have a different mod installed on the server that handles the commands differently, Eg. Bukkit Essentials");
+        tag.getTag("command").useBraces().setComment(
+                "Change these options if you have a different mod installed on the server that handles the commands differently, Eg. Bukkit Essentials");
         tag.setNewLineMode(1);
 
         tag.getTag("inventory.widgetsenabled").getBooleanValue(true);
@@ -132,11 +136,11 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.hidden").getBooleanValue(false);
         tag.getTag("inventory.cheatmode").getIntValue(2);
-        tag.getTag("inventory.lockmode")
-                .setComment(
-                        "For those who can't help themselves.\nSet this to a mode and you will be unable to change it ingame")
+        tag.getTag("inventory.lockmode").setComment(
+                "For those who can't help themselves.\nSet this to a mode and you will be unable to change it ingame")
                 .getIntValue(-1);
         API.addOption(new OptionCycled("inventory.cheatmode", 3) {
+
             @Override
             public boolean optionValid(int index) {
                 return getLockedMode() == -1 || getLockedMode() == index && NEIInfo.isValidMode(index);
@@ -183,6 +187,7 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.invertMouseScrollTransfer").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.invertMouseScrollTransfer", true) {
+
             @Override
             public boolean isEnabled() {
                 return isMouseScrollTransferEnabled();
@@ -205,10 +210,10 @@ public class NEIClientConfig {
         tag.getTag("command.heal").setDefaultValue("");
         API.addOption(new OptionTextField("command.heal"));
 
-        tag.getTag("inventory.worldSpecificBookmarks")
-                .setComment("Global or world specific bookmarks")
+        tag.getTag("inventory.worldSpecificBookmarks").setComment("Global or world specific bookmarks")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.worldSpecificBookmarks", true) {
+
             @Override
             public boolean onClick(int button) {
                 super.onClick(button);
@@ -217,10 +222,10 @@ public class NEIClientConfig {
             }
         });
 
-        tag.getTag("inventory.worldSpecificPresets")
-                .setComment("Global or world specific presets")
+        tag.getTag("inventory.worldSpecificPresets").setComment("Global or world specific presets")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.worldSpecificPresets", true) {
+
             @Override
             public boolean onClick(int button) {
                 super.onClick(button);
@@ -229,60 +234,43 @@ public class NEIClientConfig {
             }
         });
 
-        tag.getTag("inventory.bookmarksEnabled")
-                .setComment("Enable/disable bookmarks")
-                .getBooleanValue(true);
+        tag.getTag("inventory.bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarksEnabled", true));
-        tag.getTag("inventory.useNBTInBookmarks")
-                .setComment("Use NBT in Bookmarks")
-                .getBooleanValue(true);
+        tag.getTag("inventory.useNBTInBookmarks").setComment("Use NBT in Bookmarks").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.useNBTInBookmarks", true));
-        tag.getTag("inventory.bookmarksAnimationEnabled")
-                .setComment("REI Style Animation in Bookmarks")
+        tag.getTag("inventory.bookmarksAnimationEnabled").setComment("REI Style Animation in Bookmarks")
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarksAnimationEnabled", true));
-        tag.getTag("inventory.showRecipeMarker")
-                .setComment("Show Recipe Marker")
-                .getBooleanValue(false);
+        tag.getTag("inventory.showRecipeMarker").setComment("Show Recipe Marker").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.showRecipeMarker", true));
 
-        tag.getTag("inventory.showItemQuantityWidget")
-                .setComment("Show Item Quantity Widget")
-                .getBooleanValue(true);
+        tag.getTag("inventory.showItemQuantityWidget").setComment("Show Item Quantity Widget").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.showItemQuantityWidget", true));
 
-        tag.getTag("inventory.jei_style_tabs")
-                .setComment("Enable/disable JEI Style Tabs")
-                .getBooleanValue(true);
+        tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
         tag.getTag("inventory.jei_style_item_presence_overlay")
-                .setComment("Enable/disable JEI Style item presence overlay on ?-hover")
-                .getBooleanValue(true);
+                .setComment("Enable/disable JEI Style item presence overlay on ?-hover").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.jei_style_item_presence_overlay", true));
-        tag.getTag("inventory.jei_style_recipe_catalyst")
-                .setComment("Enable/disable JEI Style Recipe Catalysts")
+        tag.getTag("inventory.jei_style_recipe_catalyst").setComment("Enable/disable JEI Style Recipe Catalysts")
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.jei_style_recipe_catalyst", true));
 
-        tag.getTag("inventory.creative_tab_style")
-                .setComment("Creative or JEI style tabs")
-                .getBooleanValue(false);
+        tag.getTag("inventory.creative_tab_style").setComment("Creative or JEI style tabs").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.creative_tab_style", true));
 
-        tag.getTag("inventory.ignore_potion_overlap")
-                .setComment("Ignore overlap with potion effect HUD")
+        tag.getTag("inventory.ignore_potion_overlap").setComment("Ignore overlap with potion effect HUD")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.ignore_potion_overlap", true));
 
-        tag.getTag("inventory.optimize_gui_overlap_computation")
-                .setComment("Optimize computation for GUI overlap")
+        tag.getTag("inventory.optimize_gui_overlap_computation").setComment("Optimize computation for GUI overlap")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.optimize_gui_overlap_computation", true));
 
-        tag.getTag("tools.handler_load_from_config")
-                .setComment("ADVANCED: Load handlers from config")
+        tag.getTag("tools.handler_load_from_config").setComment("ADVANCED: Load handlers from config")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("tools.handler_load_from_config", true) {
+
             @Override
             public boolean onClick(int button) {
                 super.onClick(button);
@@ -291,10 +279,10 @@ public class NEIClientConfig {
             }
         });
 
-        tag.getTag("tools.catalyst_load_from_config")
-                .setComment("ADVANCED: Load catalysts from config")
+        tag.getTag("tools.catalyst_load_from_config").setComment("ADVANCED: Load catalysts from config")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("tools.catalyst_load_from_config", true) {
+
             @Override
             public boolean onClick(int button) {
                 super.onClick(button);
@@ -308,6 +296,7 @@ public class NEIClientConfig {
 
     private static void linkOptionList() {
         OptionList.setOptionList(new OptionList("nei.options") {
+
             @Override
             public ConfigSet globalConfigSet() {
                 return global;
@@ -348,7 +337,8 @@ public class NEIClientConfig {
         API.addHashBind("gui.bookmark_recipe", Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH);
         API.addHashBind("gui.bookmark_count", Keyboard.KEY_A + NEIClientUtils.CTRL_HASH);
         API.addHashBind(
-                "gui.bookmark_recipe_count", Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH);
+                "gui.bookmark_recipe_count",
+                Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH);
         API.addHashBind("gui.overlay", Keyboard.KEY_S);
         API.addHashBind("gui.overlay_use", Keyboard.KEY_S + NEIClientUtils.SHIFT_HASH);
         API.addHashBind("gui.overlay_hide", Keyboard.KEY_S + NEIClientUtils.CTRL_HASH);
@@ -402,10 +392,8 @@ public class NEIClientConfig {
         ItemPanels.itemPanel.quantity.setText(Integer.toString(getItemQuantity()));
         SubsetWidget.loadHidden();
 
-        if (newWorld && Minecraft.getMinecraft().isSingleplayer())
-            world.config
-                    .getTag("inventory.cheatmode")
-                    .setIntValue(NEIClientUtils.mc().playerController.isInCreativeMode() ? 2 : 0);
+        if (newWorld && Minecraft.getMinecraft().isSingleplayer()) world.config.getTag("inventory.cheatmode")
+                .setIntValue(NEIClientUtils.mc().playerController.isInCreativeMode() ? 2 : 0);
 
         NEIInfo.load(ClientUtils.getWorld());
     }
@@ -445,10 +433,12 @@ public class NEIClientConfig {
         configLoaded = true;
 
         new Thread("NEI Plugin Loader") {
+
             @Override
             public void run() {
                 ClassDiscoverer classDiscoverer = new ClassDiscoverer(
-                        test -> test.startsWith("NEI") && test.endsWith("Config.class"), IConfigureNEI.class);
+                        test -> test.startsWith("NEI") && test.endsWith("Config.class"),
+                        IConfigureNEI.class);
 
                 classDiscoverer.findClasses();
 

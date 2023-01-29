@@ -1,17 +1,20 @@
 package codechicken.nei.config;
 
-import codechicken.nei.Image;
-import codechicken.nei.LayoutManager;
-import codechicken.nei.guihook.GuiContainerManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import codechicken.nei.Image;
+import codechicken.nei.LayoutManager;
+import codechicken.nei.guihook.GuiContainerManager;
+
 public class OptionUtilities extends OptionStringSet {
+
     public OptionUtilities(String name) {
         super(name);
         options.add("time");

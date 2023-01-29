@@ -1,12 +1,14 @@
 package codechicken.nei.recipe.stackinfo;
 
-import codechicken.nei.api.IStackStringifyHandler;
 import java.lang.reflect.Method;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
+import codechicken.nei.api.IStackStringifyHandler;
 
 public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
 
@@ -23,7 +25,7 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
             getFluidDisplayStack = gtUtility.getMethod("getFluidDisplayStack", FluidStack.class, boolean.class);
 
         } catch (Exception ignored) {
-            /*Do nothing*/
+            /* Do nothing */
         }
     }
 
@@ -57,8 +59,7 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
                     return (ItemStack) obj;
                 }
 
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
         }
 
         return null;
@@ -74,8 +75,7 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
                     return (FluidStack) obj;
                 }
 
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
         }
 
         return null;

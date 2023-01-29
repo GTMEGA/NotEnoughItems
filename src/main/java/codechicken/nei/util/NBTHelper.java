@@ -1,7 +1,9 @@
 package codechicken.nei.util;
 
 import java.util.Set;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -9,8 +11,8 @@ import net.minecraft.nbt.NBTTagList;
 public class NBTHelper {
 
     /*
-     * Taken from Botania r1.11-379 by Vazkii under the Botania License
-     * You can obtain one at https://botaniamod.net/license.php
+     * Taken from Botania r1.11-379 by Vazkii under the Botania License You can obtain one at
+     * https://botaniamod.net/license.php
      */
 
     /**
@@ -32,7 +34,7 @@ public class NBTHelper {
     private static boolean matchTagCompound(NBTTagCompound template, NBTTagCompound target) {
         if (template.tagMap.size() > target.tagMap.size()) return false;
 
-        //noinspection unchecked
+        // noinspection unchecked
         for (String key : (Set<String>) template.func_150296_c()) {
             if (!matchTag(template.getTag(key), target.getTag(key))) return false;
         }

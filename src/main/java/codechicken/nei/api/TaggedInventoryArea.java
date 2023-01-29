@@ -1,12 +1,14 @@
 package codechicken.nei.api;
 
 import java.util.HashSet;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class TaggedInventoryArea {
+
     public final HashSet<Integer> slots = new HashSet<>();
     public final String tagName;
     /**

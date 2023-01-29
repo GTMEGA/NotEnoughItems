@@ -1,5 +1,13 @@
 package codechicken.nei;
 
+import java.util.List;
+
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
+
 import codechicken.core.CommonUtils;
 import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -10,14 +18,9 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import java.util.List;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
 
 public class ServerHandler {
+
     private static ServerHandler instance;
 
     public static void load() {
@@ -32,11 +35,10 @@ public class ServerHandler {
 
     @SubscribeEvent
     public void tickEvent(TickEvent.WorldTickEvent event) {
-        if (event.phase == Phase.START
-                && !event.world.isRemote
-                && NEIServerConfig.dimTags.containsKey(
-                        CommonUtils.getDimension(event.world))) // fake worlds that don't call Load
-        processDisabledProperties(event.world);
+        if (event.phase == Phase.START && !event.world.isRemote
+                && NEIServerConfig.dimTags.containsKey(CommonUtils.getDimension(event.world))) // fake worlds that don't
+                                                                                               // call Load
+            processDisabledProperties(event.world);
     }
 
     @SubscribeEvent
@@ -72,8 +74,8 @@ public class ServerHandler {
         double maxspeedy = 0.5;
         double speedxz = 0.05;
         double speedy = 0.07;
-        List<EntityItem> items = player.worldObj.getEntitiesWithinAABB(
-                EntityItem.class, player.boundingBox.expand(distancexz, distancey, distancexz));
+        List<EntityItem> items = player.worldObj
+                .getEntitiesWithinAABB(EntityItem.class, player.boundingBox.expand(distancexz, distancey, distancexz));
         for (EntityItem item : items) {
             if (item.delayBeforeCanPickup > 0) continue;
             if (!NEIServerUtils.canItemFitInInventory(player, item.getEntityItem())) continue;

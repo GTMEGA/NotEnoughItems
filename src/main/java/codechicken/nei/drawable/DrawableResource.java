@@ -1,9 +1,10 @@
 package codechicken.nei.drawable;
 
-import codechicken.nei.Image;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
+
+import codechicken.nei.Image;
 
 public class DrawableResource extends Image {
 
@@ -16,18 +17,8 @@ public class DrawableResource extends Image {
     private final int paddingLeft;
     private final int paddingRight;
 
-    public DrawableResource(
-            ResourceLocation resourceLocation,
-            int u,
-            int v,
-            int width,
-            int height,
-            int paddingTop,
-            int paddingBottom,
-            int paddingLeft,
-            int paddingRight,
-            int textureWidth,
-            int textureHeight) {
+    public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop,
+            int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
         super(u, v, width, height);
         this.resourceLocation = resourceLocation;
         this.textureWidth = textureWidth;

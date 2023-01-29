@@ -1,12 +1,5 @@
 package codechicken.nei.recipe;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.Widget;
-import codechicken.nei.drawable.DrawableResource;
-import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
-import codechicken.nei.guihook.GuiContainerManager;
-import cpw.mods.fml.common.Loader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,10 +11,12 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -29,7 +24,16 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.Widget;
+import codechicken.nei.drawable.DrawableResource;
+import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
+import codechicken.nei.guihook.GuiContainerManager;
+import cpw.mods.fml.common.Loader;
+
 public abstract class GuiRecipeTab extends Widget {
+
     public static HandlerInfo DEFAULT_HANDLER_INFO = getDefaultHandlerInfo();
     public static HashMap<String, HandlerInfo> handlerMap = new HashMap<>();
     public static HashMap<String, HandlerInfo> handlerAdderFromIMC = new HashMap<>();
@@ -123,7 +127,10 @@ public abstract class GuiRecipeTab extends Widget {
             int textCenterY = y + (int) (getHeight() / 2f) - 3;
             int color = selected ? 0xffffa0 : 0xe0e0e0;
             fontRenderer.drawStringWithShadow(
-                    text, textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f), textCenterY, color);
+                    text,
+                    textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f),
+                    textCenterY,
+                    color);
             GL11.glColor4f(1, 1, 1, 1);
         }
     }
@@ -256,8 +263,9 @@ public abstract class GuiRecipeTab extends Widget {
                 try {
                     final int imageHeight = intOrDefault(record.get("handlerHeight"), HandlerInfo.DEFAULT_HEIGHT);
                     final int imageWidth = intOrDefault(record.get("handlerWidth"), HandlerInfo.DEFAULT_WIDTH);
-                    final int maxRecipesPerPage =
-                            intOrDefault(record.get("maxRecipesPerPage"), HandlerInfo.DEFAULT_MAX_PER_PAGE);
+                    final int maxRecipesPerPage = intOrDefault(
+                            record.get("maxRecipesPerPage"),
+                            HandlerInfo.DEFAULT_MAX_PER_PAGE);
                     info.setHandlerDimensions(imageHeight, imageWidth, maxRecipesPerPage);
                 } catch (NumberFormatException ignored) {
                     NEIClientConfig.logger.info("Error setting handler dimensions for " + handler);
@@ -281,7 +289,9 @@ public abstract class GuiRecipeTab extends Widget {
     private static HandlerInfo getDefaultHandlerInfo() {
         final HandlerInfo info = new HandlerInfo("Unknown", "Unknown", "Unknown", false, "");
         info.setHandlerDimensions(
-                HandlerInfo.DEFAULT_HEIGHT, HandlerInfo.DEFAULT_WIDTH, HandlerInfo.DEFAULT_MAX_PER_PAGE);
+                HandlerInfo.DEFAULT_HEIGHT,
+                HandlerInfo.DEFAULT_WIDTH,
+                HandlerInfo.DEFAULT_MAX_PER_PAGE);
         return info;
     }
 

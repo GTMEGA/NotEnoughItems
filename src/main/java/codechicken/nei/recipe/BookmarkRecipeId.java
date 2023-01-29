@@ -1,15 +1,18 @@
 package codechicken.nei.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import codechicken.nei.PositionedStack;
 import codechicken.nei.util.NBTJson;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class BookmarkRecipeId {
 
@@ -67,8 +70,8 @@ public class BookmarkRecipeId {
         Short idx = 0;
 
         for (PositionedStack pStack : stacks) {
-            final NBTTagCompound tagCompoundA =
-                    StackInfo.itemStackToNBT(StackInfo.getItemStackWithMinimumDamage(pStack.items));
+            final NBTTagCompound tagCompoundA = StackInfo
+                    .itemStackToNBT(StackInfo.getItemStackWithMinimumDamage(pStack.items));
             final NBTTagCompound tagCompoundB = ingredients.get(idx);
 
             if (tagCompoundB == null || !tagCompoundB.equals(tagCompoundA)) {

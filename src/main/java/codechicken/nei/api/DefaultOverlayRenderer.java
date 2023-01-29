@@ -1,13 +1,17 @@
 package codechicken.nei.api;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.guihook.GuiContainerManager;
 import java.util.ArrayList;
 import java.util.List;
+
 import net.minecraft.inventory.Slot;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.nei.PositionedStack;
+import codechicken.nei.guihook.GuiContainerManager;
+
 public class DefaultOverlayRenderer implements IRecipeOverlayRenderer {
+
     public DefaultOverlayRenderer(List<PositionedStack> ai, IStackPositioner positioner) {
         positioner = this.positioner = positioner;
         ingreds = new ArrayList<>();

@@ -3,6 +3,7 @@ package codechicken.nei;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ItemMobSpawner extends ItemBlock {
+
     private static Map<Integer, EntityLiving> entityHashMap;
     private static Map<Integer, String> IDtoNameMap;
     public static int idPig;
@@ -48,20 +50,11 @@ public class ItemMobSpawner extends ItemBlock {
         return Blocks.mob_spawner.getBlockTextureFromSide(0);
     }
 
-    public boolean onItemUse(
-            ItemStack itemstack,
-            EntityPlayer entityplayer,
-            World world,
-            int x,
-            int y,
-            int z,
-            int par7,
-            float par8,
-            float par9,
-            float par10) {
+    public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int par7,
+            float par8, float par9, float par10) {
         if (super.onItemUse(itemstack, entityplayer, world, x, y, z, par7, par8, par9, par10) && world.isRemote) {
-            TileEntityMobSpawner tileentitymobspawner =
-                    (TileEntityMobSpawner) world.getTileEntity(placedX, placedY, placedZ);
+            TileEntityMobSpawner tileentitymobspawner = (TileEntityMobSpawner) world
+                    .getTileEntity(placedX, placedY, placedZ);
             if (tileentitymobspawner != null) {
                 setDefaultTag(itemstack);
                 String mobtype = IDtoNameMap.get(itemstack.getItemDamage());
@@ -93,8 +86,7 @@ public class ItemMobSpawner extends ItemBlock {
             loadSpawners(world);
             Class<?> clazz = (Class<?>) EntityList.IDtoClassMapping.get(ID);
             try {
-                e = (EntityLiving)
-                        clazz.getConstructor(new Class[] {World.class}).newInstance(world);
+                e = (EntityLiving) clazz.getConstructor(new Class[] { World.class }).newInstance(world);
             } catch (Throwable t) {
                 if (clazz == null)
                     NEIClientConfig.logger.error("Null class for entity (" + ID + ", " + IDtoNameMap.get(ID));
@@ -117,15 +109,13 @@ public class ItemMobSpawner extends ItemBlock {
     public static void loadSpawners(World world) {
         if (loaded) return;
         loaded = true;
-        HashMap<Class<Entity>, String> classToStringMapping =
-                (HashMap<Class<Entity>, String>) EntityList.classToStringMapping;
-        HashMap<Class<Entity>, Integer> classToIDMapping =
-                (HashMap<Class<Entity>, Integer>) EntityList.classToIDMapping;
+        HashMap<Class<Entity>, String> classToStringMapping = (HashMap<Class<Entity>, String>) EntityList.classToStringMapping;
+        HashMap<Class<Entity>, Integer> classToIDMapping = (HashMap<Class<Entity>, Integer>) EntityList.classToIDMapping;
         for (Class<Entity> eclass : classToStringMapping.keySet()) {
             if (!EntityLiving.class.isAssignableFrom(eclass)) continue;
             try {
-                EntityLiving entityliving = (EntityLiving)
-                        eclass.getConstructor(new Class[] {World.class}).newInstance(world);
+                EntityLiving entityliving = (EntityLiving) eclass.getConstructor(new Class[] { World.class })
+                        .newInstance(world);
                 entityliving.isChild();
 
                 int id = classToIDMapping.get(eclass);
@@ -136,13 +126,11 @@ public class ItemMobSpawner extends ItemBlock {
                 IDtoNameMap.put(id, name);
 
                 if (name.equals("Pig")) idPig = id;
-            } catch (Throwable ignored) {
-            }
+            } catch (Throwable ignored) {}
         }
 
         IDtoNameMap.entrySet()
-                .removeIf(e -> getEntity(e.getKey()).getClass() == EntityPig.class
-                        && !e.getValue().equals("Pig"));
+                .removeIf(e -> getEntity(e.getKey()).getClass() == EntityPig.class && !e.getValue().equals("Pig"));
     }
 
     @Override

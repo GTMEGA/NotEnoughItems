@@ -1,13 +1,20 @@
 package codechicken.nei;
 
+import java.io.File;
+import java.util.*;
+
+import net.minecraft.util.EnumChatFormatting;
+
 import codechicken.core.CommonUtils;
 import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.asm.NEICorePlugin;
 import codechicken.nei.config.IMCHandler;
 import codechicken.nei.recipe.GuiRecipeTab;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.FMLFileResourcePack;
 import cpw.mods.fml.client.FMLFolderResourcePack;
 import cpw.mods.fml.common.DummyModContainer;
@@ -21,11 +28,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
-import java.io.File;
-import java.util.*;
-import net.minecraft.util.EnumChatFormatting;
 
 public class NEIModContainer extends DummyModContainer {
+
     public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     private static boolean gregTech5Loaded;
@@ -42,8 +47,7 @@ public class NEIModContainer extends DummyModContainer {
         modMetadata.version = "GRADLETOKEN_VERSION";
         modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123");
         modMetadata.url = "https://github.com/GTNewHorizons/NotEnoughItems";
-        modMetadata.description =
-                "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.";
+        modMetadata.description = "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.";
         return modMetadata;
     }
 

@@ -4,6 +4,7 @@ import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 
 public class Label extends Widget {
+
     final boolean centered;
     final int colour;
     public String text;

@@ -3,6 +3,7 @@ package codechicken.nei;
 import java.util.Comparator;
 
 public class WidgetZOrder implements Comparator<Widget> {
+
     final boolean topfirst;
 
     public WidgetZOrder(boolean topfirst) {

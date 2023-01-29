@@ -1,13 +1,17 @@
 package codechicken.nei.config;
 
-import codechicken.core.gui.GuiScrollPane;
 import java.awt.*;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.core.gui.GuiScrollPane;
+
 public abstract class OptionScrollPane extends GuiScrollPane {
+
     public OptionScrollPane() {
         super(0, 0, 0, 0);
         setMargins(24, 4, 20, 4);

@@ -2,24 +2,29 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import codechicken.core.gui.GuiCCButton;
-import codechicken.core.gui.GuiCCTextField;
-import codechicken.core.gui.GuiScrollSlot;
-import codechicken.core.inventory.GuiContainerWidget;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.FontUtils;
 import java.awt.Dimension;
 import java.util.ArrayList;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
+
 import org.lwjgl.opengl.GL11;
 
+import codechicken.core.gui.GuiCCButton;
+import codechicken.core.gui.GuiCCTextField;
+import codechicken.core.gui.GuiScrollSlot;
+import codechicken.core.inventory.GuiContainerWidget;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.FontUtils;
+
 public class GuiPotionCreator extends GuiContainerWidget {
+
     public class GuiSlotPotionEffects extends GuiScrollSlot {
+
         public int selectedslot = -1;
         public boolean enabled = true;
         private final ArrayList<Potion> validPotions = new ArrayList<>();
@@ -69,7 +74,12 @@ public class GuiPotionCreator extends GuiContainerWidget {
             CCRenderState.changeTexture("textures/gui/container/enchanting_table.png");
             drawTexturedModalRect(x, y, 0, 166 + getSlotHeight(slot) * shade, width - 30, getSlotHeight(slot));
             drawTexturedModalRect(
-                    x + width - 30, y, width - 23, 166 + getSlotHeight(slot) * shade, 30, getSlotHeight(slot));
+                    x + width - 30,
+                    y,
+                    width - 23,
+                    166 + getSlotHeight(slot) * shade,
+                    30,
+                    getSlotHeight(slot));
 
             if (potion.hasStatusIcon()) {
                 CCRenderState.changeTexture("textures/gui/container/inventory.png");
@@ -94,9 +104,7 @@ public class GuiPotionCreator extends GuiContainerWidget {
 
         private PotionEffect getEffect(int id) {
             ItemStack potion = container.potionInv.getStackInSlot(0);
-            if (potion != null
-                    && potion.hasTagCompound()
-                    && potion.getTagCompound().hasKey("CustomPotionEffects")) {
+            if (potion != null && potion.hasTagCompound() && potion.getTagCompound().hasKey("CustomPotionEffects")) {
                 NBTTagList potionTagList = potion.getTagCompound().getTagList("CustomPotionEffects", 10);
                 for (int i = 0; i < potionTagList.tagCount(); i++) {
                     PotionEffect effect = PotionEffect.readCustomPotionEffectFromNBT(potionTagList.getCompoundTagAt(i));
@@ -167,6 +175,7 @@ public class GuiPotionCreator extends GuiContainerWidget {
     }
 
     public class GuiDurationField extends GuiCCTextField {
+
         private String baseValue;
 
         public GuiDurationField(int x, int y, int width, int height) {
@@ -216,8 +225,8 @@ public class GuiPotionCreator extends GuiContainerWidget {
         @Override
         public void drawText() {
             String s = getText();
-            String seconds =
-                    s.substring(Math.max(0, s.length() - 2), Math.max(0, s.length() - 2) + Math.min(s.length(), 2));
+            String seconds = s
+                    .substring(Math.max(0, s.length() - 2), Math.max(0, s.length() - 2) + Math.min(s.length(), 2));
             String minutes = s.length() < 3 ? "" : s.substring(0, s.length() - 2);
             int ty = y + height / 2 - 4;
             int tcolour = getTextColour();
