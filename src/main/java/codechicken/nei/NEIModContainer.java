@@ -42,9 +42,9 @@ public class NEIModContainer extends DummyModContainer {
 
     private static ModMetadata getModMetadata() {
         final ModMetadata modMetadata = new ModMetadata();
-        modMetadata.name = "GRADLETOKEN_MODNAME";
-        modMetadata.modId = "GRADLETOKEN_MODID";
-        modMetadata.version = "GRADLETOKEN_VERSION";
+        modMetadata.name = "NotEnoughItems";
+        modMetadata.modId = "NotEnoughItems";
+        modMetadata.version = Tags.VERSION;
         modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123");
         modMetadata.url = "https://github.com/GTNewHorizons/NotEnoughItems";
         modMetadata.description = "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.";
