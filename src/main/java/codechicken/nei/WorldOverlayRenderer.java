@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.passive.EntityPig;
@@ -14,7 +15,6 @@ import net.minecraft.world.chunk.Chunk;
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.math.MathHelper;
-import codechicken.lib.render.RenderUtils;
 import codechicken.nei.KeyManager.IKeyStateTracker;
 
 public class WorldOverlayRenderer implements IKeyStateTracker {
@@ -42,10 +42,19 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
     public static void render(float frame) {
         GL11.glPushMatrix();
         Entity entity = Minecraft.getMinecraft().renderViewEntity;
-        RenderUtils.translateToWorldCoords(entity, frame);
 
-        renderChunkBounds(entity);
-        renderMobSpawnOverlay(entity);
+        double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * frame;
+        double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * frame;
+        double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * frame;
+
+        int intOffsetX = (int) interpPosX;
+        int intOffsetY = (int) interpPosY;
+        int intOffsetZ = (int) interpPosZ;
+
+        GL11.glTranslated(-interpPosX + intOffsetX, -interpPosY + intOffsetY, -interpPosZ + intOffsetZ);
+
+        renderChunkBounds(entity, intOffsetX, intOffsetY, intOffsetZ);
+        renderMobSpawnOverlay(entity, intOffsetX, intOffsetY, intOffsetZ);
         GL11.glPopMatrix();
     }
 
@@ -86,7 +95,7 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
         }
     }
 
-    private static void renderMobSpawnOverlay(Entity entity) {
+    private static void renderMobSpawnOverlay(Entity entity, int intOffsetX, int intOffsetY, int intOffsetZ) {
         if (mobOverlay == 0) {
             if (mobSpawnCache != null) {
                 mobSpawnCache = null;
@@ -105,15 +114,17 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glLineWidth(1.5F);
-        GL11.glBegin(GL11.GL_LINES);
 
         GL11.glColor4f(1, 0, 0, 1);
         int curSpawnMode = 2;
 
         World world = entity.worldObj;
-        int x1 = (int) entity.posX;
-        int z1 = (int) entity.posZ;
-        int y1 = (int) MathHelper.clip(entity.posY, 16, world.getHeight() - 16);
+        int x1 = (int) entity.posX - intOffsetX;
+        int z1 = (int) entity.posZ - intOffsetZ;
+        int y1 = (int) MathHelper.clip(entity.posY, 16, world.getHeight() - 16) - intOffsetY;
+
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawing(GL11.GL_LINES);
 
         for (int i = 0; i <= 32; i++) {
             int x = x1 - 16 + i;
@@ -132,22 +143,22 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
 
                     if (spawnMode != curSpawnMode) {
                         if (spawnMode == 1) {
-                            GL11.glColor4f(1, 1, 0, 1);
+                            tess.setColorOpaque(255, 255, 0);
                         } else {
-                            GL11.glColor4f(1, 0, 0, 1);
+                            tess.setColorOpaque(255, 0, 0);
                         }
                         curSpawnMode = spawnMode;
                     }
 
-                    GL11.glVertex3d(x, y + 0.02, z);
-                    GL11.glVertex3d(x + 1, y + 0.02, z + 1);
-                    GL11.glVertex3d(x + 1, y + 0.02, z);
-                    GL11.glVertex3d(x, y + 0.02, z + 1);
+                    tess.addVertex(x, y + 0.02, z);
+                    tess.addVertex(x + 1, y + 0.02, z + 1);
+                    tess.addVertex(x + 1, y + 0.02, z);
+                    tess.addVertex(x, y + 0.02, z + 1);
                 }
             }
         }
 
-        GL11.glEnd();
+        tess.draw();
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
@@ -157,8 +168,8 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
     private static final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
 
     private static byte getSpawnMode(Chunk chunk, int x, int y, int z) {
-        if (!SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, chunk.worldObj, x, y, z)
-                || chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15) >= 8) {
+        if (chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15) >= 8
+                || !SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, chunk.worldObj, x, y, z)) {
             return 0;
         }
 
@@ -176,7 +187,7 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
         return (byte) (chunk.getSavedLightValue(EnumSkyBlock.Sky, x & 15, y, z & 15) >= 8 ? 1 : 2);
     }
 
-    private static void renderChunkBounds(Entity entity) {
+    private static void renderChunkBounds(Entity entity, int intOffsetX, int intOffsetY, int intOffsetZ) {
         if (chunkOverlay == 0) return;
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -187,8 +198,8 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
         GL11.glBegin(GL11.GL_LINES);
 
         for (int cx = -4; cx <= 4; cx++) for (int cz = -4; cz <= 4; cz++) {
-            double x1 = (entity.chunkCoordX + cx) << 4;
-            double z1 = (entity.chunkCoordZ + cz) << 4;
+            double x1 = ((entity.chunkCoordX + cx) << 4) - intOffsetX;
+            double z1 = ((entity.chunkCoordZ + cz) << 4) - intOffsetZ;
             double x2 = x1 + 16;
             double z2 = z1 + 16;
 
@@ -204,6 +215,9 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
                 y2 = entity.worldObj.getHeight();
                 y1 = y2 - dy;
             }
+
+            y1 -= intOffsetY;
+            y2 -= intOffsetY;
 
             double dist = Math.pow(1.5, -(cx * cx + cz * cz));
 
@@ -240,6 +254,9 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
                         y1 = y2 - dy;
                     }
 
+                    y1 -= intOffsetY;
+                    y2 -= intOffsetY;
+
                     GL11.glColor4d(0, 0.9, 0, 0.4);
                     for (double y = (int) y1; y <= y2; y++) {
                         GL11.glVertex3d(x2, y, z1);
@@ -262,8 +279,10 @@ public class WorldOverlayRenderer implements IKeyStateTracker {
                         GL11.glVertex3d(x2, y2, z1 + h);
                     }
                 } else if (chunkOverlay == 3) {
-                    int gx1 = ((entity.chunkCoordX < 0 ? entity.chunkCoordX - 3 : entity.chunkCoordX) / 3 * 3) << 4;
-                    int gz1 = ((entity.chunkCoordZ < 0 ? entity.chunkCoordZ - 3 : entity.chunkCoordZ) / 3 * 3) << 4;
+                    int gx1 = (((entity.chunkCoordX < 0 ? entity.chunkCoordX - 3 : entity.chunkCoordX) / 3 * 3) << 4)
+                            - intOffsetX;
+                    int gz1 = (((entity.chunkCoordZ < 0 ? entity.chunkCoordZ - 3 : entity.chunkCoordZ) / 3 * 3) << 4)
+                            - intOffsetZ;
                     if (entity.chunkCoordX < 0) {
                         gx1 += 16;
                     }
