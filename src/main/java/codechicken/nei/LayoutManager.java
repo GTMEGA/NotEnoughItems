@@ -359,11 +359,18 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 this.icons[2] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 64, 0, 16, 16).build();
             }
 
+            private boolean getIsAccessibleControlEventKey() {
+                if (Minecraft.isRunningOnMac) {
+                    return Keyboard.getEventKey() == Keyboard.KEY_LMETA || Keyboard.getEventKey() == Keyboard.KEY_RMETA;
+                }
+                return Keyboard.getEventKey() == Keyboard.KEY_LCONTROL
+                        || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL;
+            }
+
             @Override
             public boolean onButtonPress(boolean rightclick) {
                 if (!rightclick) {
-                    if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL
-                            || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+                    if (Keyboard.getEventKeyState() && getIsAccessibleControlEventKey()) {
                         NEIClientConfig.cycleSetting("inventory.cheatmode", 3);
                     } else {
                         if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT

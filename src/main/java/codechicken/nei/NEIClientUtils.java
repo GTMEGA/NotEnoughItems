@@ -251,6 +251,9 @@ public class NEIClientUtils extends NEIServerUtils {
     }
 
     public static boolean controlKey() {
+        if (Minecraft.isRunningOnMac) {
+            return Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA);
+        }
         return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
     }
 
