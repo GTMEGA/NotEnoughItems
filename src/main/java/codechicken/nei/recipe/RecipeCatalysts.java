@@ -13,8 +13,10 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
@@ -227,6 +229,20 @@ public class RecipeCatalysts {
             }
         }
 
+        if (!catalystsAdderFromIMC.isEmpty()) {
+            // If we're getting an IMC message, it probably means it should match
+            Set<String> handlerIds = new HashSet<>(GuiRecipeTab.handlerMap.keySet());
+            catalystsAdderFromIMC.keySet().forEach(handlerName -> {
+                if (!handlerIds.contains(handlerName)) {
+                    NEIClientConfig.logger.warn("Could not find a registered handlerID that matches " + handlerName);
+                    handlerIds.forEach(handler -> {
+                        if (handler.equalsIgnoreCase(handlerName)) {
+                            NEIClientConfig.logger.warn("  -- Did you mean: " + handler);
+                        }
+                    });
+                }
+            });
+        }
         for (Map.Entry<String, List<ItemStack>> entry : catalystsRemoverFromAPI.entrySet()) {
             String handlerID = entry.getKey();
             if (recipeCatalystMap.containsKey(handlerID)) {

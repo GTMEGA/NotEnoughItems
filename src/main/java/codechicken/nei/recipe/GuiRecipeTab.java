@@ -282,6 +282,20 @@ public abstract class GuiRecipeTab extends Widget {
         handlerMap.keySet().removeAll(handlerRemoverFromIMC);
         handlerMap.putAll(handlerAdderFromIMC);
 
+        if (!handlerAdderFromIMC.isEmpty()) {
+            // If we're getting an IMC message, it probably means it should match
+            Set<String> handlerIds = new HashSet<>(handlerMap.keySet());
+            handlerAdderFromIMC.keySet().forEach(handlerName -> {
+                if (!handlerIds.contains(handlerName)) {
+                    NEIClientConfig.logger.warn("Could not find a registered handlerID that matches " + handlerName);
+                    handlerIds.forEach(handler -> {
+                        if (handler.equalsIgnoreCase(handlerName)) {
+                            NEIClientConfig.logger.warn("  -- Did you mean: " + handler);
+                        }
+                    });
+                }
+            });
+        }
         NEIClientConfig.logger.info("Sending {}", NEIRegisterHandlerInfosEvent.class.getSimpleName());
         MinecraftForge.EVENT_BUS.post(new NEIRegisterHandlerInfosEvent());
     }
