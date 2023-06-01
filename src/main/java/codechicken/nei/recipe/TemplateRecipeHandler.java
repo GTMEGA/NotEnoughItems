@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -210,7 +211,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
                 for (int i = 0; i < stack.items.length; i++) {
                     if (NEIServerUtils.areStacksSameTypeCrafting(ingredient, stack.items[i])) {
                         stack.item = stack.items[i];
-                        stack.item.setItemDamage(ingredient.getItemDamage());
+                        Items.feather.setDamage(stack.item, Items.feather.getDamage(ingredient));
                         if (ingredient.hasTagCompound()) {
                             stack.item.setTagCompound((NBTTagCompound) ingredient.getTagCompound().copy());
                         }
