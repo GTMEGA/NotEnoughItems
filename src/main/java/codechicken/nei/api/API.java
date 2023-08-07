@@ -14,6 +14,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Sets;
 
+import codechicken.nei.BookmarkContainerInfo;
 import codechicken.nei.ItemList;
 import codechicken.nei.ItemSorter;
 import codechicken.nei.ItemStackSet;
@@ -388,6 +389,11 @@ public class API {
 
     public static void removeRecipeCatalyst(ItemStack stack, String handlerID) {
         RecipeCatalysts.removeRecipeCatalyst(handlerID, stack);
+    }
+
+    public static void registerBookmarkContainerHandler(Class<? extends GuiContainer> gui,
+            IBookmarkContainerHandler handler) {
+        BookmarkContainerInfo.registerBookmarkContainerHandler(gui, handler);
     }
 
     @Deprecated
