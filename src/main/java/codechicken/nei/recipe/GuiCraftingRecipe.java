@@ -2,6 +2,7 @@ package codechicken.nei.recipe;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
