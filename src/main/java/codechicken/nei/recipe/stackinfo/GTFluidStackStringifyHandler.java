@@ -1,13 +1,14 @@
 package codechicken.nei.recipe.stackinfo;
 
-import codechicken.nei.api.IStackStringifyHandler;
+import java.lang.reflect.Method;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.lang.reflect.Method;
+import codechicken.nei.api.IStackStringifyHandler;
 
 public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
 

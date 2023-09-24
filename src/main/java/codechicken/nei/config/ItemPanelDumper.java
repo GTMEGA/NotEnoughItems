@@ -1,10 +1,11 @@
 package codechicken.nei.config;
 
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanels;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.guihook.GuiContainerManager;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,11 +15,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanels;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.guihook.GuiContainerManager;
 
 public class ItemPanelDumper extends DataDumper {
 

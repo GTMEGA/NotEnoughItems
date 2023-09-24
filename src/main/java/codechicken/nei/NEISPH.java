@@ -1,12 +1,11 @@
 package codechicken.nei;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.SlotDummy;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
-import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
+import static codechicken.nei.PacketIDs.C2S;
+import static codechicken.nei.PacketIDs.S2C;
+
+import java.util.LinkedList;
+import java.util.Set;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryBasic;
@@ -17,11 +16,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 
-import java.util.LinkedList;
-import java.util.Set;
-
-import static codechicken.nei.PacketIDs.C2S;
-import static codechicken.nei.PacketIDs.S2C;
+import codechicken.core.CommonUtils;
+import codechicken.core.ServerUtils;
+import codechicken.lib.inventory.SlotDummy;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.relauncher.Side;
 
 public class NEISPH implements IServerPacketHandler {
 

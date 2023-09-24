@@ -1,12 +1,14 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.api.INEIGuiAdapter;
-import codechicken.nei.drawable.GuiElementDuex;
-import codechicken.nei.drawable.GuiElementScalable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.util.Rectangle;
+
+import codechicken.nei.api.INEIGuiAdapter;
+import codechicken.nei.drawable.GuiElementDuex;
+import codechicken.nei.drawable.GuiElementScalable;
 
 public class GuiRecipeCatalyst extends INEIGuiAdapter {
 

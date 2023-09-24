@@ -1,14 +1,16 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.api.IRecipeOverlayRenderer;
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+
 import org.lwjgl.input.Keyboard;
 
-import java.util.List;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.api.IRecipeOverlayRenderer;
 
 /**
  * Do not implement this. Implement one of it's subinterfaces, either {@link ICraftingHandler} or {@link IUsageHandler}

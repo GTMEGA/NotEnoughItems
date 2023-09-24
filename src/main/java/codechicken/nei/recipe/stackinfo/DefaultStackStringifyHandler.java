@@ -1,13 +1,14 @@
 package codechicken.nei.recipe.stackinfo;
 
-import codechicken.nei.api.IStackStringifyHandler;
-import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
+
+import codechicken.nei.api.IStackStringifyHandler;
+import cpw.mods.fml.common.registry.GameData;
 
 public class DefaultStackStringifyHandler implements IStackStringifyHandler {
 

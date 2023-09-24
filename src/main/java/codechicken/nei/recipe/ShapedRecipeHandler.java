@@ -1,5 +1,18 @@
 package codechicken.nei.recipe;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+
 import codechicken.core.ReflectionManager;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
@@ -9,18 +22,6 @@ import codechicken.nei.api.DefaultOverlayRenderer;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.api.IStackPositioner;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import java.awt.Rectangle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShapedRecipeHandler extends TemplateRecipeHandler {
 

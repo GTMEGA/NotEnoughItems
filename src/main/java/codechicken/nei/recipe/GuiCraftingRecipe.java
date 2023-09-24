@@ -1,20 +1,20 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.ItemPanels;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.PositionedStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
-
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
+
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.ItemPanels;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
 
 public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
 

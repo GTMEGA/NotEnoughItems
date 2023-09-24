@@ -1,11 +1,11 @@
 package codechicken.nei.api;
 
+import java.util.HashSet;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-
-import java.util.HashSet;
 
 public class TaggedInventoryArea {
 

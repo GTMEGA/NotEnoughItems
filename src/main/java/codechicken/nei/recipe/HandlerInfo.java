@@ -1,11 +1,12 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class HandlerInfo {
 

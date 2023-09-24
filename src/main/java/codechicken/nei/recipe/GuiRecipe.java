@@ -1,5 +1,30 @@
 package codechicken.nei.recipe;
 
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.GuiNEIButton;
 import codechicken.nei.LayoutManager;
@@ -19,30 +44,6 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.guihook.IGuiHandleMouseWheel;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import java.awt.Rectangle;
-import java.awt.Point;
-
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static codechicken.lib.gui.GuiDraw.fontRenderer;
 
 public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer implements IGuiContainerOverlay,
         IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler, INEIGuiHandler {

@@ -1,11 +1,12 @@
 package codechicken.nei.util;
 
+import java.util.Set;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-
-import javax.annotation.Nullable;
-import java.util.Set;
 
 public class NBTHelper {
 

@@ -1,13 +1,14 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.NEICPH;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.api.INEIGuiAdapter;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
 public class CheatItemHandler extends INEIGuiAdapter {
 

@@ -1,29 +1,30 @@
 package codechicken.nei.config;
 
-import codechicken.core.gui.GuiCCButton;
-import codechicken.core.gui.GuiScreenWidget;
-import codechicken.core.gui.GuiScrollSlot;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.LayoutManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.awt.Rectangle;
-import java.awt.Dimension;
-import java.awt.Point;
-
 import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.fontRenderer;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static net.minecraft.util.StatCollector.translateToLocal;
+
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+import codechicken.core.gui.GuiCCButton;
+import codechicken.core.gui.GuiScreenWidget;
+import codechicken.core.gui.GuiScrollSlot;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.LayoutManager;
 
 public class GuiOptionList extends GuiScreenWidget {
 

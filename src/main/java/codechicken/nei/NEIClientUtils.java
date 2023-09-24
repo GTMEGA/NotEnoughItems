@@ -1,26 +1,12 @@
 package codechicken.nei;
 
-import codechicken.lib.inventory.InventoryRange;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.util.LangProxy;
-import codechicken.nei.api.GuiInfo;
-import codechicken.nei.api.IInfiniteItemHandler;
-import codechicken.nei.api.ItemInfo;
-import com.google.common.collect.Iterables;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
+import static codechicken.nei.NEIClientConfig.canCheatItem;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
+import static codechicken.nei.NEIClientConfig.getStringArrSetting;
+import static codechicken.nei.NEIClientConfig.getStringSetting;
+import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
+import static codechicken.nei.NEIClientConfig.invCreativeMode;
+import static codechicken.nei.NEIClientConfig.world;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,13 +27,30 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static codechicken.nei.NEIClientConfig.canCheatItem;
-import static codechicken.nei.NEIClientConfig.canPerformAction;
-import static codechicken.nei.NEIClientConfig.getStringArrSetting;
-import static codechicken.nei.NEIClientConfig.getStringSetting;
-import static codechicken.nei.NEIClientConfig.hasSMPCounterPart;
-import static codechicken.nei.NEIClientConfig.invCreativeMode;
-import static codechicken.nei.NEIClientConfig.world;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.Iterables;
+
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.util.LangProxy;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.IInfiniteItemHandler;
+import codechicken.nei.api.ItemInfo;
 
 public class NEIClientUtils extends NEIServerUtils {
 

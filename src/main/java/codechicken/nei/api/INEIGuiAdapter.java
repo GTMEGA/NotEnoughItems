@@ -1,13 +1,14 @@
 package codechicken.nei.api;
 
-import codechicken.nei.VisiblityData;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
+import codechicken.nei.VisiblityData;
 
 /**
  * Lets you just override those things you want to

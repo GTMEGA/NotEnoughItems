@@ -1,27 +1,28 @@
 package codechicken.nei;
 
-import codechicken.lib.config.ConfigTag;
-import codechicken.nei.KeyManager.IKeyStateTracker;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.StackInfo;
+import static codechicken.lib.gui.GuiDraw.displaySize;
+import static codechicken.lib.gui.GuiDraw.drawString;
+import static codechicken.lib.gui.GuiDraw.drawTooltipBox;
+import static codechicken.lib.gui.GuiDraw.getStringWidth;
+
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import java.awt.Dimension;
-import java.awt.Point;
 
-
-import java.util.List;
-
-import static codechicken.lib.gui.GuiDraw.displaySize;
-import static codechicken.lib.gui.GuiDraw.drawString;
-import static codechicken.lib.gui.GuiDraw.drawTooltipBox;
-import static codechicken.lib.gui.GuiDraw.getStringWidth;
+import codechicken.lib.config.ConfigTag;
+import codechicken.nei.KeyManager.IKeyStateTracker;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.StackInfo;
 
 public class HUDRenderer implements IKeyStateTracker {
 

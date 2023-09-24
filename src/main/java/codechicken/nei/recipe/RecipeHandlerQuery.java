@@ -1,19 +1,20 @@
 package codechicken.nei.recipe;
 
-import codechicken.core.TaskProfiler;
-import codechicken.nei.ItemList;
-import codechicken.nei.NEIClientConfig;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import codechicken.core.TaskProfiler;
+import codechicken.nei.ItemList;
+import codechicken.nei.NEIClientConfig;
 
 class RecipeHandlerQuery<T extends IRecipeHandler> {
 

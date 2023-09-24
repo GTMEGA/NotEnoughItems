@@ -1,10 +1,11 @@
 package codechicken.nei.api;
 
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.config.OptionCycled;
+import java.util.LinkedList;
+
 import net.minecraft.world.World;
 
-import java.util.LinkedList;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.config.OptionCycled;
 
 public class NEIInfo {
 

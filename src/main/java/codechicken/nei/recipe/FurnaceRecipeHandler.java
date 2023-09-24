@@ -1,20 +1,20 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import java.awt.Rectangle;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
 
 public class FurnaceRecipeHandler extends TemplateRecipeHandler {
 

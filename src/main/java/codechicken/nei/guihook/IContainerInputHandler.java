@@ -1,6 +1,7 @@
 package codechicken.nei.guihook;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+
 import org.lwjgl.input.Keyboard;
 
 public interface IContainerInputHandler {

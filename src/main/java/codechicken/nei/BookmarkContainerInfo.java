@@ -1,11 +1,12 @@
 package codechicken.nei;
 
-import codechicken.nei.api.API;
-import codechicken.nei.api.IBookmarkContainerHandler;
+import java.util.HashMap;
+
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import java.util.HashMap;
+import codechicken.nei.api.API;
+import codechicken.nei.api.IBookmarkContainerHandler;
 
 public class BookmarkContainerInfo {
 

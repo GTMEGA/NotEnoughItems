@@ -1,11 +1,12 @@
 package codechicken.nei.recipe;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
 import codechicken.nei.ItemPanels;
 import codechicken.nei.api.ShortcutInputHandler;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
 
 public class RecipeItemInputHandler implements IContainerInputHandler {
 

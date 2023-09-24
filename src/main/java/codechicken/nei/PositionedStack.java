@@ -1,12 +1,12 @@
 package codechicken.nei;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Simply an {@link ItemStack} with position. Mainly used in the recipe handlers.

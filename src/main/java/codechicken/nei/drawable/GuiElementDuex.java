@@ -1,9 +1,11 @@
 package codechicken.nei.drawable;
 
+import net.minecraft.client.gui.GuiScreen;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.opengl.GL11;
 
 /*
  * Taken from Mantle 1.12-1.3.3.49 under the MIT License The MIT License (MIT) Copyright (c) 2013-2014 Slime Knights

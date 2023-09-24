@@ -1,36 +1,5 @@
 package codechicken.nei;
 
-import codechicken.core.ClientUtils;
-import codechicken.core.GuiModListScroll;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.nei.api.API;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.recipe.GuiRecipeTab;
-import codechicken.nei.recipe.StackInfo;
-import com.google.common.collect.Lists;
-import cpw.mods.fml.client.CustomModLoadingErrorDisplayException;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiErrorScreen;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiSelectWorld;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.IOUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,6 +14,40 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSelectWorld;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.MinecraftForge;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
+
+import com.google.common.collect.Lists;
+
+import codechicken.core.ClientUtils;
+import codechicken.core.GuiModListScroll;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.nei.api.API;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.StackInfo;
+import cpw.mods.fml.client.CustomModLoadingErrorDisplayException;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientHandler {
 

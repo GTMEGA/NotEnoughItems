@@ -1,13 +1,14 @@
 package codechicken.nei.config;
 
-import codechicken.lib.config.ConfigTag;
-import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
-import java.util.List;
+import codechicken.lib.config.ConfigTag;
+import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
 
 public abstract class Option {
 

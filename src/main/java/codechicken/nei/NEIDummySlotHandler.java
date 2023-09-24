@@ -1,11 +1,12 @@
 package codechicken.nei;
 
-import codechicken.lib.inventory.ContainerExtended;
-import codechicken.lib.inventory.SlotDummy;
-import codechicken.nei.api.INEIGuiAdapter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import codechicken.lib.inventory.ContainerExtended;
+import codechicken.lib.inventory.SlotDummy;
+import codechicken.nei.api.INEIGuiAdapter;
 
 public class NEIDummySlotHandler extends INEIGuiAdapter {
 

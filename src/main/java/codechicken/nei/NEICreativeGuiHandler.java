@@ -1,9 +1,10 @@
 package codechicken.nei;
 
-import codechicken.nei.api.INEIGuiAdapter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.creativetab.CreativeTabs;
+
+import codechicken.nei.api.INEIGuiAdapter;
 
 public class NEICreativeGuiHandler extends INEIGuiAdapter {
 

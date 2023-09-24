@@ -2,6 +2,7 @@ package codechicken.nei;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+
 import org.lwjgl.input.Keyboard;
 
 public abstract class TextField extends Widget {

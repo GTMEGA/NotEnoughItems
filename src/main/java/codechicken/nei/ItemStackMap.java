@@ -1,18 +1,19 @@
 package codechicken.nei;
 
-import com.google.common.base.Objects;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import static codechicken.lib.inventory.InventoryUtils.actualDamage;
+import static codechicken.lib.inventory.InventoryUtils.newItemStack;
+import static net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static codechicken.lib.inventory.InventoryUtils.actualDamage;
-import static codechicken.lib.inventory.InventoryUtils.newItemStack;
-import static net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import com.google.common.base.Objects;
 
 /**
  * A maplike class for ItemStack keys with wildcard damage/NBT. Optimised for lookup

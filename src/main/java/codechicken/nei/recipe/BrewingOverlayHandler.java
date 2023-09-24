@@ -1,10 +1,11 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.PositionedStack;
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
-import java.util.List;
+import codechicken.nei.PositionedStack;
 
 public class BrewingOverlayHandler extends DefaultOverlayHandler {
 

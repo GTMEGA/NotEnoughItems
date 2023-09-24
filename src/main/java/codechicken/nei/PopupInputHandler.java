@@ -1,9 +1,10 @@
 package codechicken.nei;
 
-import codechicken.nei.guihook.IContainerInputHandler;
+import static codechicken.nei.NEIClientConfig.canPerformAction;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import static codechicken.nei.NEIClientConfig.canPerformAction;
+import codechicken.nei.guihook.IContainerInputHandler;
 
 public class PopupInputHandler implements IContainerInputHandler {
 

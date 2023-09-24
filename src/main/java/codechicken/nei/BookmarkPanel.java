@@ -1,28 +1,11 @@
 package codechicken.nei;
 
-import codechicken.core.CommonUtils;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.api.IBookmarkContainerHandler;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.BookmarkRecipeId;
-import codechicken.nei.recipe.StackInfo;
-import codechicken.nei.util.NBTJson;
-import codechicken.nei.util.ReadableNumberConverter;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.opengl.GL11;
+import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.nei.NEIClientUtils.getGuiContainer;
+import static codechicken.nei.NEIClientUtils.translate;
 
-import javax.annotation.Nullable;
 import java.awt.Point;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,10 +19,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import static codechicken.lib.gui.GuiDraw.drawRect;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-import static codechicken.nei.NEIClientUtils.getGuiContainer;
-import static codechicken.nei.NEIClientUtils.translate;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.opengl.GL11;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+
+import codechicken.core.CommonUtils;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.api.IBookmarkContainerHandler;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.BookmarkRecipeId;
+import codechicken.nei.recipe.StackInfo;
+import codechicken.nei.util.NBTJson;
+import codechicken.nei.util.ReadableNumberConverter;
 
 public class BookmarkPanel extends PanelWidget {
 

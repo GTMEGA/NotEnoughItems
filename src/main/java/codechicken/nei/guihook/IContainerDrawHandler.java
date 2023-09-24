@@ -1,9 +1,9 @@
 package codechicken.nei.guihook;
 
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
-
-import java.util.List;
 
 public interface IContainerDrawHandler {
 

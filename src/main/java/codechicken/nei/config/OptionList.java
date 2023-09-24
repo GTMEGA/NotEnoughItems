@@ -1,12 +1,13 @@
 package codechicken.nei.config;
 
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
 
 public class OptionList extends OptionButton {
 

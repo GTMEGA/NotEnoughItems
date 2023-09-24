@@ -1,7 +1,5 @@
 package codechicken.nei;
 
-import codechicken.core.ClientUtils;
-import codechicken.lib.render.CCRenderState;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,8 +11,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import codechicken.core.ClientUtils;
+import codechicken.lib.render.CCRenderState;
 
 public class SpawnerRenderer implements IItemRenderer {
 

@@ -1,10 +1,5 @@
 package codechicken.nei;
 
-import codechicken.nei.api.LayoutStyle;
-import codechicken.nei.drawable.DrawableBuilder;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import org.lwjgl.opengl.GL11;
-
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.LayoutManager.bookmarkPanel;
 import static codechicken.nei.LayoutManager.bookmarksButton;
@@ -24,6 +19,13 @@ import static codechicken.nei.NEIClientConfig.canPerformAction;
 import static codechicken.nei.NEIClientConfig.disabledActions;
 import static codechicken.nei.NEIClientConfig.getMagnetMode;
 import static codechicken.nei.NEIClientConfig.isEnabled;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+
+import org.lwjgl.opengl.GL11;
+
+import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.drawable.DrawableBuilder;
 
 public class LayoutStyleMinecraft extends LayoutStyle {
 

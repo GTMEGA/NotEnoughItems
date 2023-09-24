@@ -1,12 +1,14 @@
 package codechicken.nei.api;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.guihook.GuiContainerManager;
-import net.minecraft.inventory.Slot;
-import org.lwjgl.opengl.GL11;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.inventory.Slot;
+
+import org.lwjgl.opengl.GL11;
+
+import codechicken.nei.PositionedStack;
+import codechicken.nei.guihook.GuiContainerManager;
 
 public class DefaultOverlayRenderer implements IRecipeOverlayRenderer {
 

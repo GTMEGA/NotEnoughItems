@@ -1,13 +1,23 @@
 package codechicken.nei;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.util.EnumChatFormatting;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 import codechicken.core.CommonUtils;
 import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.asm.NEICorePlugin;
 import codechicken.nei.config.IMCHandler;
 import codechicken.nei.recipe.GuiRecipeTab;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.FMLFileResourcePack;
 import cpw.mods.fml.client.FMLFolderResourcePack;
 import cpw.mods.fml.common.DummyModContainer;
@@ -21,14 +31,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
-import net.minecraft.util.EnumChatFormatting;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 public class NEIModContainer extends DummyModContainer {
 

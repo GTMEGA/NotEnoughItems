@@ -1,25 +1,8 @@
 package codechicken.nei;
 
-import codechicken.core.gui.GuiScrollSlot;
-import codechicken.lib.gui.GuiDraw;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemList.AnyMultiItemFilter;
-import codechicken.nei.ItemList.ItemsLoadedCallback;
-import codechicken.nei.ItemList.NothingItemFilter;
-import codechicken.nei.SearchField.ISearchProvider;
-import codechicken.nei.api.API;
-import codechicken.nei.api.ItemFilter;
-import codechicken.nei.api.ItemFilter.ItemFilterProvider;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.guihook.GuiContainerManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumChatFormatting;
+import static codechicken.nei.NEIClientUtils.translate;
+
 import java.awt.Point;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +16,24 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
-import static codechicken.nei.NEIClientUtils.translate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
+
+import codechicken.core.gui.GuiScrollSlot;
+import codechicken.lib.gui.GuiDraw;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemList.AnyMultiItemFilter;
+import codechicken.nei.ItemList.ItemsLoadedCallback;
+import codechicken.nei.ItemList.NothingItemFilter;
+import codechicken.nei.SearchField.ISearchProvider;
+import codechicken.nei.api.API;
+import codechicken.nei.api.ItemFilter;
+import codechicken.nei.api.ItemFilter.ItemFilterProvider;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.guihook.GuiContainerManager;
 
 public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoadedCallback, ISearchProvider {
 

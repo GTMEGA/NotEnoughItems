@@ -1,10 +1,14 @@
 package codechicken.nei.recipe;
 
-import codechicken.nei.ItemStackSet;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.api.API;
+import static net.minecraft.init.Items.potionitem;
+
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemPotion;
@@ -12,16 +16,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
-import java.awt.Rectangle;
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import static net.minecraft.init.Items.potionitem;
+import codechicken.nei.ItemStackSet;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.API;
 
 public class BrewingRecipeHandler extends TemplateRecipeHandler {
 

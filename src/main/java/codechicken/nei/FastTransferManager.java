@@ -1,19 +1,20 @@
 package codechicken.nei;
 
-import codechicken.nei.guihook.GuiContainerManager;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import static codechicken.nei.NEIServerUtils.areStacksIdentical;
+import static codechicken.nei.NEIServerUtils.areStacksSameType;
+import static codechicken.nei.NEIServerUtils.copyStack;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import static codechicken.nei.NEIServerUtils.areStacksIdentical;
-import static codechicken.nei.NEIServerUtils.areStacksSameType;
-import static codechicken.nei.NEIServerUtils.copyStack;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
+import codechicken.nei.guihook.GuiContainerManager;
 
 public class FastTransferManager {
 

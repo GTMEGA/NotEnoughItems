@@ -1,9 +1,10 @@
 package codechicken.nei;
 
-import codechicken.lib.vec.Rectangle4i;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 
-import java.util.List;
+import codechicken.lib.vec.Rectangle4i;
 
 public abstract class Widget {
 

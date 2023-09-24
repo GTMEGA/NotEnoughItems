@@ -1,37 +1,5 @@
 package codechicken.nei;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.KeyManager.IKeyStateTracker;
-import codechicken.nei.api.API;
-import codechicken.nei.api.GuiInfo;
-import codechicken.nei.api.IRecipeOverlayRenderer;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.api.LayoutStyle;
-import codechicken.nei.drawable.DrawableBuilder;
-import codechicken.nei.drawable.DrawableResource;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.guihook.IContainerDrawHandler;
-import codechicken.nei.guihook.IContainerInputHandler;
-import codechicken.nei.guihook.IContainerObjectHandler;
-import codechicken.nei.guihook.IContainerTooltipHandler;
-import codechicken.nei.recipe.GuiRecipeTab;
-import codechicken.nei.recipe.RecipeCatalysts;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-
 import static codechicken.lib.gui.GuiDraw.changeTexture;
 import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
@@ -63,6 +31,40 @@ import static codechicken.nei.NEIClientUtils.shiftKey;
 import static codechicken.nei.NEIClientUtils.toggleMagnetMode;
 import static codechicken.nei.NEIClientUtils.toggleRaining;
 import static codechicken.nei.NEIClientUtils.translate;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeSet;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.KeyManager.IKeyStateTracker;
+import codechicken.nei.api.API;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.api.IRecipeOverlayRenderer;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.api.LayoutStyle;
+import codechicken.nei.drawable.DrawableBuilder;
+import codechicken.nei.drawable.DrawableResource;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IContainerDrawHandler;
+import codechicken.nei.guihook.IContainerInputHandler;
+import codechicken.nei.guihook.IContainerObjectHandler;
+import codechicken.nei.guihook.IContainerTooltipHandler;
+import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.RecipeCatalysts;
 
 public class LayoutManager implements IContainerInputHandler, IContainerTooltipHandler, IContainerDrawHandler,
         IContainerObjectHandler, IKeyStateTracker {

@@ -1,20 +1,22 @@
 package codechicken.nei.config;
 
-import codechicken.core.CommonUtils;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.LayoutManager;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
-import org.lwjgl.opengl.GL11;
+import static codechicken.lib.gui.GuiDraw.drawString;
+import static codechicken.lib.gui.GuiDraw.drawStringC;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static codechicken.lib.gui.GuiDraw.drawString;
-import static codechicken.lib.gui.GuiDraw.drawStringC;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
+
+import org.lwjgl.opengl.GL11;
+
+import codechicken.core.CommonUtils;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.LayoutManager;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
 
 public abstract class DataDumper extends Option {
 

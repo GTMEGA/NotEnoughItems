@@ -1,12 +1,11 @@
 package codechicken.nei.config;
 
+import java.awt.Rectangle;
+
 import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
-import java.awt.Rectangle;
-
-
 
 public class OptionToggleButtonBoubs extends OptionButton {
 

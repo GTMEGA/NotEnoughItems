@@ -1,11 +1,11 @@
 package codechicken.nei.api;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 public interface IHighlightHandler {
 

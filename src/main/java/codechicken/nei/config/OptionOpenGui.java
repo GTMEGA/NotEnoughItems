@@ -1,8 +1,9 @@
 package codechicken.nei.config;
 
-import codechicken.nei.NEIClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+
+import codechicken.nei.NEIClientConfig;
 
 public class OptionOpenGui extends OptionButton {
 
