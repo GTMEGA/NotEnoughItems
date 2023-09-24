@@ -5,7 +5,7 @@ import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;

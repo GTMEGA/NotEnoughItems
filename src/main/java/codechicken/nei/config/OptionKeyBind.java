@@ -3,7 +3,7 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 import org.lwjgl.input.Keyboard;
 

@@ -3,7 +3,7 @@ package codechicken.nei.config;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

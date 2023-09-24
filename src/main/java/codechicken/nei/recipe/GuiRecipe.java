@@ -2,8 +2,7 @@ package codechicken.nei.recipe;
 
 import static codechicken.lib.gui.GuiDraw.fontRenderer;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

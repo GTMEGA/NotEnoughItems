@@ -1,7 +1,11 @@
 package codechicken.nei;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import net.minecraft.util.EnumChatFormatting;
 

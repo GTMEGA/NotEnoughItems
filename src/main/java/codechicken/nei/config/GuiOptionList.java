@@ -6,9 +6,7 @@ import static codechicken.lib.gui.GuiDraw.fontRenderer;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static net.minecraft.util.StatCollector.translateToLocal;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;

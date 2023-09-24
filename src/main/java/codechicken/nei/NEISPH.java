@@ -1,6 +1,7 @@
 package codechicken.nei;
 
-import static codechicken.nei.PacketIDs.*;
+import static codechicken.nei.PacketIDs.C2S;
+import static codechicken.nei.PacketIDs.S2C;
 
 import java.util.LinkedList;
 import java.util.Set;

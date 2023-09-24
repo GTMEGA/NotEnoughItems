@@ -2,7 +2,7 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

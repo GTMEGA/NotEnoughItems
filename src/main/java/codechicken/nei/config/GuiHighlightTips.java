@@ -4,8 +4,7 @@ import static codechicken.lib.gui.GuiDraw.displaySize;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.nei.NEIClientUtils.translate;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 

@@ -4,8 +4,7 @@ import static codechicken.lib.gui.GuiDraw.changeTexture;
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

@@ -2,7 +2,7 @@ package codechicken.nei;
 
 import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.LinkedList;
 
 import net.minecraft.client.gui.inventory.GuiContainer;

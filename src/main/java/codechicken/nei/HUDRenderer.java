@@ -5,8 +5,7 @@ import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawTooltipBox;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;

@@ -1,6 +1,6 @@
 package codechicken.nei.config;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 import codechicken.nei.Image;
 import codechicken.nei.LayoutManager;

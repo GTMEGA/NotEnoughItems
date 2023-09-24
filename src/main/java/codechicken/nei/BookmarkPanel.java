@@ -5,7 +5,7 @@ import static codechicken.lib.gui.GuiDraw.getMousePosition;
 import static codechicken.nei.NEIClientUtils.getGuiContainer;
 import static codechicken.nei.NEIClientUtils.translate;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,7 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.annotation.Nullable;
 

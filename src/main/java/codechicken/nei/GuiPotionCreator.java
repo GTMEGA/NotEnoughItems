@@ -2,7 +2,7 @@ package codechicken.nei;
 
 import static codechicken.nei.NEIClientUtils.translate;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.ArrayList;
 
 import net.minecraft.entity.player.InventoryPlayer;

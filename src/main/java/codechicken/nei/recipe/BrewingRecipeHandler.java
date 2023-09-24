@@ -2,7 +2,7 @@ package codechicken.nei.recipe;
 
 import static net.minecraft.init.Items.potionitem;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
