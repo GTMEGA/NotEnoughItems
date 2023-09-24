@@ -1,14 +1,13 @@
 package codechicken.nei;
 
-import java.io.File;
-
+import codechicken.core.ServerUtils;
+import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.InventoryUtils;
+import java.io.File;
 
 public class PlayerSave {
 

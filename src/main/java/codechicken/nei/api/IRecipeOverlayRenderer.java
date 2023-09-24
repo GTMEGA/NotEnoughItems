@@ -1,8 +1,7 @@
 package codechicken.nei.api;
 
-import net.minecraft.inventory.Slot;
-
 import codechicken.nei.guihook.GuiContainerManager;
+import net.minecraft.inventory.Slot;
 
 public interface IRecipeOverlayRenderer {
 

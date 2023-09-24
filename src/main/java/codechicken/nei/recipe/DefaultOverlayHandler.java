@@ -1,21 +1,20 @@
 package codechicken.nei.recipe;
 
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.nei.FastTransferManager;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.IOverlayHandler;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.nei.FastTransferManager;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.api.IOverlayHandler;
 
 @SuppressWarnings("rawtypes, unchecked")
 public class DefaultOverlayHandler implements IOverlayHandler {

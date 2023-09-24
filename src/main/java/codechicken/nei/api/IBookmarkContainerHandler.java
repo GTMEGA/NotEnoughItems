@@ -1,9 +1,9 @@
 package codechicken.nei.api;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
 
 public interface IBookmarkContainerHandler {
 

@@ -1,12 +1,5 @@
 package codechicken.nei.api;
 
-import java.util.List;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Mouse;
-
 import codechicken.nei.ItemPanels;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.NEIClientConfig;
@@ -15,6 +8,11 @@ import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Mouse;
+
+import java.util.List;
 
 public abstract class ShortcutInputHandler {
 

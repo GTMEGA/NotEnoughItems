@@ -1,14 +1,5 @@
 package codechicken.nei;
 
-import static codechicken.nei.NEIClientConfig.world;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import net.minecraft.util.EnumChatFormatting;
-
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.ItemList.AnyMultiItemFilter;
 import codechicken.nei.ItemList.EverythingItemFilter;
@@ -17,6 +8,14 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.util.TextHistory;
+import net.minecraft.util.EnumChatFormatting;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import static codechicken.nei.NEIClientConfig.world;
 
 public class SearchField extends TextField implements ItemFilterProvider {
 

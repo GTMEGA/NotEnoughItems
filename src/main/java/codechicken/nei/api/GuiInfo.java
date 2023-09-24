@@ -1,14 +1,5 @@
 package codechicken.nei.api;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.NEIChestGuiHandler;
 import codechicken.nei.NEICreativeGuiHandler;
@@ -18,6 +9,14 @@ import codechicken.nei.recipe.CheatItemHandler;
 import codechicken.nei.recipe.FillFluidContainerHandler;
 import codechicken.nei.recipe.GuiRecipeCatalyst;
 import codechicken.nei.recipe.SearchInputDropHandler;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class GuiInfo {
 

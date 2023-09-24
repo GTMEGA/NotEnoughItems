@@ -1,9 +1,8 @@
 package codechicken.nei.event;
 
-import net.minecraftforge.common.MinecraftForge;
-
 import codechicken.nei.api.IConfigureNEI;
 import cpw.mods.fml.common.eventhandler.Event;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Event is posted from <font color=red>NEI Plugin Loader Thread</font> after all {@link IConfigureNEI} were loaded.

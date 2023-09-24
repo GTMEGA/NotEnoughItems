@@ -1,12 +1,11 @@
 package codechicken.nei.asm;
 
-import static org.objectweb.asm.Opcodes.POP;
-import static org.objectweb.asm.Opcodes.PUTSTATIC;
-
+import codechicken.lib.asm.ASMHelper;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import codechicken.lib.asm.ASMHelper;
+import static org.objectweb.asm.Opcodes.POP;
+import static org.objectweb.asm.Opcodes.PUTSTATIC;
 
 public class GuiContainerManagerAPITransformer extends ClassVisitor {
 

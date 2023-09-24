@@ -1,14 +1,14 @@
 package codechicken.nei.config;
 
-import static codechicken.lib.gui.GuiDraw.drawRect;
-import static codechicken.lib.gui.GuiDraw.drawStringC;
-
-import java.awt.*;
-
-import org.lwjgl.input.Keyboard;
-
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
+import org.lwjgl.input.Keyboard;
+import java.awt.Rectangle;
+
+
+
+import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.lib.gui.GuiDraw.drawStringC;
 
 public class OptionKeyBind extends OptionButton {
 

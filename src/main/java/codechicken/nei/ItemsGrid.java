@@ -1,16 +1,13 @@
 package codechicken.nei;
 
-import static codechicken.lib.gui.GuiDraw.drawRect;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.api.GuiInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.BookmarkRecipeId;
+import codechicken.nei.recipe.GuiCraftingRecipe;
+import codechicken.nei.recipe.GuiRecipe;
+import codechicken.nei.recipe.StackInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
@@ -21,18 +18,19 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import java.awt.Point;
 
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.api.GuiInfo;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.BookmarkRecipeId;
-import codechicken.nei.recipe.GuiCraftingRecipe;
-import codechicken.nei.recipe.GuiRecipe;
-import codechicken.nei.recipe.StackInfo;
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 public class ItemsGrid {
 

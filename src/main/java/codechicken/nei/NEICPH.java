@@ -1,8 +1,10 @@
 package codechicken.nei;
 
-import static codechicken.nei.PacketIDs.C2S;
-import static codechicken.nei.PacketIDs.S2C;
-
+import codechicken.core.ClientUtils;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
@@ -10,11 +12,8 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
-import codechicken.core.ClientUtils;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import cpw.mods.fml.relauncher.Side;
+import static codechicken.nei.PacketIDs.C2S;
+import static codechicken.nei.PacketIDs.S2C;
 
 public class NEICPH implements IClientPacketHandler {
 

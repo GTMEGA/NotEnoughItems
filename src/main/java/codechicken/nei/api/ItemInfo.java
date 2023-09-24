@@ -1,13 +1,26 @@
 package codechicken.nei.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
+import codechicken.core.featurehack.GameDataManipulator;
+import codechicken.nei.InfiniteStackSizeHandler;
+import codechicken.nei.InfiniteToolHandler;
+import codechicken.nei.ItemList;
+import codechicken.nei.ItemMobSpawner;
+import codechicken.nei.ItemStackMap;
+import codechicken.nei.ItemStackSet;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.PopupInputHandler;
+import codechicken.nei.config.ArrayDumper;
+import codechicken.nei.config.HandlerDumper;
+import codechicken.nei.config.ItemPanelDumper;
+import codechicken.nei.config.RegistryDumper;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.BrewingRecipeHandler;
+import codechicken.nei.recipe.RecipeItemInputHandler;
+import com.google.common.collect.ArrayListMultimap;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -39,28 +52,13 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.oredict.OreDictionary;
 
-import com.google.common.collect.ArrayListMultimap;
-
-import codechicken.core.featurehack.GameDataManipulator;
-import codechicken.nei.InfiniteStackSizeHandler;
-import codechicken.nei.InfiniteToolHandler;
-import codechicken.nei.ItemList;
-import codechicken.nei.ItemMobSpawner;
-import codechicken.nei.ItemStackMap;
-import codechicken.nei.ItemStackSet;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.PopupInputHandler;
-import codechicken.nei.config.ArrayDumper;
-import codechicken.nei.config.HandlerDumper;
-import codechicken.nei.config.ItemPanelDumper;
-import codechicken.nei.config.RegistryDumper;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.recipe.BrewingRecipeHandler;
-import codechicken.nei.recipe.RecipeItemInputHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is an internal class for storing information about items, to be accessed by the API

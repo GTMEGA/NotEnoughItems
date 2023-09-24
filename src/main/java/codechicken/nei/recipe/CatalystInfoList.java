@@ -1,17 +1,14 @@
 package codechicken.nei.recipe;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIServerUtils;
+import com.google.common.collect.ForwardingList;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import net.minecraft.item.ItemStack;
-
-import com.google.common.collect.ForwardingList;
-
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIServerUtils;
 
 // Do not directly extend ArrayList, see Effective Java Item 16
 public class CatalystInfoList extends ForwardingList<CatalystInfo> {

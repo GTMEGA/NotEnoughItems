@@ -1,25 +1,26 @@
 package codechicken.nei.config;
 
-import static codechicken.lib.gui.GuiDraw.displaySize;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-import static codechicken.nei.NEIClientUtils.translate;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-
-import org.lwjgl.input.Keyboard;
-
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.HUDRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
+import java.awt.Point;
+import java.awt.Dimension;
+
+
+
+import java.util.Arrays;
+import java.util.List;
+
+import static codechicken.lib.gui.GuiDraw.displaySize;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.nei.NEIClientUtils.translate;
 
 public class GuiHighlightTips extends GuiScreenWidget {
 

@@ -1,12 +1,11 @@
 package codechicken.nei.recipe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import net.minecraft.client.Minecraft;
-
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
+import net.minecraft.client.Minecraft;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GuiUsageRecipe extends GuiRecipe<IUsageHandler> {
 

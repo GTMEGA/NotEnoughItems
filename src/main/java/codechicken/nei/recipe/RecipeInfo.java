@@ -1,19 +1,17 @@
 package codechicken.nei.recipe;
 
-import java.util.HashMap;
-
+import codechicken.nei.OffsetPositioner;
+import codechicken.nei.api.API;
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.api.IStackPositioner;
+import com.google.common.base.Objects;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
 
-import com.google.common.base.Objects;
-
-import codechicken.nei.OffsetPositioner;
-import codechicken.nei.api.API;
-import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.api.IStackPositioner;
+import java.util.HashMap;
 
 public class RecipeInfo {
 

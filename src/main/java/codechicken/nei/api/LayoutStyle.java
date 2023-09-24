@@ -1,10 +1,9 @@
 package codechicken.nei.api;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
-
 import codechicken.nei.Button;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.guihook.GuiContainerManager;
+import net.minecraft.client.gui.inventory.GuiContainer;
 
 public abstract class LayoutStyle {
 

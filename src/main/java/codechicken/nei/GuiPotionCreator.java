@@ -1,25 +1,24 @@
 package codechicken.nei;
 
-import static codechicken.nei.NEIClientUtils.translate;
-
-import java.awt.*;
-import java.util.ArrayList;
-
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.StatCollector;
-
-import org.lwjgl.opengl.GL11;
-
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiCCTextField;
 import codechicken.core.gui.GuiScrollSlot;
 import codechicken.core.inventory.GuiContainerWidget;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.FontUtils;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.StatCollector;
+import org.lwjgl.opengl.GL11;
+import java.awt.Dimension;
+
+
+import java.util.ArrayList;
+
+import static codechicken.nei.NEIClientUtils.translate;
 
 public class GuiPotionCreator extends GuiContainerWidget {
 

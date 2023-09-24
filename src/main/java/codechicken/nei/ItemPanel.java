@@ -1,15 +1,13 @@
 package codechicken.nei;
 
-import static codechicken.lib.gui.GuiDraw.drawRect;
-
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-
+import codechicken.lib.vec.Rectangle4i;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-import codechicken.lib.vec.Rectangle4i;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+
+import static codechicken.lib.gui.GuiDraw.drawRect;
 
 public class ItemPanel extends PanelWidget {
 

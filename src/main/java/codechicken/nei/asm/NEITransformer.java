@@ -1,34 +1,5 @@
 package codechicken.nei.asm;
 
-import static codechicken.lib.asm.InsnComparator.findN;
-import static codechicken.lib.asm.InsnComparator.findOnce;
-import static codechicken.lib.asm.InsnComparator.getControlFlowLabels;
-import static codechicken.lib.asm.InsnComparator.matches;
-import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
-import static org.objectweb.asm.ClassWriter.COMPUTE_MAXS;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ASM5;
-import static org.objectweb.asm.Opcodes.ILOAD;
-import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.IRETURN;
-
-import java.util.Map;
-
-import net.minecraft.launchwrapper.IClassTransformer;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
-
 import codechicken.lib.asm.ASMBlock;
 import codechicken.lib.asm.ASMHelper;
 import codechicken.lib.asm.ASMInit;
@@ -43,6 +14,33 @@ import codechicken.lib.asm.ModularASMTransformer.MethodTransformer;
 import codechicken.lib.asm.ModularASMTransformer.MethodWriter;
 import codechicken.lib.asm.ObfMapping;
 import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import net.minecraft.launchwrapper.IClassTransformer;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import java.util.Map;
+
+import static codechicken.lib.asm.InsnComparator.findN;
+import static codechicken.lib.asm.InsnComparator.findOnce;
+import static codechicken.lib.asm.InsnComparator.getControlFlowLabels;
+import static codechicken.lib.asm.InsnComparator.matches;
+import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
+import static org.objectweb.asm.ClassWriter.COMPUTE_MAXS;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 public class NEITransformer implements IClassTransformer {
 

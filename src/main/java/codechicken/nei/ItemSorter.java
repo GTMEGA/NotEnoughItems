@@ -1,20 +1,19 @@
 package codechicken.nei;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-
 import codechicken.lib.config.ConfigTagParent;
 import codechicken.nei.ItemList.ItemsLoadedCallback;
 import codechicken.nei.api.API;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.config.GuiItemSorter;
 import codechicken.nei.config.OptionOpenGui;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class ItemSorter implements Comparator<ItemStack>, ItemsLoadedCallback {
 

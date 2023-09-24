@@ -1,6 +1,9 @@
 package codechicken.nei.config;
 
-import static codechicken.lib.gui.GuiDraw.drawString;
+import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.LayoutManager;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,11 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.LayoutManager;
+import static codechicken.lib.gui.GuiDraw.drawString;
 
 public abstract class OptionStringSet extends Option {
 

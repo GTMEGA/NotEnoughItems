@@ -1,23 +1,23 @@
 package codechicken.nei.recipe;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.InventoryCraftingDummy;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.guihook.GuiContainerManager;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.RecipeFireworks;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.InventoryCraftingDummy;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.guihook.GuiContainerManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.awt.Rectangle;
+import java.awt.Point;
 public class FireworkRecipeHandler extends ShapelessRecipeHandler {
 
     public class CachedFireworkRecipe extends CachedShapelessRecipe {

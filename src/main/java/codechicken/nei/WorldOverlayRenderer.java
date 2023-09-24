@@ -1,5 +1,7 @@
 package codechicken.nei;
 
+import codechicken.lib.math.MathHelper;
+import codechicken.nei.KeyManager.IKeyStateTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
@@ -11,11 +13,7 @@ import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
-
 import org.lwjgl.opengl.GL11;
-
-import codechicken.lib.math.MathHelper;
-import codechicken.nei.KeyManager.IKeyStateTracker;
 
 public class WorldOverlayRenderer implements IKeyStateTracker {
 

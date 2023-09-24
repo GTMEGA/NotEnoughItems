@@ -1,5 +1,10 @@
 package codechicken.nei;
 
+import codechicken.lib.inventory.ContainerExtended;
+import codechicken.lib.inventory.InventoryNBT;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.inventory.SlotHandleClicks;
+import codechicken.lib.packet.PacketCustom;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,12 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
-
-import codechicken.lib.inventory.ContainerExtended;
-import codechicken.lib.inventory.InventoryNBT;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.inventory.SlotHandleClicks;
-import codechicken.lib.packet.PacketCustom;
 
 public class ContainerPotionCreator extends ContainerExtended {
 

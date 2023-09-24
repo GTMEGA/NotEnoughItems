@@ -1,18 +1,17 @@
 package codechicken.nei.recipe;
 
-import static codechicken.nei.NEIClientUtils.translate;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.PositionedStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.PositionedStack;
+import static codechicken.nei.NEIClientUtils.translate;
 
 public class FuelRecipeHandler extends FurnaceRecipeHandler {
 

@@ -1,15 +1,14 @@
 package codechicken.nei;
 
-import java.util.Collections;
-import java.util.List;
-
+import codechicken.nei.api.INEIGuiAdapter;
+import codechicken.nei.api.TaggedInventoryArea;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
 
-import codechicken.nei.api.INEIGuiAdapter;
-import codechicken.nei.api.TaggedInventoryArea;
+import java.util.Collections;
+import java.util.List;
 
 public class NEIChestGuiHandler extends INEIGuiAdapter {
 

@@ -1,5 +1,23 @@
 package codechicken.nei.recipe;
 
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.Widget;
+import codechicken.nei.drawable.DrawableResource;
+import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
+import codechicken.nei.guihook.GuiContainerManager;
+import cpw.mods.fml.common.Loader;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,26 +32,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.MinecraftForge;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.Widget;
-import codechicken.nei.drawable.DrawableResource;
-import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
-import codechicken.nei.guihook.GuiContainerManager;
-import cpw.mods.fml.common.Loader;
 
 public abstract class GuiRecipeTab extends Widget {
 

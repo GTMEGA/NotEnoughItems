@@ -1,24 +1,23 @@
 package codechicken.nei.config;
 
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-
-import java.awt.*;
-import java.util.ArrayList;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.ItemsGrid;
 import codechicken.nei.guihook.GuiContainerManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import java.awt.Point;
+
+
+import java.util.ArrayList;
+
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 public class GuiPanelSettings extends GuiScreenWidget {
 

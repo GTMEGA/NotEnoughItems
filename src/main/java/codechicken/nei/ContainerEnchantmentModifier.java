@@ -1,7 +1,6 @@
 package codechicken.nei;
 
-import java.util.ArrayList;
-
+import codechicken.lib.render.CCRenderState;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,10 +12,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
 
-import codechicken.lib.render.CCRenderState;
+import java.util.ArrayList;
 
 /**
  * This is crap code, don't ever do this.

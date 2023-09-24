@@ -1,12 +1,11 @@
 package codechicken.nei;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
+import codechicken.nei.api.IBookmarkContainerHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-import codechicken.nei.api.IBookmarkContainerHandler;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class DefaultBookmarkContainerHandler implements IBookmarkContainerHandler {
 

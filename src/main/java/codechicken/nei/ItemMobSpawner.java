@@ -1,9 +1,5 @@
 package codechicken.nei;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -19,6 +15,10 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ItemMobSpawner extends ItemBlock {
 

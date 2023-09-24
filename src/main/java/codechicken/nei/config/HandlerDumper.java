@@ -1,17 +1,5 @@
 package codechicken.nei.config;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.LinkedList;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
-
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.base.Objects;
-
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.GuiUsageRecipe;
@@ -19,6 +7,15 @@ import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import codechicken.nei.util.NBTJson;
+import com.google.common.base.Objects;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
 
 public class HandlerDumper extends DataDumper {
 

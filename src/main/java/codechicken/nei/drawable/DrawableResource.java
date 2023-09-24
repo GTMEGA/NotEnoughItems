@@ -1,10 +1,9 @@
 package codechicken.nei.drawable;
 
+import codechicken.nei.Image;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
-
-import codechicken.nei.Image;
 
 public class DrawableResource extends Image {
 

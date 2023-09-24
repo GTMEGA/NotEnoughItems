@@ -1,17 +1,14 @@
 package codechicken.nei;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipException;
-
+import codechicken.core.CommonUtils;
+import codechicken.core.ServerUtils;
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.nei.PacketIDs.S2C;
+import codechicken.nei.util.NBTHelper;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,18 +31,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.oredict.OreDictionary;
-
 import org.apache.logging.log4j.Level;
 
-import codechicken.core.CommonUtils;
-import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.InventoryRange;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.nei.PacketIDs.S2C;
-import codechicken.nei.util.NBTHelper;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.registry.GameRegistry;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipException;
 
 public class NEIServerUtils {
 

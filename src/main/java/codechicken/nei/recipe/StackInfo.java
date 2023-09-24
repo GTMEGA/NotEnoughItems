@@ -1,5 +1,16 @@
 package codechicken.nei.recipe;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.api.IStackStringifyHandler;
+import codechicken.nei.recipe.stackinfo.DefaultStackStringifyHandler;
+import codechicken.nei.recipe.stackinfo.GTFluidStackStringifyHandler;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,19 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.fluids.FluidStack;
-
-import org.apache.commons.io.IOUtils;
-
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.api.IStackStringifyHandler;
-import codechicken.nei.recipe.stackinfo.DefaultStackStringifyHandler;
-import codechicken.nei.recipe.stackinfo.GTFluidStackStringifyHandler;
 
 public class StackInfo {
 

@@ -1,5 +1,16 @@
 package codechicken.nei;
 
+import codechicken.nei.ThreadOperationTimer.TimeoutException;
+import codechicken.nei.api.ItemFilter;
+import codechicken.nei.api.ItemFilter.ItemFilterProvider;
+import codechicken.nei.api.ItemInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,19 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-
-import codechicken.nei.ThreadOperationTimer.TimeoutException;
-import codechicken.nei.api.ItemFilter;
-import codechicken.nei.api.ItemFilter.ItemFilterProvider;
-import codechicken.nei.api.ItemInfo;
-import codechicken.nei.guihook.GuiContainerManager;
 
 public class ItemList {
 

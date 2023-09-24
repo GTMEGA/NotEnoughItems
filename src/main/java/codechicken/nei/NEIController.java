@@ -1,17 +1,5 @@
 package codechicken.nei;
 
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-
-import java.awt.*;
-import java.util.LinkedList;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.inventory.SlotCrafting;
-import net.minecraft.item.ItemStack;
-
 import codechicken.nei.api.API;
 import codechicken.nei.api.GuiInfo;
 import codechicken.nei.api.IInfiniteItemHandler;
@@ -21,6 +9,18 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerSlotClickHandler;
 import codechicken.nei.recipe.GuiRecipe;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.ItemStack;
+import java.awt.Point;
+
+
+import java.util.LinkedList;
+
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 public class NEIController implements IContainerSlotClickHandler, IContainerInputHandler {
 

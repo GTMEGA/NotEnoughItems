@@ -1,5 +1,15 @@
 package codechicken.nei.recipe;
 
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+import com.google.common.base.Objects;
+import cpw.mods.fml.common.Loader;
+import net.minecraft.item.ItemStack;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,19 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.minecraft.item.ItemStack;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
-import com.google.common.base.Objects;
-
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import cpw.mods.fml.common.Loader;
 
 public class RecipeCatalysts {
 

@@ -1,18 +1,16 @@
 package codechicken.nei.recipe;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
+import codechicken.nei.PositionedStack;
+import codechicken.nei.util.NBTJson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.util.NBTJson;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookmarkRecipeId {
 

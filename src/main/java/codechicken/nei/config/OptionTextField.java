@@ -1,13 +1,13 @@
 package codechicken.nei.config;
 
-import static codechicken.lib.gui.GuiDraw.drawString;
-import static codechicken.lib.gui.GuiDraw.getStringWidth;
-
-import java.util.List;
-
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.TextField;
 import codechicken.nei.config.GuiOptionList.OptionScrollSlot;
+
+import java.util.List;
+
+import static codechicken.lib.gui.GuiDraw.drawString;
+import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
 public class OptionTextField extends Option {
 

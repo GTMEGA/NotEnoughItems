@@ -1,21 +1,9 @@
 package codechicken.nei.guihook;
 
-import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
-import static codechicken.lib.gui.GuiDraw.fontRenderer;
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-import static codechicken.lib.gui.GuiDraw.renderEngine;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.recipe.StackInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,16 +15,25 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import java.awt.Point;
+import javax.annotation.Nullable;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.recipe.StackInfo;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
+
+import static codechicken.lib.gui.GuiDraw.drawMultilineTip;
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
+import static codechicken.lib.gui.GuiDraw.renderEngine;
 
 public class GuiContainerManager {
 

@@ -1,8 +1,8 @@
 package codechicken.nei;
 
-import static codechicken.lib.gui.GuiDraw.getStringWidth;
-
 import java.util.List;
+
+import static codechicken.lib.gui.GuiDraw.getStringWidth;
 
 public abstract class Button extends Widget {
 

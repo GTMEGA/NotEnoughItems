@@ -1,14 +1,13 @@
 package codechicken.nei.event;
 
-import java.util.function.Consumer;
-
-import net.minecraftforge.common.MinecraftForge;
-
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import cpw.mods.fml.common.eventhandler.Event;
+import net.minecraftforge.common.MinecraftForge;
+
+import java.util.function.Consumer;
 
 /**
  * Event is posted every time the handler infos got registered or reloaded. During it, you can safely register your

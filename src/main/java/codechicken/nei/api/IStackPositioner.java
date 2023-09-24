@@ -1,8 +1,8 @@
 package codechicken.nei.api;
 
-import java.util.ArrayList;
-
 import codechicken.nei.PositionedStack;
+
+import java.util.ArrayList;
 
 /**
  * For repositioning recipes in overlay renderers.

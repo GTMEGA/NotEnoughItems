@@ -1,20 +1,19 @@
 package codechicken.nei.config;
 
+import codechicken.nei.LayoutManager;
+import codechicken.nei.NEIClientUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+
+import java.awt.Rectangle;
+import java.util.List;
+
 import static codechicken.lib.gui.GuiDraw.changeTexture;
 import static codechicken.lib.gui.GuiDraw.drawString;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
-
-import java.awt.*;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
-import codechicken.nei.LayoutManager;
-import codechicken.nei.NEIClientUtils;
 
 public abstract class OptionButton extends Option {
 

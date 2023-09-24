@@ -1,19 +1,5 @@
 package codechicken.nei.api;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-
-import com.google.common.collect.Sets;
-
 import codechicken.nei.BookmarkContainerInfo;
 import codechicken.nei.ItemList;
 import codechicken.nei.ItemSorter;
@@ -39,6 +25,17 @@ import codechicken.nei.recipe.IUsageHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.nei.recipe.StackInfo;
+import com.google.common.collect.Sets;
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This is the main class that handles item property configuration. WARNING: DO NOT access this class until the world

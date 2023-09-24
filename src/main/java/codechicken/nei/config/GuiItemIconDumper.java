@@ -1,15 +1,11 @@
 package codechicken.nei.config;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
-
+import codechicken.core.CommonUtils;
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.ItemPanels;
+import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.guihook.GuiContainerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -20,18 +16,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import java.awt.Dimension;
 
-import codechicken.core.CommonUtils;
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.ItemPanels;
-import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
-import codechicken.nei.guihook.GuiContainerManager;
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GuiItemIconDumper extends GuiScreen {
 

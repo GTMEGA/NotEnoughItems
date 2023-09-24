@@ -1,14 +1,16 @@
 package codechicken.nei.recipe;
 
-import static codechicken.lib.gui.GuiDraw.getMousePosition;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import codechicken.nei.Button;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
+import java.awt.Rectangle;
+import java.awt.Point;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static codechicken.lib.gui.GuiDraw.getMousePosition;
 
 public class GuiRecipeTabs {
 

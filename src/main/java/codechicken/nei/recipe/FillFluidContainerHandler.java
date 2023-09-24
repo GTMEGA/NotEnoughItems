@@ -1,14 +1,13 @@
 package codechicken.nei.recipe;
 
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.ItemPanels;
+import codechicken.nei.api.INEIGuiAdapter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
-
-import codechicken.nei.ItemPanel.ItemPanelSlot;
-import codechicken.nei.ItemPanels;
-import codechicken.nei.api.INEIGuiAdapter;
 
 public class FillFluidContainerHandler extends INEIGuiAdapter {
 

@@ -1,8 +1,8 @@
 package codechicken.nei.config;
 
-import java.util.LinkedList;
-
 import net.minecraft.util.RegistryNamespaced;
+
+import java.util.LinkedList;
 
 public abstract class RegistryDumper<T> extends DataDumper {
 
