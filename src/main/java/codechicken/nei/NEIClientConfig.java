@@ -73,6 +73,7 @@ public class NEIClientConfig {
     public static final File serialHandlersFile = new File(configDir, "serialhandlers.cfg");
     public static final File heightHackHandlersFile = new File(configDir, "heighthackhandlers.cfg");
     public static final File handlerOrderingFile = new File(configDir, "handlerordering.csv");
+    public static final File hiddenHandlersFile = new File(configDir, "hiddenhandlers.csv");
 
     @Deprecated
     public static File bookmarkFile;
@@ -83,6 +84,9 @@ public class NEIClientConfig {
     // Set of regexes matching handler ID of handlers that need the hack in GuiRecipe.startHeightHack().
     // We use regex here so that we can apply the height hack to entire mods with one entry.
     public static HashSet<Pattern> heightHackHandlerRegex = new HashSet<>();
+
+    // Set of handler Name or Id of handlers that need hide.
+    public static HashSet<String> hiddenHandlers = new HashSet<>();
 
     // Map of handler ID to sort order.
     // Handlers will be sorted in ascending order, so smaller numbers show up earlier.
@@ -237,14 +241,14 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarksEnabled", true));
-        tag.getTag("inventory.useNBTInBookmarks").setComment("Use NBT in Bookmarks").getBooleanValue(true);
-        API.addOption(new OptionToggleButton("inventory.useNBTInBookmarks", true));
+
         tag.getTag("inventory.bookmarksAnimationEnabled").setComment("REI Style Animation in Bookmarks")
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarksAnimationEnabled", true));
-        tag.getTag("inventory.recipeTooltipsEnabled").setComment("Show recipe tooltips in Bookmarks")
-                .getBooleanValue(true);
-        API.addOption(new OptionToggleButton("inventory.recipeTooltipsEnabled", true));
+
+        tag.getTag("inventory.recipeTooltipsMode").setComment("Show recipe tooltips in Bookmarks").getIntValue(1);
+        API.addOption(new OptionCycled("inventory.recipeTooltipsMode", 4, true));
+
         tag.getTag("inventory.showRecipeMarker").setComment("Show Recipe Marker").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.showRecipeMarker", true));
 
@@ -256,9 +260,11 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
+
         tag.getTag("inventory.jei_style_item_presence_overlay")
                 .setComment("Enable/disable JEI Style item presence overlay on ?-hover").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.jei_style_item_presence_overlay", true));
+
         tag.getTag("inventory.jei_style_recipe_catalyst").setComment("Enable/disable JEI Style Recipe Catalysts")
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.jei_style_recipe_catalyst", true));
@@ -355,6 +361,7 @@ public class NEIClientConfig {
                 "gui.bookmark_recipe_count",
                 Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH);
         API.addHashBind("gui.bookmark_pull_items", Keyboard.KEY_V);
+        API.addHashBind("gui.bookmark_pull_items_ingredients", Keyboard.KEY_V + NEIClientUtils.SHIFT_HASH);
         API.addHashBind("gui.overlay", Keyboard.KEY_S);
         API.addHashBind("gui.overlay_use", Keyboard.KEY_S + NEIClientUtils.SHIFT_HASH);
         API.addHashBind("gui.overlay_hide", Keyboard.KEY_S + NEIClientUtils.CTRL_HASH);
@@ -422,6 +429,16 @@ public class NEIClientConfig {
         if (!nbt.hasKey("validateenchantments")) nbt.setBoolean("validateenchantments", false);
 
         world.saveNBT();
+    }
+
+    public static void unloadWorld() {
+        if (ItemPanels.bookmarkPanel != null) {
+            ItemPanels.bookmarkPanel.saveBookmarks();
+        }
+
+        if (world != null) {
+            world.saveNBT();
+        }
     }
 
     public static int getKeyBinding(String string) {
@@ -556,16 +573,12 @@ public class NEIClientConfig {
         return !getBooleanSetting("inventory.bookmarksEnabled");
     }
 
-    public static boolean useNBTInBookmarks() {
-        return getBooleanSetting("inventory.useNBTInBookmarks");
-    }
-
     public static boolean areBookmarksAnimated() {
         return getBooleanSetting("inventory.bookmarksAnimationEnabled");
     }
 
-    public static boolean showRecipeTooltips() {
-        return getBooleanSetting("inventory.recipeTooltipsEnabled");
+    public static int getRecipeTooltipsMode() {
+        return getIntSetting("inventory.recipeTooltipsMode");
     }
 
     public static boolean showRecipeMarker() {
@@ -689,7 +702,6 @@ public class NEIClientConfig {
 
     public static void setSearchExpression(String expression) {
         world.nbt.setString("search", expression);
-        world.saveNBT();
     }
 
     public static boolean isMouseScrollTransferEnabled() {

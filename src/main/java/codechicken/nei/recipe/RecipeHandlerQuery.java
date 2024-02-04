@@ -37,6 +37,7 @@ class RecipeHandlerQuery<T extends IRecipeHandler> {
         profiler.start(profilerSection);
         try {
             ArrayList<T> handlers = getRecipeHandlersParallel();
+
             if (error) {
                 displayRecipeLookupError();
             }
@@ -60,27 +61,37 @@ class RecipeHandlerQuery<T extends IRecipeHandler> {
     }
 
     private ArrayList<T> getSerialHandlersWithRecipes() {
+
         return serialRecipeHandlers.stream().map(handler -> {
             try {
-                return recipeHandlerFunction.apply(handler);
+                return isHidden(handler) ? null : recipeHandlerFunction.apply(handler);
             } catch (Throwable t) {
                 printLog(t);
                 error = true;
                 return null;
             }
-        }).filter(h -> h != null && h.numRecipes() > 0).collect(Collectors.toCollection(ArrayList::new));
+        }).filter(h -> h != null && h.numRecipes() > 0 && SearchRecipeHandler.findFirst(h, (recipeIndex) -> true) != -1)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private ArrayList<T> getHandlersWithRecipes() throws InterruptedException, ExecutionException {
+
         return ItemList.forkJoinPool.submit(() -> recipeHandlers.parallelStream().map(handler -> {
             try {
-                return recipeHandlerFunction.apply(handler);
+                return isHidden(handler) ? null : recipeHandlerFunction.apply(handler);
             } catch (Throwable t) {
                 printLog(t);
                 error = true;
                 return null;
             }
-        }).filter(h -> h != null && h.numRecipes() > 0).collect(Collectors.toCollection(ArrayList::new))).get();
+        }).filter(h -> h != null && h.numRecipes() > 0 && SearchRecipeHandler.findFirst(h, (recipeIndex) -> true) != -1)
+                .collect(Collectors.toCollection(ArrayList::new))).get();
+    }
+
+    private boolean isHidden(T handler) {
+        final String handlerName = handler.getHandlerId();
+        final String handlerId = handler.getOverlayIdentifier();
+        return NEIClientConfig.hiddenHandlers.stream().anyMatch(h -> h.equals(handlerId) || h.equals(handlerName));
     }
 
     private void printLog(Throwable t) {
