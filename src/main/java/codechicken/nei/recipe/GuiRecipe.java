@@ -135,6 +135,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         if (overlayButtons != null) {
             buttonList.removeIf(Arrays.asList(overlayButtons)::contains);
         }
+
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
         
         final int recipesPerPage = getRecipesPerPage();
         overlayButtons = new GuiButton[recipesPerPage];
@@ -142,7 +144,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             overlayButtons[i] = new GuiNEIButton(
                 OVERLAY_BUTTON_ID_START + i,
                  (width / 2) + 65,
-                 guiTop + 16 + (handlerInfo.getHeight() * (i+1)) - 2,
+                 guiTop + 16 + (handlerHeight * (i+1)) - 2,
                  buttonWidth,
                  buttonHeight,
                  "?");
@@ -253,7 +255,10 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         
         // Begin Hax
         final int oldHeight = this.height;
-        this.height = 166 + handlerInfo.getHeight() + 18 + (guiTop - 44) * 2;
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
+
+
+        this.height = 166 + handlerHeight + 18 + (guiTop - 44) * 2;
         for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
             currenttip = handler.handleTooltip(this, currenttip, i);
         }
@@ -334,8 +339,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         final int numRecipes = Math.min(handler.numRecipes() - (page * recipesPerPage), recipesPerPage);
 
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
         area.width = handlerInfo.getWidth();
-        area.height = handlerInfo.getHeight() * numRecipes;
+        area.height = handlerHeight * numRecipes;
         area.x = guiLeft - 2;
         area.y = guiTop  - 4 + yShift;
         checkYShift();
@@ -389,11 +395,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         s = NEIClientUtils.translate("recipe.page", page + 1, (handler.numRecipes() - 1) / recipesPerPage + 1);
         fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 19, 0xffffff);
 
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
+
         GL11.glPushMatrix();
         GL11.glTranslatef(5, 32 + yShift, 0);
         for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
             handler.drawForeground(i);
-            GL11.glTranslatef(0, handlerInfo.getHeight(), 0);
+            GL11.glTranslatef(0, handlerHeight, 0);
         }
         GL11.glPopMatrix();
     }
@@ -424,12 +432,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             recipeTabs.draw(mouseX, mouseY);
             RenderHelper.disableStandardItemLighting();
         }
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
 
         GL11.glPushMatrix();
         GL11.glTranslatef(j + 5, k + 32 + yShift, 0);
         for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
             handler.drawBackground(i);
-            GL11.glTranslatef(0, handlerInfo.getHeight(), 0);
+            GL11.glTranslatef(0, handlerHeight, 0);
         }
         GL11.glPopMatrix();
     }
@@ -484,7 +493,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
 
     public Point getRecipePosition(int recipe) {
-        return new Point(5, 32 + yShift + ((recipe % getRecipesPerPage()) * handlerInfo.getHeight()));
+        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
+        return new Point(5, 32 + yShift + ((recipe % getRecipesPerPage()) * handlerHeight));
     }
 
     @Override
