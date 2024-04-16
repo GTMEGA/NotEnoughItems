@@ -118,4 +118,16 @@ public interface IRecipeHandler
      * @return true to terminate further processing of this event.
      */
     public boolean mouseClicked(GuiRecipe gui, int button, int recipe);
+
+
+
+    default boolean overwriteHandlerInfoSettings() {
+        return false;
+    }
+
+    default int height() {
+        return 0;
+    }
+
+
 }

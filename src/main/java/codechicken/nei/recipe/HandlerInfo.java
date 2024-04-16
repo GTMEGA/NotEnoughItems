@@ -149,7 +149,6 @@ public class HandlerInfo {
         return false;
     }
 
-
     public void setYShift(int yShift) {
         this.yShift = yShift;
     }

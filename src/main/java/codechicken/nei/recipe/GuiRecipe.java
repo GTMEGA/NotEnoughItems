@@ -473,8 +473,12 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     }
     
     private int getRecipesPerPage() {
-        if(handlerInfo != null) 
+        if(handlerInfo != null) {
+            if (handler.overwriteHandlerInfoSettings()) {
+                return Math.max(Math.min(((ySize - (buttonHeight*3)) / handler.height()), handler.recipiesPerPage()), 1);
+            }
             return Math.max(Math.min(((ySize - (buttonHeight*3)) / handlerInfo.getHeight()), handlerInfo.getMaxRecipesPerPage()), 1);
+        }
         else
             return (handler.recipiesPerPage());
     }
