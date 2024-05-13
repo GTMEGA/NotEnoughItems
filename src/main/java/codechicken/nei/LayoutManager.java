@@ -337,9 +337,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public void init() {
-                this.icons[0] = new DrawableBuilder("nei:textures/nei_sprites.png", 32, 72, 16, 16).build();
-                this.icons[1] = new DrawableBuilder("nei:textures/nei_sprites.png", 48, 72, 16, 16).build();
-                this.icons[2] = new DrawableBuilder("nei:textures/nei_sprites.png", 64, 72, 16, 16).build();
+                this.icons[0] = new Image(32, 36, 16, 16);
+                this.icons[1] = new Image(48, 36, 16, 16);
+                this.icons[2] = new Image(64, 36, 16, 16);
             }
             
             @Override
@@ -383,8 +383,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public void init() {
-                this.icons[0] = new DrawableBuilder("nei:textures/nei_sprites.png", 0, 72, 16, 16).build();
-                this.icons[1] = new DrawableBuilder("nei:textures/nei_sprites.png", 16, 72, 16, 16).build();
+                this.icons[0] = new Image(0, 36, 16, 16);
+                this.icons[1] = new Image(16, 36, 16, 16);
             }
             
             @Override
@@ -790,8 +790,12 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static void drawIcon(int x, int y, Image image) {
         final boolean isDrawableResource = image instanceof DrawableResource;
         
-        if (!isDrawableResource)
+        if (!isDrawableResource) {
             changeTexture("nei:textures/nei_sprites.png");
+            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        }
         
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnable(GL11.GL_BLEND);
