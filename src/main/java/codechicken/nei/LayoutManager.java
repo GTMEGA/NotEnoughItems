@@ -15,8 +15,8 @@ import codechicken.nei.guihook.IContainerDrawHandler;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
-import codechicken.nei.recipe.GuiRecipeTab;
-import cpw.mods.fml.common.Loader;
+import codechicken.nei.recipe.HandlerInfoManager;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -337,9 +337,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public void init() {
-                this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 32, 0, 16, 16).build();
-                this.icons[1] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 48, 0, 16, 16).build();
-                this.icons[2] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 64, 0, 16, 16).build();
+                this.icons[0] = new DrawableBuilder("nei:textures/nei_sprites.png", 32, 72, 16, 16).build();
+                this.icons[1] = new DrawableBuilder("nei:textures/nei_sprites.png", 48, 72, 16, 16).build();
+                this.icons[2] = new DrawableBuilder("nei:textures/nei_sprites.png", 64, 72, 16, 16).build();
             }
             
             @Override
@@ -349,7 +349,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                         NEIClientConfig.cycleSetting("inventory.cheatmode", 3);
                     } else {
                         if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT)) {
-                            GuiRecipeTab.loadHandlerInfo();
+                            HandlerInfoManager.loadHandlerInfo();
                         }
                         getOptionList().openGui(getGuiContainer(), false);
                     }
@@ -383,8 +383,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         {
             @Override
             public void init() {
-                this.icons[0] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 0, 0, 16, 16).build();
-                this.icons[1] = new DrawableBuilder("nei:textures/nei_tabbed_sprites.png", 16, 0, 16, 16).build();
+                this.icons[0] = new DrawableBuilder("nei:textures/nei_sprites.png", 0, 72, 16, 16).build();
+                this.icons[1] = new DrawableBuilder("nei:textures/nei_sprites.png", 16, 72, 16, 16).build();
             }
             
             @Override

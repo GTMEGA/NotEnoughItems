@@ -1,20 +1,13 @@
 package codechicken.nei.recipe;
 
 
-import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientConfig;
-import codechicken.nei.Widget;
-import codechicken.nei.drawable.DrawableResource;
-import codechicken.nei.guihook.GuiContainerManager;
+
 import cpw.mods.fml.common.Loader;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,127 +20,13 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
-import java.util.List;
 
-public abstract class GuiRecipeTab extends Widget {
+
+public final class HandlerInfoManager {
     public static HandlerInfo DEFAULT_HANDLER_INFO = getDefaultHandlerInfo();
     public static HashMap<String, HandlerInfo> handlerMap = new HashMap<>();
 
-    private final GuiRecipe guiRecipe;
-    private final IRecipeHandler handler;
-    private final String handlerName;
-    private final String handlerID;
-
-    private boolean selected;
-    
-    public abstract int getWidth();
-    public abstract int getHeight();
-    
-    public abstract DrawableResource getSelectedTabImage();
-    public abstract DrawableResource getUnselectedTabImage();
-
-    protected abstract int getForegroundIconX();
-    protected abstract int getForegroundIconY();
-
-
-    public GuiRecipeTab(GuiRecipe guiRecipe, IRecipeHandler handler, int x, int y) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.w = getWidth();
-        this.h = getHeight();
-        this.handler = handler;
-        this.handlerName = handler.toString().split("@")[0];
-        this.guiRecipe = guiRecipe;
-        this.selected = false;
-        
-        if(handler instanceof TemplateRecipeHandler) {
-            handlerID = (((TemplateRecipeHandler)handler).getOverlayIdentifier());
-        } else {
-            handlerID = null;
-        }
-    }
-
-    @Override
-    public void draw(int mouseX, int mouseY) {
-        drawBackground(mouseX, mouseY);
-        drawForeground(mouseX, mouseY);
-    }
-
-    public void drawBackground(int mouseX, int mouseY) {
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glColor4f(1, 1, 1, 1);
-        final DrawableResource image;
-        if (selected)  image = getSelectedTabImage();
-        else           image = getUnselectedTabImage();
-
-        final int iconX = x + (w - image.getWidth())  / 2;
-        final int iconY = y + (h - image.getHeight()) / 2;
-        image.draw(iconX, iconY);
-    }
-
-    public void drawForeground(int mouseX, int mouseY) {
-        final int iconX = getForegroundIconX();
-        final int iconY = getForegroundIconY();
-
-        final FontRenderer fontRenderer = GuiDraw.fontRenderer;
-        final HandlerInfo handlerInfo = getHandlerInfo(handlerName, handlerID);
-        final DrawableResource icon = handlerInfo != null ? handlerInfo.getImage() : null;
-        final ItemStack itemStack =  handlerInfo != null ? handlerInfo.getItemStack() : null;
-       
-        
-        if (icon != null) {
-            icon.draw(iconX + 1, iconY + 1);
-        } else if (itemStack != null) {
-            GuiContainerManager.drawItems.zLevel += 100;
-            GuiContainerManager.drawItem(iconX, iconY, itemStack);
-            GuiContainerManager.drawItems.zLevel -= 100;
-        } else {
-            // Text fallback
-            String text = handler.getRecipeName();
-            if (text != null && text.length() > 0) {
-                if (text.length() > 2) {
-                    text = text.substring(0, 2);
-                }
-            } else {
-                text = "??";
-            }
-            
-            int textCenterX = x + (int) (getWidth() / 2f);
-            int textCenterY = y + (int) (getHeight() / 2f) - 3;
-            int color = selected ? 0xffffa0 : 0xe0e0e0;
-            fontRenderer.drawStringWithShadow(text, textCenterX - (int) (fontRenderer.getStringWidth(text) / 2f), textCenterY, color);
-            GL11.glColor4f(1, 1, 1, 1);
-        } 
-    }
-
-    public void addTooltips(List<String> tooltip) {
-        tooltip.add(handler.getRecipeName().trim());
-        
-        String handlerMod = getHandlerMod(handlerName, handlerID);
-        tooltip.add(EnumChatFormatting.BLUE + handlerMod);
-
-        boolean shiftHeld = Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT);
-        if (handlerMod.equals("Unknown") || shiftHeld) {
-            tooltip.add("");
-            tooltip.add("HandlerName: " + handlerName);
-            tooltip.add("HandlerID: " + handlerID);
-        }
-
-    }
-    
-    public boolean onButtonPress(boolean rightclick) {
-        int newIdx = guiRecipe.currenthandlers.indexOf(handler);
-        if (newIdx == -1)
-            return false;
-
-        guiRecipe.setRecipePage(newIdx);
-        return true;
-    }
-    
-    public void setSelected(IRecipeHandler current) {
-        selected = handler == current;
-    }
+    private HandlerInfoManager() {}
 
     public static HandlerInfo getHandlerInfo(String name, String name2) {
         HandlerInfo res = handlerMap.get(name);
@@ -156,15 +35,6 @@ public abstract class GuiRecipeTab extends Widget {
         return res;
     }
 
-
-    public static String getHandlerMod(String name, String name2) {
-        HandlerInfo info  = getHandlerInfo(name, name2);
-        if (info == null)
-            return "Unknown";
-
-        return info.getModName();
-    }
-    
     public static void loadHandlerInfo() {
         final boolean fromJar = NEIClientConfig.loadHandlersFromJar();
         NEIClientConfig.logger.info("Loading handler info from " + (fromJar ? "JAR" : "Config"));

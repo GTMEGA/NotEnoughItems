@@ -21,8 +21,6 @@ import codechicken.nei.guihook.IGuiHandleMouseWheel;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
@@ -71,7 +69,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     private GuiButton[] overlayButtons;
     
     private final Rectangle area = new Rectangle();
-    private final GuiRecipeTabs recipeTabs;
     private IRecipeHandler handler;
     private HandlerInfo handlerInfo;
     
@@ -79,7 +76,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     protected GuiRecipe(GuiScreen prevgui) {
         super(new ContainerRecipe());
-        recipeTabs = new GuiRecipeTabs(this);
         slotcontainer = (ContainerRecipe) inventorySlots;
 
         this.prevGui = prevgui;
@@ -124,7 +120,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             prevtype.visible = false;
         }
         
-        recipeTabs.initLayout();
         refreshPage();
 
 
@@ -166,7 +161,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         handler = currenthandlers.get(recipetype);
         handlerInfo = getHandlerInfo(handler);
         page = 0;
-        recipeTabs.calcPageNumber();
         checkYShift();
         initOverlayButtons();
     }
@@ -208,8 +202,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         for (int recipe = page * recipesPerPage; recipe < handler.numRecipes() && recipe < (page + 1) * recipesPerPage; recipe++)
             if (handler.mouseClicked(this, button, recipe))
                 return;
-        if (recipeTabs.mouseClicked(x, y, button))
-            return;
         super.mouseClicked(x, y, button);
     }
 
@@ -262,7 +254,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
             currenttip = handler.handleTooltip(this, currenttip, i);
         }
-        recipeTabs.handleTooltip(mousex, mousey, currenttip);
         this.height = oldHeight;
         // End Hax
         
@@ -310,10 +301,10 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         } else {
             handlerID = null;
         }
-        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerID);
+        HandlerInfo info = HandlerInfoManager.getHandlerInfo(handlerName, handlerID);
         
         if (info == null)
-            return GuiRecipeTab.DEFAULT_HANDLER_INFO;
+            return HandlerInfoManager.DEFAULT_HANDLER_INFO;
         
         return info;
     }
@@ -362,8 +353,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                 }
             }
         }
-
-        recipeTabs.refreshPage();
     }
 
     private void refreshSlots() {
@@ -426,12 +415,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                  nextpage.yPosition + buttonHeight,
                  0x30000000);
         
-        if (NEIClientConfig.areJEIStyleTabsVisible()) {
-            RenderHelper.enableGUIStandardItemLighting();
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-            recipeTabs.draw(mouseX, mouseY);
-            RenderHelper.disableStandardItemLighting();
-        }
         int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
 
         GL11.glPushMatrix();

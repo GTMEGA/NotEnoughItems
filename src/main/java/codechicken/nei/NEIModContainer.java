@@ -6,7 +6,6 @@ import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.asm.NEICorePlugin;
 import codechicken.nei.config.IMCHandler;
-import codechicken.nei.recipe.GuiRecipeTab;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
@@ -101,8 +100,6 @@ public class NEIModContainer extends DummyModContainer
     }
     @Subscribe
     public void postInit(FMLPostInitializationEvent event) {
-        if (CommonUtils.isClient())
-            GuiRecipeTab.loadHandlerInfo();
         handleIMCMessages();
     }
 

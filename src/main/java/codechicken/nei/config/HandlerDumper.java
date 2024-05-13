@@ -1,15 +1,14 @@
 package codechicken.nei.config;
 
 import codechicken.nei.NEIClientConfig;
-import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.HandlerInfoManager;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import codechicken.nei.util.NBTJson;
 import com.google.common.base.Objects;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 import org.apache.commons.io.IOUtils;
@@ -36,7 +35,7 @@ public class HandlerDumper extends DataDumper
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String handlerName = handler.toString().split("@")[0];
             final String handlerId = Objects.firstNonNull(handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler)handler).getOverlayIdentifier() : null, "null");
-            HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
+            HandlerInfo info = HandlerInfoManager.getHandlerInfo(handlerName, handlerId);
 
             list.add(new String[] {
                 handler.getRecipeName(),

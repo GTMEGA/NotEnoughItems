@@ -1,7 +1,7 @@
 package codechicken.nei.config;
 
 import codechicken.nei.NEIClientConfig;
-import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.HandlerInfoManager;
 import codechicken.nei.recipe.HandlerInfo;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
@@ -63,8 +63,8 @@ public class IMCHandler {
                     NEIClientConfig.logger.info("Error setting handler dimensions for " + handler);
                 }
 
-                GuiRecipeTab.handlerMap.remove(handler);
-                GuiRecipeTab.handlerMap.put(handler, info);
+                HandlerInfoManager.handlerMap.remove(handler);
+                HandlerInfoManager.handlerMap.put(handler, info);
             } else if(type.equals("removeHandlerInfo")) {
                 if (!message.isNBTMessage())  {
                     logInvalidMessage(message, "NBT");
@@ -74,7 +74,7 @@ public class IMCHandler {
                 final String handler = tag.getString("handler");
                 NEIClientConfig.logger.info("Processing removeHandlerInfo `" + handler + "` from " + message.getSender());
                 
-                GuiRecipeTab.handlerMap.remove(handler);
+                HandlerInfoManager.handlerMap.remove(handler);
             }
 
         }

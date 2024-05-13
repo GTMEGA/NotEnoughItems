@@ -22,9 +22,8 @@ import codechicken.nei.config.OptionList;
 import codechicken.nei.config.OptionOpenGui;
 import codechicken.nei.config.OptionTextField;
 import codechicken.nei.config.OptionToggleButton;
-import codechicken.nei.config.OptionToggleButtonBoubs;
 import codechicken.nei.config.OptionUtilities;
-import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.HandlerInfoManager;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.obfuscator.ObfuscationRun;
 import net.minecraft.client.Minecraft;
@@ -144,18 +143,13 @@ public class NEIClientConfig {
         
         tag.getTag("inventory.bookmarksEnabled").setComment("Enable/disable bookmarks").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarksEnabled", true));
-        tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
-        API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
-        
-        tag.getTag("inventory.creative_tab_style").setComment("Creative or JEI style tabs").getBooleanValue(false);
-        API.addOption(new OptionToggleButton("inventory.creative_tab_style", true));
 
         tag.getTag("tools.handler_load_from_config").setComment("ADVANCED: Load handlers from config").getBooleanValue(false);
         API.addOption(new OptionToggleButton("tools.handler_load_from_config", true) {
             @Override
             public boolean onClick(int button) {
                 super.onClick(button);
-                GuiRecipeTab.loadHandlerInfo();
+                HandlerInfoManager.loadHandlerInfo();
                 return true;
             }
         });
@@ -319,12 +313,6 @@ public class NEIClientConfig {
     }
     public static boolean isBookmarkPanelHidden() {
         return !getBooleanSetting("inventory.bookmarksEnabled");
-    }
-    public static boolean areJEIStyleTabsVisible() {
-        return getBooleanSetting("inventory.jei_style_tabs");
-    }
-    public static boolean useCreativeTabStyle() {
-        return getBooleanSetting("inventory.creative_tab_style");
     }
     public static boolean isEnabled() {
         return enabledOverride && getBooleanSetting("inventory.widgetsenabled");
