@@ -153,10 +153,14 @@ public class DefaultOverlayHandler implements IOverlayHandler {
             DistributedIngred istack = distrib.distrib;
             if(istack.numSlots == 0)
                 return 0;
+
+            int maxSize = istack.stack.getMaxStackSize();
+            if (maxSize == 1) continue;
             
             int allSlots = istack.invAmount;
-            if(allSlots/istack.numSlots > istack.stack.getMaxStackSize())
-                allSlots = istack.numSlots*istack.stack.getMaxStackSize();
+            if(allSlots/istack.numSlots > maxSize)
+                allSlots = istack.numSlots*maxSize;
+
             
             quantity = Math.min(quantity, allSlots/istack.distributed);
         }
