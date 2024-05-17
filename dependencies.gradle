@@ -1,5 +1,4 @@
 dependencies {
-    compile("codechicken:codechickenlib-mc1.7.10:1.1.4-gtmega:dev")
-    compile("codechicken:codechickencore-mc1.7.10:1.0.9-gtmega:dev")
+    implementation("codechicken:codechickencore-mc1.7.10:1.4.0-mega:dev")
     shadowCompile("org.apache.commons:commons-csv:1.9.0")
 }
