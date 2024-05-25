@@ -1,6 +1,6 @@
 package codechicken.nei.config;
 
-import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIServerConfig;
 import codechicken.nei.recipe.HandlerInfoManager;
 import codechicken.nei.recipe.HandlerInfo;
 import cpw.mods.fml.common.FMLLog;
@@ -25,7 +25,7 @@ public class IMCHandler {
                 }
                 final NBTTagCompound tag = message.getNBTValue();
                 final String handler = tag.getString("handler");
-                NEIClientConfig.logger.info("Processing registerHandlerInfo `" + handler + "` from " + message.getSender());
+                NEIServerConfig.logger.info("Processing registerHandlerInfo `" + handler + "` from " + message.getSender());
                 
                 final String modName = tag.getString("modName");
                 final String modId = tag.getString("modId");
@@ -33,7 +33,7 @@ public class IMCHandler {
                 final String excludedModId = tag.hasKey("excludedModId") ? tag.getString("excludedModId") : null;
 
                 if(handler.equals("") || modName.equals("") || modId.equals("")) {
-                    NEIClientConfig.logger.warn("Missing relevant information to registerHandlerInfo!");
+                    NEIServerConfig.logger.warn("Missing relevant information to registerHandlerInfo!");
                     continue;
                 }
                 
@@ -60,7 +60,7 @@ public class IMCHandler {
                     final int maxRecipesPerPage = tag.hasKey("maxRecipesPerPage") ? tag.getInteger("maxRecipesPerPage") : HandlerInfo.DEFAULT_MAX_PER_PAGE;
                     info.setHandlerDimensions(imageHeight, imageWidth, maxRecipesPerPage);
                 } catch (NumberFormatException ignored) {
-                    NEIClientConfig.logger.info("Error setting handler dimensions for " + handler);
+                    NEIServerConfig.logger.info("Error setting handler dimensions for " + handler);
                 }
 
                 HandlerInfoManager.handlerMap.remove(handler);
@@ -72,7 +72,7 @@ public class IMCHandler {
                 }
                 final NBTTagCompound tag = message.getNBTValue();
                 final String handler = tag.getString("handler");
-                NEIClientConfig.logger.info("Processing removeHandlerInfo `" + handler + "` from " + message.getSender());
+                NEIServerConfig.logger.info("Processing removeHandlerInfo `" + handler + "` from " + message.getSender());
                 
                 HandlerInfoManager.handlerMap.remove(handler);
             }
