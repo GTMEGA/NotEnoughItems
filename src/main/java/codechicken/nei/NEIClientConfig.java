@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,6 +77,7 @@ public class NEIClientConfig {
     public static final File heightHackHandlersFile = new File(configDir, "heighthackhandlers.cfg");
     public static final File handlerOrderingFile = new File(configDir, "handlerordering.csv");
     public static final File hiddenHandlersFile = new File(configDir, "hiddenhandlers.csv");
+    public static final File enableAutoFocusFile = new File(configDir, "enableautofocus.cfg");
 
     @Deprecated
     public static File bookmarkFile;
@@ -94,6 +96,9 @@ public class NEIClientConfig {
     // Handlers will be sorted in ascending order, so smaller numbers show up earlier.
     // Any handler not in the map will be assigned to 0, and negative numbers are fine.
     public static HashMap<String, Integer> handlerOrdering = new HashMap<>();
+
+    // List of prefixes of classes that should enable the autofocus search widget on open.
+    public static ArrayList<String> enableAutoFocusPrefixes = new ArrayList<>();
 
     // Function that extracts the handler ID from a handler, with special logic for
     // TemplateRecipeHandler: prefer using the overlay ID if it exists.
@@ -272,6 +277,11 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.centerSearchWidget").setComment("Center Search Widget").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.centerSearchWidget", true));
+
+        tag.getTag("inventory.focusSearchWidgetOnOpen")
+                .setComment("Focus Search Widget on Open, blurs on mouse move unless typing has started first")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.focusSearchWidgetOnOpen", true));
 
         tag.getTag("inventory.jei_style_tabs").setComment("Enable/disable JEI Style Tabs").getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.jei_style_tabs", true));
@@ -613,6 +623,10 @@ public class NEIClientConfig {
 
     public static boolean isSearchWidgetCentered() {
         return getBooleanSetting("inventory.centerSearchWidget");
+    }
+
+    public static boolean isFocusSearchWidgetOnOpen() {
+        return getBooleanSetting("inventory.focusSearchWidgetOnOpen");
     }
 
     public static boolean areJEIStyleTabsVisible() {
