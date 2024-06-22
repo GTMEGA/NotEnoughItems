@@ -602,7 +602,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
 
     @Override
     public int recipiesPerPage() {
-        return 2;
+        return 1;
     }
 
     @Override
