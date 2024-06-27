@@ -90,7 +90,8 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static PresetsWidget presetsPanel;
     public static SearchField searchField;
     public static boolean searchInitFocusedCancellable = false;
-    public static int mousePriorX, mousePriorY;
+    protected static int mousePriorX;
+    protected static int mousePriorY;
 
     public static ButtonCycled options;
     public static ButtonCycled bookmarksButton;
@@ -167,7 +168,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         return getSideWidth(gui);
     }
 
-    public boolean isAllowedGuiAutoSearchFocus(GuiContainer gui) {
+    protected boolean isAllowedGuiAutoSearchFocus(GuiContainer gui) {
         if (gui instanceof INEIAutoFocusSearchEnable) {
             return true;
         }
@@ -182,9 +183,9 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         return false;
     }
 
-    public void searchFocusInitCancelCheck() {
+    protected void searchFocusInitCancelCheck() {
         if (searchInitFocusedCancellable) {
-            if (searchField.isVisible() && NEIClientConfig.isFocusSearchWidgetOnOpen()
+            if (searchField.isVisible() && NEIClientConfig.searchWidgetAutofocus()
                     && getInputFocused() == searchField) {
                 searchField.setFocus(false);
                 setInputFocused(null);
@@ -306,8 +307,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             if (mousePriorX == -1) {
                 mousePriorX = mousex;
                 mousePriorY = mousey;
-            }
-            if (mousePriorX != mousex || mousePriorY != mousey) {
+            } else if (mousePriorX != mousex || mousePriorY != mousey) {
                 searchFocusInitCancelCheck();
                 mousePriorX = mousex;
                 mousePriorY = mousey;
@@ -676,7 +676,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             mousePriorX = -1;
             mousePriorY = -1;
 
-            if (searchField.isVisible() && NEIClientConfig.isFocusSearchWidgetOnOpen()
+            if (searchField.isVisible() && NEIClientConfig.searchWidgetAutofocus()
                     && isAllowedGuiAutoSearchFocus(gui)) {
                 searchField.setFocus(true);
                 setInputFocused(searchField);
