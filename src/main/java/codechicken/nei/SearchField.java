@@ -59,6 +59,8 @@ public class SearchField extends TextField implements ItemFilterProvider
     }
 
     public static boolean searchInventories() {
+        if (world == null)
+            return false;
         return world.nbt.getBoolean("searchinventories");
     }
 
