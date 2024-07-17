@@ -78,6 +78,7 @@ public class GuiContainerManager
      * @param handler The handler to register
      */
     public static void addDrawHandler(IContainerDrawHandler handler) {
+        new Throwable("Registering DrawHandler!").printStackTrace();
         drawHandlers.add(handler);
     }
 
@@ -385,6 +386,9 @@ public class GuiContainerManager
     }
 
     public void renderObjects(int mousex, int mousey) {
+        if (drawHandlers.isEmpty()) {
+            new Throwable("renderObjects NO DrawHandlers!").printStackTrace();
+        }
         GL11.glTranslatef(-window.guiLeft, -window.guiTop, 200F);
         for (IContainerDrawHandler drawHandler : drawHandlers)
             drawHandler.renderObjects(window, mousex, mousey);
