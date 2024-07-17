@@ -245,18 +245,23 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public void renderObjects(GuiContainer gui, int mousex, int mousey) {
         NEIClientConfig.logger.trace("renderObjects trace:", new Throwable());
         if (!isHidden()) {
+            NEIClientConfig.logger.trace("NOT HIDDEN!");
             layout(gui);
             if (isEnabled()) {
+                NEIClientConfig.logger.trace("ENABLED!");
                 getLayoutStyle().drawBackground(GuiContainerManager.getManager(gui));
                 for (Widget widget : drawWidgets)
                     widget.draw(mousex, mousey);
             } else {
+                NEIClientConfig.logger.trace("DISABLED!");
                 options.draw(mousex, mousey);
                 bookmarksButton.draw(mousex, mousey);
             }
 
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
+        } else {
+            NEIClientConfig.logger.trace("HIDDEN!");
         }
     }
     
@@ -302,17 +307,25 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
     public static void layout(GuiContainer gui) {
         VisiblityData visiblity = new VisiblityData();
-        if (isHidden())
+        if (isHidden()) {
             visiblity.showNEI = false;
+            NEIClientConfig.logger.trace("layout isHidden!");
+        }
         
-        if (isBookmarkPanelHidden())
+        if (isBookmarkPanelHidden()) {
             visiblity.showBookmarkPanel = false;
+            NEIClientConfig.logger.trace("bookmarkPanelHidden!");
+        }
         
-        if (gui.height - gui.ySize <= 40)
+        if (gui.height - gui.ySize <= 40) {
             visiblity.showSearchSection = false;
+            NEIClientConfig.logger.trace("showSearchSection hidden!");
+        }
         
-        if (gui.guiLeft - 4 < 76)
+        if (gui.guiLeft - 4 < 76) {
             visiblity.showWidgets = false;
+            NEIClientConfig.logger.trace("showWidgets hidden!");
+        }
 
         for (INEIGuiHandler handler : GuiInfo.guiHandlers)
             handler.modifyVisiblity(gui, visiblity);
@@ -656,8 +669,11 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         drawWidgets = new TreeSet<>(new WidgetZOrder(false));
         controlWidgets = new TreeSet<>(new WidgetZOrder(true));
 
-        if (!visiblity.showNEI)
+        if (!visiblity.showNEI) {
+
+            NEIClientConfig.logger.trace("visibility showNEI hidden!");
             return;
+        }
 
 
         addWidget(options);
