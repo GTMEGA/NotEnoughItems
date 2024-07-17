@@ -243,7 +243,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     }
 
     public void renderObjects(GuiContainer gui, int mousex, int mousey) {
-        new Throwable("renderObjects").printStackTrace();
+        NEIClientConfig.logger.trace("renderObjects trace:", new Throwable());
         if (!isHidden()) {
             layout(gui);
             if (isEnabled()) {

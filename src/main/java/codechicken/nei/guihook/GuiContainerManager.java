@@ -1,6 +1,7 @@
 package codechicken.nei.guihook;
 
 import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -78,7 +79,7 @@ public class GuiContainerManager
      * @param handler The handler to register
      */
     public static void addDrawHandler(IContainerDrawHandler handler) {
-        new Throwable("Registering DrawHandler!").printStackTrace();
+        NEIClientConfig.logger.trace("Registering DrawHandler: {}", handler, new Throwable());
         drawHandlers.add(handler);
     }
 
@@ -386,9 +387,9 @@ public class GuiContainerManager
     }
 
     public void renderObjects(int mousex, int mousey) {
-        if (drawHandlers.isEmpty()) {
-            new Throwable("renderObjects NO DrawHandlers!").printStackTrace();
-        }
+        if (drawHandlers.isEmpty())
+            NEIClientConfig.logger.trace("renderObjects NO DrawHandlers trace: ", new Throwable());
+
         GL11.glTranslatef(-window.guiLeft, -window.guiTop, 200F);
         for (IContainerDrawHandler drawHandler : drawHandlers)
             drawHandler.renderObjects(window, mousex, mousey);
