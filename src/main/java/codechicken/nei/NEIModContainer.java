@@ -101,7 +101,8 @@ public class NEIModContainer extends DummyModContainer
     }
     @Subscribe
     public void postInit(FMLPostInitializationEvent event) {
-        HandlerInfoManager.loadHandlerInfo();
+        if (CommonUtils.isClient())
+            HandlerInfoManager.loadHandlerInfo();
         handleIMCMessages();
     }
 
