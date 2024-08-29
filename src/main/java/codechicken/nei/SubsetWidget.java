@@ -33,7 +33,6 @@ import codechicken.nei.SearchTokenParser.SearchMode;
 import codechicken.nei.api.API;
 import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
-import codechicken.nei.api.ItemInfo;
 import codechicken.nei.guihook.GuiContainerManager;
 
 public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoadedCallback {
@@ -641,7 +640,6 @@ public class SubsetWidget extends Button implements ItemFilterProvider, ItemsLoa
             if (reallocate) {
                 for (ItemStack item : ItemList.items) {
                     if (interrupted()) return;
-                    if (ItemInfo.isHidden(item)) continue;
                     for (SubsetTag tag : tags) if (tag.filter.matches(item)) state.get(tag.fullname).items.add(item);
                 }
             }
