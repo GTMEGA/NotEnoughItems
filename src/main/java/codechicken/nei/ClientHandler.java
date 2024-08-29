@@ -296,7 +296,7 @@ public class ClientHandler {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             NEIClientConfig.logger.info("Loading handler ordering from file {}", file);
-            CSVParser csvParser = CSVFormat.EXCEL.withCommentMarker('#').parse(reader);
+            CSVParser csvParser = CSVFormat.EXCEL.builder().setCommentMarker('#').build().parse(reader);
             for (CSVRecord record : csvParser) {
                 final String handlerId = record.get(0);
 
@@ -410,8 +410,9 @@ public class ClientHandler {
             }
         };
 
-        @SuppressWarnings("serial")
         CustomModLoadingErrorDisplayException e = new CustomModLoadingErrorDisplayException() {
+
+            private static final long serialVersionUID = -5593387489666663375L;
 
             @Override
             public void initGui(GuiErrorScreen errorScreen, FontRenderer fontRenderer) {
