@@ -227,7 +227,7 @@ public class NEIClientConfig {
         });
 
         tag.getTag("inventory.search.subsetsSearchMode").setComment("Search mode for Item Subsets (prefix: %)")
-                .getIntValue(2);
+                .getIntValue(1);
         API.addOption(new OptionCycled("inventory.search.subsetsSearchMode", 3, true) {
 
             @Override
@@ -631,34 +631,14 @@ public class NEIClientConfig {
         return hash != Keyboard.CHAR_NONE && hash == NEIClientUtils.getKeyHash();
     }
 
-    public static String getKeyName(int keyBind, boolean useHash) {
-        return getKeyName(keyBind, useHash, false);
-    }
+    public static String getKeyName(String keyBind) {
+        final int hash = getKeyBinding(keyBind);
 
-    public static String getKeyName(int keyBind, boolean useHash, boolean showOnlyHash) {
-        String keyText = "";
-
-        if (useHash) {
-            final String DELIMITER = " + ";
-            if ((keyBind & NEIClientUtils.CTRL_HASH) != 0) {
-                keyText += NEIClientUtils.translate(Minecraft.isRunningOnMac ? "key.ctrl.mac" : "key.ctrl") + DELIMITER;
-            }
-            if ((keyBind & NEIClientUtils.SHIFT_HASH) != 0) {
-                keyText += "SHIFT" + DELIMITER;
-            }
-            if ((keyBind & NEIClientUtils.ALT_HASH) != 0) {
-                keyText += "ALT" + DELIMITER;
-            }
+        if (hash == Keyboard.CHAR_NONE) {
+            return null;
         }
 
-        if (!showOnlyHash) {
-            keyText += Keyboard.getKeyName(unHashKey(keyBind));
-        }
-        return keyText;
-    }
-
-    public static int unHashKey(int keyBind) {
-        return keyBind & ~(NEIClientUtils.CTRL_HASH | NEIClientUtils.SHIFT_HASH | NEIClientUtils.ALT_HASH);
+        return NEIClientUtils.getKeyName(hash);
     }
 
     public static void bootNEI(World world) {
@@ -685,7 +665,7 @@ public class NEIClientConfig {
                         config.loadConfig();
                         NEIModContainer.plugins.add(config);
                         logger.debug("Loaded {}", clazz.getName());
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         logger.error("Failed to Load {}", clazz.getName(), e);
                     }
                 });
