@@ -19,14 +19,17 @@ import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.guihook.IGuiHandleMouseWheel;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -36,6 +39,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
 
 public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOverlay, IGuiClientSide, IGuiHandleMouseWheel, IContainerTooltipHandler, INEIGuiHandler {
     // Background image calculations
@@ -59,7 +66,11 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     
     public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
 
+    public int desiredScrollPos;
     public int scrollPos;
+    public int scrollPosPrev;
+    public int scrollPosInterp;
+
     public int recipetype;
     public ContainerRecipe slotcontainer;
     public GuiContainer firstGui;
@@ -70,7 +81,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     private int OVERLAY_BUTTON_ID_START = 4;
     private GuiButton[] overlayButtons;
     
-    private final Rectangle area = new Rectangle();
+    private final GuiScrollPaneViewport scroll = new GuiScrollPaneViewport(this);
     private IRecipeHandler handler;
     private HandlerInfo handlerInfo;
     
@@ -130,17 +141,16 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             buttonList.removeIf(Arrays.asList(overlayButtons)::contains);
         }
 
-        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
-
-        overlayButtons = new GuiButton[8];
+        overlayButtons = new GuiButton[32];
         for (int i = 0 ; i < overlayButtons.length ; i++) {
             overlayButtons[i] = new GuiNEIButton(
                 OVERLAY_BUTTON_ID_START + i,
-                 (width / 2) + 65,
-                 guiTop + 16 + (handlerHeight * (i+1)) - 2,
+                 0,
+                 0,
                  buttonWidth,
                  buttonHeight,
-                 "?");
+                 "?", scroll
+                );
         }
         Collections.addAll(buttonList, overlayButtons);
 
@@ -159,10 +169,19 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         handler = currenthandlers.get(recipetype);
         handlerInfo = getHandlerInfo(handler);
         scrollPos = 0;
+        scrollPosInterp = 0;
+        scrollPosPrev = 0;
+        desiredScrollPos = 0;
         checkYShift();
         initOverlayButtons();
     }
 
+    @Override
+    protected boolean func_146978_c(int left, int top, int right, int bottom, int pointX, int pointY) {
+        if (!scroll.isInViewportScreenSpace(pointX, pointY))
+            return false;
+        return super.func_146978_c(left, top, right, bottom, pointX, pointY);
+    }
 
     @Override
     public void keyTyped(char c, int i) {
@@ -194,9 +213,11 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     protected void mouseClicked(int x, int y, int button) {
         val si = getScrollInfo();
-        for (int recipe = si.firstIndex; recipe < handler.numRecipes() && recipe < si.lastIndex; recipe++)
-            if (handler.mouseClicked(this, button, recipe))
-                return;
+        if (scroll.isInViewportScreenSpace(x, y)) {
+            for (int recipe = si.firstIndex; recipe < handler.numRecipes() && recipe < si.lastIndex; recipe++)
+                if (handler.mouseClicked(this, button, recipe))
+                    return;
+        }
         super.mouseClicked(x, y, button);
     }
 
@@ -219,6 +240,25 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public void updateScreen() {
+        scrollPosPrev = scrollPos;
+        if (Math.abs(scrollPos - desiredScrollPos) < 2) {
+            scrollPos = desiredScrollPos;
+        }
+        scrollPos = (scrollPos + desiredScrollPos) / 2;
+
+        boolean clamped = false;
+        if (scrollPos < 0) {
+            scrollPos = 0;
+            clamped = true;
+        }
+        val h = Math.max(0, getScrollContentHeight() - scroll.height + 30);
+        if (scrollPos > h) {
+            scrollPos = h;
+            clamped = true;
+        }
+        if (clamped) {
+            desiredScrollPos = scrollPos;
+        }
         super.updateScreen();
         handler.onUpdate();
         refreshPage();
@@ -226,6 +266,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
+        if (!scroll.isInViewportScreenSpace(mousex, mousey))
+            return currenttip;
         /*
          * Several mods try to figure out the relative mouse position for fluid tooltips.  This worked fine
          * when it was a static 166.. however now that we're scaling it this no longer works.  Rather than
@@ -250,6 +292,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mousex, int mousey, List<String> currenttip) {
+        if (!scroll.isInViewportScreenSpace(mousex, mousey))
+            return currenttip;
         val si = getScrollInfo();
         for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++)
             currenttip = handler.handleItemTooltip(this, stack, currenttip, i);
@@ -304,10 +348,10 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public void refreshPage() {
         refreshSlots();
 
-        area.width = handlerInfo.getWidth();
-        area.height = ySize - buttonHeight * 2;
-        area.x = guiLeft - 2;
-        area.y = guiTop  - 4 + yShift;
+        scroll.x = 5;
+        scroll.y = 2 + buttonHeight + 5;
+        scroll.width = handlerInfo == null ? width - 10 : handlerInfo.getWidth();
+        scroll.height = ySize - buttonHeight - 10;
         checkYShift();
         val si = getScrollInfo();
 
@@ -319,10 +363,18 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         } else {
             for(int i = 0 ; i < overlayButtons.length ; i ++) {
                 final int curRecipe = si.firstIndex + i;
+                val button = overlayButtons[i];
                 if (curRecipe >= numRecipes) {
-                    overlayButtons[i].visible = false;
+                    button.visible = false;
                 } else {
-                    overlayButtons[i].visible = handler.hasOverlay(firstGui, firstGui.inventorySlots, curRecipe);
+                    boolean visible = handler.hasOverlay(firstGui, firstGui.inventorySlots, curRecipe);
+                    button.visible = visible;
+                    if (visible) {
+                        int x = guiLeft + scroll.x + scroll.width - 16;
+                        int y = guiTop + scroll.y + (si.handlerHeight * (i + 1)) - 16 + si.firstOffset;
+                        button.xPosition = x;
+                        button.yPosition = y;
+                    }
                 }
             }
         }
@@ -358,45 +410,76 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     private ScrollInfo getScrollInfo() {
         int handlerHeight = getHandlerHeight();
-        int firstIndex = scrollPos / handlerHeight;
-        int firstOffset = firstIndex * handlerHeight - scrollPos;
-        int lastIndex = (scrollPos + area.height + handlerHeight - 1) / handlerHeight;
+        int firstIndex = scrollPosInterp / handlerHeight;
+        firstIndex = Math.max(firstIndex, 0);
+        int firstOffset = firstIndex * handlerHeight - scrollPosInterp;
+        int lastIndex = (scrollPosInterp + scroll.height + handlerHeight - 1) / handlerHeight;
         return new ScrollInfo(handlerHeight, firstIndex, firstOffset, lastIndex);
     }
 
     private int getHandlerHeight() {
         if (handlerInfo == null) {
             return handler.height();
-        } else if (handler == null) {
-            return handlerInfo.getHeight();
         } else {
             return handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
         }
     }
 
+    private int getScrollContentHeight() {
+        return getHandlerHeight() * handler.numRecipes();
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        scrollPosInterp = (int) MathHelper.denormalizeClamp(scrollPosPrev, scrollPos, partialTicks) - 15;
+        refreshPage();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         GuiContainerManager.enable2DRender();
-        String s = handler.getRecipeName().trim();
-        fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0xffffff);
 
         val si = getScrollInfo();
-
-        val mc = Minecraft.getMinecraft();
-//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-//        TODO GL11.glScissor();
         GL11.glPushMatrix();
-        GL11.glTranslatef(5, 32 + yShift + si.firstOffset, 0);
+        GL11.glTranslatef(scroll.x, scroll.y + yShift + si.firstOffset, 0);
         for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             handler.drawForeground(i);
             GL11.glTranslatef(0, si.handlerHeight, 0);
         }
         GL11.glPopMatrix();
-//        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        String s = handler.getRecipeName().trim();
+        fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0xffffff);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor3f(1, 1, 1);
+        val tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        float color = 0.1882353f;
+        tess.setColorRGBA_F(color, color, color, 1);
+        tess.addVertex(scroll.x + scroll.width, scroll.y, 0);
+        tess.addVertex(scroll.x, scroll.y, 0);
+        tess.setColorRGBA_F(color, color, color, 0);
+        tess.addVertex(scroll.x, scroll.y + 15, 0);
+        tess.addVertex(scroll.x + scroll.width, scroll.y + 15, 0);
+        tess.setColorRGBA_F(color, color, color, 1);
+        tess.addVertex(scroll.x, scroll.y + scroll.height, 0);
+        tess.addVertex(scroll.x + scroll.width, scroll.y + scroll.height, 0);
+        tess.setColorRGBA_F(color, color, color, 0);
+        tess.addVertex(scroll.x + scroll.width, scroll.y + scroll.height - 15, 0);
+        tess.addVertex(scroll.x, scroll.y + scroll.height - 15, 0);
+        tess.draw();
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GL11.glColor4f(1, 1, 1, 1);
         final int j = (width  - xSize) / 2;
         final int k = guiTop;
@@ -410,16 +493,26 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                  0x30000000);
 
         val si = getScrollInfo();
-//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-//        TODO GL11.glScissor();
+        val mc = Minecraft.getMinecraft();
+        val sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+        double guiScale = mc.displayWidth / sr.getScaledWidth_double();
+        int viewportLeft = guiLeft + scroll.x;
+        int viewportTop = guiTop + scroll.y;
+        int viewportRight = viewportLeft + scroll.width;
+        int viewportBottom = viewportTop + scroll.height;
+        viewportLeft = (int)(viewportLeft * guiScale);
+        viewportTop = (int)(viewportTop * guiScale);
+        viewportRight = (int)(viewportRight * guiScale);
+        viewportBottom = (int)(viewportBottom * guiScale);
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(viewportLeft, mc.displayHeight - viewportBottom, viewportRight - viewportLeft, viewportBottom - viewportTop);
         GL11.glPushMatrix();
-        GL11.glTranslatef(j + 5, k + 32 + yShift + si.firstOffset, 0);
+        GL11.glTranslatef(j + scroll.x, k + scroll.y + yShift + si.firstOffset, 0);
         for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             handler.drawBackground(i);
             GL11.glTranslatef(0, si.handlerHeight, 0);
         }
         GL11.glPopMatrix();
-//        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     private void drawBackgroundTiled(int j, int k) {
@@ -463,17 +556,14 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public Point getRecipePosition(int recipe) {
         int handlerHeight = getHandlerHeight();
         int offsetInScrollPane = recipe * handlerHeight;
-        int offsetInViewport = offsetInScrollPane - scrollPos;
-        return new Point(5, 32 + yShift + offsetInViewport);
+        int offsetInViewport = offsetInScrollPane - scrollPosInterp;
+        return new Point(scroll.x, scroll.y + yShift + offsetInViewport);
     }
 
     @Override
     public void mouseScrolled(int i) {
         if (new Rectangle(guiLeft, guiTop, xSize, ySize).contains(GuiDraw.getMousePosition())) {
-            scrollPos -= i * 10;
-            if (scrollPos < 0) {
-                scrollPos = 0;
-            }
+            desiredScrollPos -= i * 10;
         }
     }
 
@@ -504,7 +594,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
         // Because some of the handlers *cough avaritia* are oversized
-        Rectangle rect = new Rectangle(area);
+        Rectangle rect = new Rectangle(scroll.x, scroll.y, scroll.width, scroll.height);
 
         return rect.contains(x, y, w, h);
     }
