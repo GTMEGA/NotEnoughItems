@@ -18,6 +18,10 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.guihook.IGuiHandleMouseWheel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -55,13 +59,11 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     
     public ArrayList<? extends IRecipeHandler> currenthandlers = new ArrayList<>();
 
-    public int page;
+    public int scrollPos;
     public int recipetype;
     public ContainerRecipe slotcontainer;
     public GuiContainer firstGui;
     public GuiScreen prevGui;
-    public GuiButton nextpage;
-    public GuiButton prevpage;
     private GuiButton nexttype;
     private GuiButton prevtype;
     
@@ -110,10 +112,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         nexttype = new GuiNEIButton(0, leftButtonX, guiTop + 3, buttonWidth, buttonHeight, "<");
         prevtype = new GuiNEIButton(1, rightButtonX, guiTop + 3, buttonWidth, buttonHeight, ">");
         
-        nextpage = new GuiNEIButton(2, leftButtonX, guiTop + 17, buttonWidth, buttonHeight, "<");
-        prevpage = new GuiNEIButton(3, rightButtonX, guiTop + 17, buttonWidth, buttonHeight, ">");
-        
-        buttonList.addAll(Arrays.asList(nexttype, prevtype, nextpage, prevpage));
+        buttonList.addAll(Arrays.asList(nexttype, prevtype));
 
         if (currenthandlers.size() == 1) {
             nexttype.visible = false;
@@ -132,10 +131,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         }
 
         int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
-        
-        final int recipesPerPage = getRecipesPerPage();
-        overlayButtons = new GuiButton[recipesPerPage];
-        for (int i = 0 ; i < recipesPerPage ; i++) {
+
+        overlayButtons = new GuiButton[8];
+        for (int i = 0 ; i < overlayButtons.length ; i++) {
             overlayButtons[i] = new GuiNEIButton(
                 OVERLAY_BUTTON_ID_START + i,
                  (width / 2) + 65,
@@ -160,7 +158,7 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         handler = currenthandlers.get(recipetype);
         handlerInfo = getHandlerInfo(handler);
-        page = 0;
+        scrollPos = 0;
         checkYShift();
         initOverlayButtons();
     }
@@ -176,8 +174,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         if (GuiContainerManager.getManager(this).lastKeyTyped(i, c))
             return;
 
-        final int recipesPerPage = getRecipesPerPage();
-        for (int recipe = page * recipesPerPage; recipe < handler.numRecipes() && recipe < (page + 1) * recipesPerPage; recipe++)
+
+        val si = getScrollInfo();
+        for (int recipe = si.firstIndex; recipe < handler.numRecipes() && recipe < si.lastIndex; recipe++)
             if (handler.keyTyped(this, c, i, recipe))
                 return;
 
@@ -189,17 +188,13 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             prevType();
         else if (i == NEIClientConfig.getKeyBinding("gui.next_machine"))
             nextType();
-        else if (i == NEIClientConfig.getKeyBinding("gui.prev_recipe"))
-            prevPage();
-        else if (i == NEIClientConfig.getKeyBinding("gui.next_recipe"))
-            nextPage();
 
     }
 
     @Override
     protected void mouseClicked(int x, int y, int button) {
-        final int recipesPerPage = getRecipesPerPage();
-        for (int recipe = page * recipesPerPage; recipe < handler.numRecipes() && recipe < (page + 1) * recipesPerPage; recipe++)
+        val si = getScrollInfo();
+        for (int recipe = si.firstIndex; recipe < handler.numRecipes() && recipe < si.lastIndex; recipe++)
             if (handler.mouseClicked(this, button, recipe))
                 return;
         super.mouseClicked(x, y, button);
@@ -208,7 +203,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     protected void actionPerformed(GuiButton guibutton) {
         super.actionPerformed(guibutton);
-        final int recipesPerPage = getRecipesPerPage();
         switch (guibutton.id) {
             case 0:
                 prevType();
@@ -216,15 +210,10 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
             case 1:
                 nextType();
                 return;
-            case 2:
-                prevPage();
-                return;
-            case 3:
-                nextPage();
-                return;
         }
         if (overlayButtons != null && guibutton.id >= OVERLAY_BUTTON_ID_START && guibutton.id < OVERLAY_BUTTON_ID_START + overlayButtons.length) {
-            overlayRecipe(page * recipesPerPage + guibutton.id - OVERLAY_BUTTON_ID_START);
+            val si = getScrollInfo();
+            overlayRecipe(si.firstIndex + guibutton.id - OVERLAY_BUTTON_ID_START);
         }
     }
 
@@ -237,21 +226,20 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
-        final int recipesPerPage = getRecipesPerPage();
-        /* 
+        /*
          * Several mods try to figure out the relative mouse position for fluid tooltips.  This worked fine
          * when it was a static 166.. however now that we're scaling it this no longer works.  Rather than
          * patching the individual mods (so that we can be as compatible as possible), we'll just fake
          * the height for their tooltip rendering.
          */
-        
+        val si = getScrollInfo();
         // Begin Hax
         final int oldHeight = this.height;
         int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
 
 
         this.height = 166 + handlerHeight + 18 + (guiTop - 44) * 2;
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
+        for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             currenttip = handler.handleTooltip(this, currenttip, i);
         }
         this.height = oldHeight;
@@ -262,8 +250,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     @Override
     public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mousex, int mousey, List<String> currenttip) {
-        final int recipesPerPage = getRecipesPerPage();
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++)
+        val si = getScrollInfo();
+        for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++)
             currenttip = handler.handleItemTooltip(this, stack, currenttip, i);
 
         return currenttip;
@@ -272,16 +260,6 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     @Override
     public List<String> handleItemDisplayName(GuiContainer gui, ItemStack itemstack, List<String> currenttip) {
         return currenttip;
-    }
-
-    private void nextPage() {
-        page++;
-        if (page > (handler.numRecipes() - 1) / getRecipesPerPage()) page = 0;
-    }
-
-    private void prevPage() {
-        page--;
-        if (page < 0) page = (handler.numRecipes() - 1) / getRecipesPerPage();
     }
 
     private void nextType() {
@@ -325,30 +303,25 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     
     public void refreshPage() {
         refreshSlots();
-        final int recipesPerPage = getRecipesPerPage();
-        final boolean multiplepages = handler.numRecipes() > recipesPerPage;
 
-        final int numRecipes = Math.min(handler.numRecipes() - (page * recipesPerPage), recipesPerPage);
-
-        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
         area.width = handlerInfo.getWidth();
-        area.height = handlerHeight * numRecipes;
+        area.height = ySize - buttonHeight * 2;
         area.x = guiLeft - 2;
         area.y = guiTop  - 4 + yShift;
         checkYShift();
+        val si = getScrollInfo();
 
-        nextpage.enabled = prevpage.enabled = multiplepages;
-        
+        val numRecipes = handler.numRecipes();
         if(firstGui == null) {
             for (GuiButton overlay : overlayButtons) {
                 overlay.visible = false;
             }
         } else {
             for(int i = 0 ; i < overlayButtons.length ; i ++) {
-                if (i >= numRecipes) {
+                final int curRecipe = si.firstIndex + i;
+                if (curRecipe >= numRecipes) {
                     overlayButtons[i].visible = false;
                 } else {
-                    final int curRecipe = page * recipesPerPage + i;
                     overlayButtons[i].visible = handler.hasOverlay(firstGui, firstGui.inventorySlots, curRecipe);
                 }
             }
@@ -357,8 +330,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
     private void refreshSlots() {
         slotcontainer.inventorySlots.clear();
-        final int recipesPerPage = getRecipesPerPage();
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
+        val si = getScrollInfo();
+        for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             Point p = getRecipePosition(i);
 
             List<PositionedStack> stacks = handler.getIngredientStacks(i);
@@ -375,29 +348,55 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         }
     }
 
+    @AllArgsConstructor
+    private static class ScrollInfo {
+        public int handlerHeight;
+        public int firstIndex;
+        public int firstOffset;
+        public int lastIndex;
+    }
+
+    private ScrollInfo getScrollInfo() {
+        int handlerHeight = getHandlerHeight();
+        int firstIndex = scrollPos / handlerHeight;
+        int firstOffset = firstIndex * handlerHeight - scrollPos;
+        int lastIndex = (scrollPos + area.height + handlerHeight - 1) / handlerHeight;
+        return new ScrollInfo(handlerHeight, firstIndex, firstOffset, lastIndex);
+    }
+
+    private int getHandlerHeight() {
+        if (handlerInfo == null) {
+            return handler.height();
+        } else if (handler == null) {
+            return handlerInfo.getHeight();
+        } else {
+            return handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
+        }
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         GuiContainerManager.enable2DRender();
-        final int recipesPerPage = getRecipesPerPage();
         String s = handler.getRecipeName().trim();
         fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0xffffff);
-        s = NEIClientUtils.translate("recipe.page", page + 1, (handler.numRecipes() - 1) / recipesPerPage + 1);
-        fontRendererObj.drawStringWithShadow(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 19, 0xffffff);
 
-        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
+        val si = getScrollInfo();
 
+        val mc = Minecraft.getMinecraft();
+//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+//        TODO GL11.glScissor();
         GL11.glPushMatrix();
-        GL11.glTranslatef(5, 32 + yShift, 0);
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
+        GL11.glTranslatef(5, 32 + yShift + si.firstOffset, 0);
+        for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             handler.drawForeground(i);
-            GL11.glTranslatef(0, handlerHeight, 0);
+            GL11.glTranslatef(0, si.handlerHeight, 0);
         }
         GL11.glPopMatrix();
+//        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
-        final int recipesPerPage = getRecipesPerPage();
         GL11.glColor4f(1, 1, 1, 1);
         final int j = (width  - xSize) / 2;
         final int k = guiTop;
@@ -409,21 +408,18 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
                  guiLeft + xSize - borderPadding - buttonWidth,
                  nexttype.yPosition + buttonHeight,
                  0x30000000);
-        drawRect(guiLeft + borderPadding + buttonWidth - 1,
-                 nextpage.yPosition,
-                 guiLeft + xSize - borderPadding - buttonWidth,
-                 nextpage.yPosition + buttonHeight,
-                 0x30000000);
-        
-        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
 
+        val si = getScrollInfo();
+//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+//        TODO GL11.glScissor();
         GL11.glPushMatrix();
-        GL11.glTranslatef(j + 5, k + 32 + yShift, 0);
-        for (int i = page * recipesPerPage; i < handler.numRecipes() && i < (page + 1) * recipesPerPage; i++) {
+        GL11.glTranslatef(j + 5, k + 32 + yShift + si.firstOffset, 0);
+        for (int i = si.firstIndex; i < handler.numRecipes() && i < si.lastIndex; i++) {
             handler.drawBackground(i);
-            GL11.glTranslatef(0, handlerHeight, 0);
+            GL11.glTranslatef(0, si.handlerHeight, 0);
         }
         GL11.glPopMatrix();
+//        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     private void drawBackgroundTiled(int j, int k) {
@@ -463,28 +459,21 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
 
         return stackSlot == mouseoverSlot;
     }
-    
-    private int getRecipesPerPage() {
-        if(handlerInfo != null) {
-            if (handler.overwriteHandlerInfoSettings()) {
-                return Math.max(Math.min(((ySize - (buttonHeight*3)) / handler.height()), handler.recipiesPerPage()), 1);
-            }
-            return Math.max(Math.min(((ySize - (buttonHeight*3)) / handlerInfo.getHeight()), handlerInfo.getMaxRecipesPerPage()), 1);
-        }
-        else
-            return (handler.recipiesPerPage());
-    }
 
     public Point getRecipePosition(int recipe) {
-        int handlerHeight = handler.overwriteHandlerInfoSettings() ? handler.height() : handlerInfo.getHeight();
-        return new Point(5, 32 + yShift + ((recipe % getRecipesPerPage()) * handlerHeight));
+        int handlerHeight = getHandlerHeight();
+        int offsetInScrollPane = recipe * handlerHeight;
+        int offsetInViewport = offsetInScrollPane - scrollPos;
+        return new Point(5, 32 + yShift + offsetInViewport);
     }
 
     @Override
     public void mouseScrolled(int i) {
         if (new Rectangle(guiLeft, guiTop, xSize, ySize).contains(GuiDraw.getMousePosition())) {
-            if (i > 0) prevPage();
-            else       nextPage();
+            scrollPos -= i * 10;
+            if (scrollPos < 0) {
+                scrollPos = 0;
+            }
         }
     }
 
