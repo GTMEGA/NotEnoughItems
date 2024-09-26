@@ -50,7 +50,7 @@ public class ThreadOperationTimer extends Thread
     @SuppressWarnings("deprecation")
     @Override
     public void run() {
-        if(FMLCommonHandler.instance().findContainerFor(Tags.MODID).getVersion().contains("$"))
+        if(FMLCommonHandler.instance().findContainerFor(Tags.MOD_ID).getVersion().contains("$"))
             return;//don't run this thread in a source environment
 
         while (thread.isAlive()) {

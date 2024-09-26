@@ -38,7 +38,7 @@ public class NEIModContainer extends DummyModContainer
     public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     public NEIModContainer() {
-        super(MetadataCollection.from(ResourceUtil.getResourceFromJar("/mcmod.info", NEIModContainer.class), Tags.MODID).getMetadataForId(Tags.MODID, null));
+        super(MetadataCollection.from(ResourceUtil.getResourceFromJar("/mcmod.info", NEIModContainer.class), Tags.MOD_ID).getMetadataForId(Tags.MOD_ID, null));
         loadMetadata();
     }
 
@@ -114,7 +114,7 @@ public class NEIModContainer extends DummyModContainer
              */
             Field modMessagesField = FMLInterModComms.class.getDeclaredField("modMessages");
             modMessagesField.setAccessible(true);
-            IMCHandler.processIMC(ImmutableList.copyOf(((ArrayListMultimap<String, FMLInterModComms.IMCMessage>)modMessagesField.get(FMLInterModComms.class)).removeAll(Tags.MODID)));
+            IMCHandler.processIMC(ImmutableList.copyOf(((ArrayListMultimap<String, FMLInterModComms.IMCMessage>)modMessagesField.get(FMLInterModComms.class)).removeAll(Tags.MOD_ID)));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }

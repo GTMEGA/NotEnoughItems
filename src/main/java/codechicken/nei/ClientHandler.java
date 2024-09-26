@@ -154,7 +154,7 @@ public class ClientHandler
     public static void load() {
         instance = new ClientHandler();
 
-        GuiModListScroll.register(Tags.MODID);
+        GuiModListScroll.register(Tags.MOD_ID);
         PacketCustom.assignHandler(NEICPH.channel, new NEICPH());
         FMLCommonHandler.instance().bus().register(instance);
         MinecraftForge.EVENT_BUS.register(instance);

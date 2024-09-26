@@ -10,7 +10,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 import java.io.File;
 import java.util.Map;
 
-@TransformerExclusions(value = {Tags.GROUPNAME + ".asm"})
+@TransformerExclusions(value = {Tags.ROOT_PKG + ".asm"})
 public class NEICorePlugin implements IFMLLoadingPlugin, IFMLCallHook
 {
     public static File location;
@@ -21,18 +21,18 @@ public class NEICorePlugin implements IFMLLoadingPlugin, IFMLCallHook
 
     @Override
     public String[] getASMTransformerClass() {
-        CodeChickenCorePlugin.versionCheck(CodeChickenCorePlugin.mcVersion, Tags.MODID);
-        return new String[]{Tags.GROUPNAME + ".asm.NEITransformer"};
+        CodeChickenCorePlugin.versionCheck(CodeChickenCorePlugin.mcVersion, Tags.MOD_ID);
+        return new String[]{Tags.ROOT_PKG + ".asm.NEITransformer"};
     }
 
     @Override
     public String getModContainerClass() {
-        return Tags.GROUPNAME + ".NEIModContainer";
+        return Tags.ROOT_PKG + ".NEIModContainer";
     }
 
     @Override
     public String getSetupClass() {
-        return Tags.GROUPNAME + ".asm.NEICorePlugin";
+        return Tags.ROOT_PKG + ".asm.NEICorePlugin";
     }
 
     @Override

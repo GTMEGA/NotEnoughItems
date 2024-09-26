@@ -34,7 +34,7 @@ public class NEIServerConfig
 {
     private static MinecraftServer server;
 
-    public static Logger logger = LogManager.getLogger(Tags.MODID);
+    public static Logger logger = LogManager.getLogger(Tags.MOD_ID);
     public static File saveDir;
     public static ConfigFile serverConfig;
     public static Map<Integer, NBTTagCompound> dimTags = new HashMap<>();
