@@ -112,26 +112,14 @@ public class LayoutStyleMinecraft extends LayoutStyle
         bookmarkPanel.resize(gui);
 
 
-        // TODO: [VEN] Proper alignment
-        int more_w;
-        int more_h;
-        int less_w;
-        int less_h;
-
-        int more_x;
-        int more_y;
-        int less_x;
-        int less_y;
-
-        more_w = more_h = less_w = less_h = 16;
-        less_x = itemPanel.prev.x;
-        more_x = gui.width - less_w - 2;
-        more_y = less_y = gui.height - more_h - 2;
-
-        searchField.x = less_x + less_w + 2;
-        searchField.y = less_y;
-        searchField.w = more_x - searchField.x - 2;
-        searchField.h = less_h;
+        // TODO: [VEN] Proper alignment for search bar
+        // Without the offset, it's aligned with the top bottoms on the left and right.
+        // This offset will keep it centered, and push it in by one pixel on each side
+        final int offset_sf = 5;
+        searchField.x = itemPanel.prev.x - 1 + offset_sf;
+        searchField.y = gui.height - 18;
+        searchField.w = gui.width - searchField.x - 1 - offset_sf;
+        searchField.h = 16;
 
         options.x = isEnabled() ? 0 : 6;
         options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
@@ -143,22 +131,13 @@ public class LayoutStyleMinecraft extends LayoutStyle
         bookmarksButton.w = 22;
         bookmarksButton.h = 22;
 
-        // TODO: [VEN] Proper alignment
-//        searchField.y = gui.height - searchField.h - 2;
-
         dropDown.x = Math.min(numButtons, buttonCount) * 20 + 3;
         dropDown.h = 20;
         dropDown.w = itemPanel.x - dropDown.x - 3;
 
-        // TODO: [VEN] Proper alignment
-//        searchField.h = 20;
-//        searchField.w = 150;
-//        searchField.x = (gui.width - searchField.w) / 2;
-
         if (!visiblity.showItemSection) {
             searchField.setFocus(false);
         }
-
     }
 
     public void layoutButton(Button button) {
