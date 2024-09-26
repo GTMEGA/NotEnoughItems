@@ -35,10 +35,11 @@ minecraft_fp {
 
 repositories {
     exclusive(mavenpattern(), "com.falsepattern")
-    exclusive(mega(), "codechicken")
+    exclusive(mega(), "codechicken", "mega")
 }
 
 dependencies {
     implementation("codechicken:codechickencore-mc1.7.10:1.4.0-mega:dev")
     shadowImplementation("org.apache.commons:commons-csv:1.9.0")
+    runtimeOnlyNonPublishable("mega:blendtronic-mc1.7.10:1.6.0:dev")
 }
