@@ -8,7 +8,6 @@ import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.api.LayoutStyle;
-import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerDrawHandler;
@@ -38,7 +37,6 @@ import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.nei.NEIClientConfig.canPerformAction;
 import static codechicken.nei.NEIClientConfig.disabledActions;
-import static codechicken.nei.NEIClientConfig.getItemQuantity;
 import static codechicken.nei.NEIClientConfig.getKeyBinding;
 import static codechicken.nei.NEIClientConfig.getOptionList;
 import static codechicken.nei.NEIClientConfig.getSearchExpression;
@@ -50,7 +48,6 @@ import static codechicken.nei.NEIClientConfig.isHidden;
 import static codechicken.nei.NEIClientConfig.showIDs;
 import static codechicken.nei.NEIClientConfig.toggleBooleanSetting;
 import static codechicken.nei.NEIClientConfig.world;
-import static codechicken.nei.NEIClientUtils.controlKey;
 import static codechicken.nei.NEIClientUtils.cycleGamemode;
 import static codechicken.nei.NEIClientUtils.decreaseSlotStack;
 import static codechicken.nei.NEIClientUtils.deleteEverything;
@@ -63,7 +60,6 @@ import static codechicken.nei.NEIClientUtils.getNextGamemode;
 import static codechicken.nei.NEIClientUtils.healPlayer;
 import static codechicken.nei.NEIClientUtils.isValidGamemode;
 import static codechicken.nei.NEIClientUtils.setHourForward;
-import static codechicken.nei.NEIClientUtils.setItemQuantity;
 import static codechicken.nei.NEIClientUtils.shiftKey;
 import static codechicken.nei.NEIClientUtils.toggleMagnetMode;
 import static codechicken.nei.NEIClientUtils.toggleRaining;
@@ -90,10 +86,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
     public static ButtonCycled options;
     public static ButtonCycled bookmarksButton;
-
-    public static Button more;
-    public static Button less;
-    public static ItemQuantityField quantity;
 
     public static Button delete;
     public static ButtonCycled gamemode;
@@ -402,42 +394,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 return translate("bookmark.toggle");
             }
         };
-        more = new Button("+")
-        {
-            @Override
-            public boolean onButtonPress(boolean rightclick) {
-                if (rightclick)
-                    return false;
-
-                int modifier = controlKey() ? 64 : shiftKey() ? 10 : 1;
-
-                int quantity = getItemQuantity() + modifier;
-                if (quantity < 0)
-                    quantity = 0;
-
-                setItemQuantity(quantity);
-                return true;
-            }
-        };
-        less = new Button("-")
-        {
-            @Override
-            public boolean onButtonPress(boolean rightclick) {
-                if (rightclick)
-                    return false;
-
-                int modifier = controlKey() ? -64 : shiftKey() ? -10 : -1;
-
-                int quantity = getItemQuantity() + modifier;
-                if (quantity < 0)
-                    quantity = 0;
-
-                setItemQuantity(quantity);
-                return true;
-            }
-        };
-        quantity = new ItemQuantityField("quantity");
-
 
         delete = new Button()
         {
@@ -664,12 +620,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
         if (visiblity.showItemPanel) {
             addWidget(itemPanel);
             itemPanel.setVisible();
-
-            if (canPerformAction("item")) {
-                addWidget(more);
-                addWidget(less);
-                addWidget(quantity);
-            }
         }
 
         if (visiblity.showBookmarkPanel) {

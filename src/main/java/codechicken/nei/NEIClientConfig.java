@@ -233,7 +233,6 @@ public class NEIClientConfig {
         setWorldDefaults();
         creativeInv = new ItemStack[54];
         LayoutManager.searchField.setText(getSearchExpression());
-        LayoutManager.quantity.setText(Integer.toString(getItemQuantity()));
         SubsetWidget.loadHidden();
 
         if (newWorld && Minecraft.getMinecraft().isSingleplayer())

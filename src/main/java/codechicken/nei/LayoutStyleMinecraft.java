@@ -12,13 +12,10 @@ import static codechicken.nei.LayoutManager.dropDown;
 import static codechicken.nei.LayoutManager.gamemode;
 import static codechicken.nei.LayoutManager.heal;
 import static codechicken.nei.LayoutManager.itemPanel;
-import static codechicken.nei.LayoutManager.less;
 import static codechicken.nei.LayoutManager.magnet;
-import static codechicken.nei.LayoutManager.more;
 import static codechicken.nei.LayoutManager.options;
-import static codechicken.nei.LayoutManager.quantity;
-import static codechicken.nei.LayoutManager.rain;
 import static codechicken.nei.LayoutManager.searchField;
+import static codechicken.nei.LayoutManager.rain;
 import static codechicken.nei.LayoutManager.timeButtons;
 import static codechicken.nei.NEIClientConfig.canPerformAction;
 import static codechicken.nei.NEIClientConfig.disabledActions;
@@ -114,15 +111,27 @@ public class LayoutStyleMinecraft extends LayoutStyle
         itemPanel.resize(gui);
         bookmarkPanel.resize(gui);
 
-        more.w = more.h = less.w = less.h = 16;
-        less.x = itemPanel.prev.x;
-        more.x = gui.width - less.w - 2;
-        more.y = less.y = gui.height - more.h - 2;
 
-        quantity.x = less.x + less.w + 2;
-        quantity.y = less.y;
-        quantity.w = more.x - quantity.x - 2;
-        quantity.h = less.h;
+        // TODO: [VEN] Proper alignment
+        int more_w;
+        int more_h;
+        int less_w;
+        int less_h;
+
+        int more_x;
+        int more_y;
+        int less_x;
+        int less_y;
+
+        more_w = more_h = less_w = less_h = 16;
+        less_x = itemPanel.prev.x;
+        more_x = gui.width - less_w - 2;
+        more_y = less_y = gui.height - more_h - 2;
+
+        searchField.x = less_x + less_w + 2;
+        searchField.y = less_y;
+        searchField.w = more_x - searchField.x - 2;
+        searchField.h = less_h;
 
         options.x = isEnabled() ? 0 : 6;
         options.y = isEnabled() ? gui.height - 22 : gui.height - 28;
@@ -134,15 +143,17 @@ public class LayoutStyleMinecraft extends LayoutStyle
         bookmarksButton.w = 22;
         bookmarksButton.h = 22;
 
-        searchField.y = gui.height - searchField.h - 2;
+        // TODO: [VEN] Proper alignment
+//        searchField.y = gui.height - searchField.h - 2;
 
         dropDown.x = Math.min(numButtons, buttonCount) * 20 + 3;
         dropDown.h = 20;
         dropDown.w = itemPanel.x - dropDown.x - 3;
-        
-        searchField.h = 20;
-        searchField.w = 150;
-        searchField.x = (gui.width - searchField.w) / 2;
+
+        // TODO: [VEN] Proper alignment
+//        searchField.h = 20;
+//        searchField.w = 150;
+//        searchField.x = (gui.width - searchField.w) / 2;
 
         if (!visiblity.showItemSection) {
             searchField.setFocus(false);
