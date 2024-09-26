@@ -1,6 +1,0 @@
-repositories {
-    maven {
-        name = "gtmega"
-        url = "https://mvn.falsepattern.com/gtmega_releases"
-    }
-}

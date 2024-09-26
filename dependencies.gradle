@@ -1,4 +1,0 @@
-dependencies {
-    implementation("codechicken:codechickencore-mc1.7.10:1.4.0-mega:dev")
-    shadowCompile("org.apache.commons:commons-csv:1.9.0")
-}

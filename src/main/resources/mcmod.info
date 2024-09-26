@@ -4,7 +4,7 @@
   "name": "${modName}",
   "version": "${modVersion}",
   "mcversion": "${minecraftVersion}",
-  "description": "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version
+  "description": "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; MEGA Version
 
 
 <plugins>
@@ -15,7 +15,7 @@ Supporters: EmuCraft Team, Victor Zimmer, lexi85, Ace_Trainer_Tullius, Bacon_Don
   "license": "LGPL-3.0",
   "authorList": [ "ChickenBones", "mitchej123", "FalsePattern" ],
   "dependencies": [
-     "CodeChickenCore"
+    "CodeChickenCore"
   ]
 }
 ]
