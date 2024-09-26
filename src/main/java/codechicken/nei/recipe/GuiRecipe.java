@@ -75,8 +75,8 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
     public ContainerRecipe slotcontainer;
     public GuiContainer firstGui;
     public GuiScreen prevGui;
-    private GuiButton nexttype;
-    private GuiButton prevtype;
+    private GuiNEIButton nexttype;
+    private GuiNEIButton prevtype;
     
     private int OVERLAY_BUTTON_ID_START = 4;
     private GuiButton[] overlayButtons;
@@ -121,7 +121,9 @@ public abstract class GuiRecipe extends GuiContainer implements IGuiContainerOve
         final int leftButtonX = guiLeft + borderPadding;
 
         nexttype = new GuiNEIButton(0, leftButtonX, guiTop + 3, buttonWidth, buttonHeight, "<");
+        nexttype.bypassScissor = true;
         prevtype = new GuiNEIButton(1, rightButtonX, guiTop + 3, buttonWidth, buttonHeight, ">");
+        prevtype.bypassScissor = true;
         
         buttonList.addAll(Arrays.asList(nexttype, prevtype));
 
