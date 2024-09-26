@@ -105,7 +105,8 @@ public class ItemMobSpawner extends ItemBlock
         if (loaded) return;
         loaded = true;
         Map<Class<? extends Entity>, String> classToStringMapping = EntityList.classToStringMapping;
-        Map<Class<? extends Entity>, Integer> classToIDMapping = (Map<Class<? extends Entity>, Integer>) EntityList.classToIDMapping;
+        @SuppressWarnings("unchecked")
+        Map<Class<? extends Entity>, Integer> classToIDMapping = EntityList.classToIDMapping;
         for (Class<? extends Entity> eclass : classToStringMapping.keySet()) {
             if (!EntityLiving.class.isAssignableFrom(eclass))
                 continue;
