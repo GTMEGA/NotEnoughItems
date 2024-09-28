@@ -130,9 +130,12 @@ public class BookmarkPanel extends PanelWidget {
         }
 
         public void setEndRowIndex(BookmarkGrid BGrid, int rowIndex) {
-            this.endRowIndex = rowIndex;
-            this.endItemIndexTop = getTopItemIndex(BGrid, rowIndex);
-            this.endItemIndexBottom = getBottomItemIndex(BGrid, rowIndex);
+
+            if (BGrid.getRowItemIndex(rowIndex, true) >= 0) {
+                this.endRowIndex = rowIndex;
+                this.endItemIndexTop = getTopItemIndex(BGrid, rowIndex);
+                this.endItemIndexBottom = getBottomItemIndex(BGrid, rowIndex);
+            }
         }
 
         public boolean hasEndRow() {
@@ -226,12 +229,12 @@ public class BookmarkPanel extends PanelWidget {
         }
     }
 
-    public static enum BookmarkViewMode {
+    public enum BookmarkViewMode {
         DEFAULT,
         TODO_LIST
     }
 
-    public static enum BookmarkLoadingState {
+    public enum BookmarkLoadingState {
         LOADING,
         LOADED
     }
@@ -2726,8 +2729,9 @@ public class BookmarkPanel extends PanelWidget {
     }
 
     public boolean pullBookmarkItems(int groupId, boolean onlyIngredients) {
-        IBookmarkContainerHandler containerHandler = BookmarkContainerInfo
-                .getBookmarkContainerHandler(getGuiContainer());
+        final GuiContainer guiContainer = getGuiContainer();
+        final IBookmarkContainerHandler containerHandler = BookmarkContainerInfo
+                .getBookmarkContainerHandler(guiContainer);
 
         if (containerHandler == null) {
             return false;
@@ -2736,7 +2740,6 @@ public class BookmarkPanel extends PanelWidget {
         final BookmarkGrid BGrid = (BookmarkGrid) grid;
         final ArrayList<ItemStack> items = new ArrayList<>();
         final ItemStackMap<Long> uniqueItems = new ItemStackMap<>();
-        final BookmarkGroup group = groupId >= 0 ? BGrid.groups.get(groupId) : null;
         ItemStackMetadata meta;
 
         for (int idx = 0; idx < BGrid.realItems.size(); idx++) {
@@ -2744,6 +2747,7 @@ public class BookmarkPanel extends PanelWidget {
 
             if (groupId == -1 || groupId == meta.groupId) {
                 final ItemStack stack = BGrid.getItem(idx);
+                final BookmarkGroup group = BGrid.groups.get(meta.groupId);
 
                 if (!onlyIngredients || meta.ingredient && (group == null || group.crafting == null
                         || group.crafting.inputs.containsKey(BGrid.realItems.get(idx)))) {
@@ -2768,7 +2772,7 @@ public class BookmarkPanel extends PanelWidget {
             return false;
         }
 
-        containerHandler.pullBookmarkItemsFromContainer(getGuiContainer(), items);
+        containerHandler.pullBookmarkItemsFromContainer(guiContainer, items);
         return true;
     }
 }
