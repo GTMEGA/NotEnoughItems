@@ -608,7 +608,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     @Override
     public List<String> handleTooltip(GuiRecipe gui, List<String> currenttip, int recipe) {
         if (GuiContainerManager.shouldShowTooltip(gui) && currenttip.size() == 0) {
-            Point offset = gui.getRecipePosition(recipe);
+            Point offset = gui.getRecipePositionWindowSpace(recipe);
             currenttip = transferRectTooltip(gui, transferRects, offset.x, offset.y, currenttip);
         }
         return currenttip;
@@ -640,7 +640,7 @@ public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageH
     }
 
     private boolean transferRect(GuiRecipe gui, int recipe, boolean usage) {
-        Point offset = gui.getRecipePosition(recipe);
+        Point offset = gui.getRecipePositionWindowSpace(recipe);
         return transferRect(gui, transferRects, offset.x, offset.y, usage);
     }
 

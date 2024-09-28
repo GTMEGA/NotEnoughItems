@@ -166,7 +166,7 @@ public class FireworkRecipeHandler extends ShapelessRecipeHandler
         currenttip = super.handleTooltip(gui, currenttip, recipe);
         Point mousepos = GuiDraw.getMousePosition();
         Point relMouse = new Point(mousepos.x - gui.guiLeft, mousepos.y - gui.guiTop);
-        Point recipepos = gui.getRecipePosition(recipe);
+        Point recipepos = gui.getRecipePositionWindowSpace(recipe);
         if (currenttip.isEmpty() && GuiContainerManager.getStackMouseOver(gui) == null &&
                 new Rectangle(recipepos.x, recipepos.y, 166, 55).contains(relMouse))
             currenttip.add(NEIClientUtils.translate(
