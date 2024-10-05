@@ -71,8 +71,14 @@ public class BookmarkPanel extends ItemPanel {
 
     public void saveBookmarks() {
         List<String> strings = new ArrayList<>();
-        for (ItemStack item:_items) {
-            strings.add(NBTJson.toJson(itemStackToNBT(item, new NBTTagCompound())));
+        for (int i = 0; i < _items.size(); i++) {
+            try {
+                ItemStack item = _items.get(i);
+                strings.add(NBTJson.toJson(itemStackToNBT(item, new NBTTagCompound())));
+            } catch (Exception e) {
+                NEIClientConfig.logger.error("Error saving bookmark for item {}: ", i);
+                NEIClientConfig.logger.error(e);
+            }
         }
         File file = NEIClientConfig.bookmarkFile;
         if(file != null) {
