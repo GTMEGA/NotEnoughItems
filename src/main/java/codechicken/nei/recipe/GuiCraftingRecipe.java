@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,14 @@ public class GuiCraftingRecipe extends GuiRecipe
                 .collect(Collectors.toCollection(ArrayList::new));
 
             handlers.addAll(ItemList.forkJoinPool.submit(() -> craftinghandlers.parallelStream()
-                .map(h -> h.getRecipeHandler(outputId, results))
+                .map(h -> {
+                    try {
+                        return h.getRecipeHandler(outputId, results);
+                    } catch (Exception ignored) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .filter(h -> h.numRecipes() > 0)
                 .collect(Collectors.toCollection(ArrayList::new))).get());
         } catch (InterruptedException | ExecutionException e) {
