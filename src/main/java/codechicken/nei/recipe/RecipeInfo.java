@@ -107,7 +107,7 @@ public class RecipeInfo
         API.registerRecipeHandler(new FuelRecipeHandler());
         API.registerUsageHandler(new FuelRecipeHandler());
 
-        API.registerGuiOverlay(GuiCrafting.class, "crafting");
+        API.registerGuiOverlay(GuiCrafting.class, "crafting",86,11);
         API.registerGuiOverlay(GuiInventory.class, "crafting2x2", 63, 20);
         API.registerGuiOverlay(GuiFurnace.class, "smelting");
         API.registerGuiOverlay(GuiFurnace.class, "fuel");
