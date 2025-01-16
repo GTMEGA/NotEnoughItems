@@ -5,6 +5,7 @@ import static codechicken.lib.inventory.InventoryUtils.newItemStack;
 import static net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,13 @@ public class ItemStackMap<T> {
 
         public final int damage;
         public final NBTTagCompound tag;
+        private final int hashCode;
 
         public StackMetaKey(int damage, NBTTagCompound tag) {
+            if (tag != null && tag.hasNoTags()) {
+                tag = null;
+            }
+            this.hashCode = Objects.hashCode(damage, tag);
             this.damage = damage;
             this.tag = tag;
         }
@@ -35,7 +41,7 @@ public class ItemStackMap<T> {
         }
 
         public int hashCode() {
-            return Objects.hashCode(damage, tag);
+            return this.hashCode;
         }
 
         public boolean equals(Object o) {
@@ -191,7 +197,7 @@ public class ItemStackMap<T> {
         WILDCARD_TAG.setBoolean("*", true);
     }
 
-    private final HashMap<Item, DetailMap> itemMap = new HashMap<>();
+    private final Map<Item, DetailMap> itemMap = new LinkedHashMap<>();
     private int size;
 
     public T get(ItemStack key) {
@@ -218,6 +224,7 @@ public class ItemStackMap<T> {
 
     public void clear() {
         itemMap.clear();
+        size = 0;
     }
 
     public T remove(ItemStack key) {
