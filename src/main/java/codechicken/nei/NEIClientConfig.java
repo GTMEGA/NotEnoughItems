@@ -355,6 +355,15 @@ public class NEIClientConfig {
         tag.getTag("inventory.gridRenderingCacheMode").getIntValue(0);
         API.addOption(new OptionCycled("inventory.gridRenderingCacheMode", 3, true));
 
+        tag.getTag("inventory.gridRenderingCacheFPS").getIntValue(8);
+        API.addOption(new OptionIntegerField("inventory.gridRenderingCacheFPS", 1, 144) {
+
+            @Override
+            public boolean isEnabled() {
+                return OpenGlHelper.framebufferSupported && getIntSetting("inventory.gridRenderingCacheMode") == 1;
+            }
+
+        });
         tag.getTag("inventory.hotkeysHelpText").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.hotkeysHelpText", true));
 
