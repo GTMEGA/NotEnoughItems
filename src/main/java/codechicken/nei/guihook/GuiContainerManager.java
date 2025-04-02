@@ -395,26 +395,28 @@ public class GuiContainerManager
     }
 
     public void renderToolTips(int mousex, int mousey) {
-        List<String> tooltip = new LinkedList<>();
-        FontRenderer font = GuiDraw.fontRenderer;
-
-        for (IContainerTooltipHandler handler : instanceTooltipHandlers)
-            tooltip = handler.handleTooltip(window, mousex, mousey, tooltip);
-
-        if (tooltip.isEmpty() && shouldShowTooltip(window)) {//mouseover tip, not holding an item
-            ItemStack stack = getStackMouseOver(window);
-            font = getFontRenderer(stack);
-            if (stack != null)
-                tooltip = itemDisplayNameMultiline(stack, window, true);
+        try {
+            List<String> tooltip = new LinkedList<>();
+            FontRenderer font = GuiDraw.fontRenderer;
 
             for (IContainerTooltipHandler handler : instanceTooltipHandlers)
-                tooltip = handler.handleItemTooltip(window, stack, mousex, mousey, tooltip);
-        }
+                tooltip = handler.handleTooltip(window, mousex, mousey, tooltip);
 
-        if (tooltip.size() > 0)
-            tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE);//add space after 'title'
+            if (tooltip.isEmpty() && shouldShowTooltip(window)) {//mouseover tip, not holding an item
+                ItemStack stack = getStackMouseOver(window);
+                font = getFontRenderer(stack);
+                if (stack != null)
+                    tooltip = itemDisplayNameMultiline(stack, window, true);
 
-        drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
+                for (IContainerTooltipHandler handler : instanceTooltipHandlers)
+                    tooltip = handler.handleItemTooltip(window, stack, mousex, mousey, tooltip);
+            }
+
+            if (tooltip.size() > 0)
+                tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE);//add space after 'title'
+
+            drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
+        } catch (Exception ignore){}
     }
 
     public static boolean shouldShowTooltip(GuiContainer window) {
