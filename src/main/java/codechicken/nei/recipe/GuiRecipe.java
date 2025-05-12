@@ -882,14 +882,19 @@ public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer i
         if (NEIClientConfig.showCycledIngredientsTooltip() && itemstack != null) {
             PositionedStack hovered = null;
 
-            for (int refIndex = 0; refIndex < indices.size() && hovered == null; refIndex++) {
+            outer: for (int refIndex = 0; refIndex < indices.size(); refIndex++) {
                 final int recipeIndex = indices.get(refIndex);
-                final List<PositionedStack> stacks = handler.original.getIngredientStacks(recipeIndex);
 
-                for (PositionedStack pStack : stacks) {
-                    if (isMouseOver(pStack, refIndex)) {
-                        hovered = pStack;
-                        break;
+                List<List<PositionedStack>> stackGroups = Arrays.asList(
+                        handler.original.getIngredientStacks(recipeIndex),
+                        handler.original.getOtherStacks(recipeIndex));
+
+                for (List<PositionedStack> group : stackGroups) {
+                    for (PositionedStack pStack : group) {
+                        if (isMouseOver(pStack, refIndex)) {
+                            hovered = pStack;
+                            break outer;
+                        }
                     }
                 }
             }
