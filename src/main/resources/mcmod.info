@@ -4,11 +4,11 @@
         "name": "${modName}",
         "version": "${modVersion}",
         "mcversion": "${minecraftVersion}",
-        "description": "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.",
-        "url": "https://github.com/GTNewHorizons/NotEnoughItems",
+        "description": "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; MEGA Version includes many enhancements.",
+        "url": "https://github.com/GTMEGA/NotEnoughItems",
         "credits": "Alexandria - original idea",
         "license": "LGPL-3.0",
-        "authorList": [ "ChickenBones", "mitchej123" ],
+        "authorList": [ "ChickenBones", "mitchej123", "FalsePattern" ],
         "dependencies": [ "CodeChickenCore" ]
     }
 ]

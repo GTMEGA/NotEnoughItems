@@ -599,7 +599,7 @@ public class GuiContainerManager {
             }
         }
 
-        if (NEIModContainer.isGTNHLibLoaded() && !tooltip.isEmpty()) {
+        if (NEIModContainer.isBlendtronicLoaded() && !tooltip.isEmpty()) {
             if (RenderTooltipEventHelper.post(stack, this.window, mousex, mousey, font)) {
                 return;
             }
@@ -738,7 +738,7 @@ public class GuiContainerManager {
             currentTooltip.add(pageTooltip);
         }
 
-        if (NEIModContainer.isGTNHLibLoaded()) {
+        if (NEIModContainer.isBlendtronicLoaded()) {
             drawMultilineTip(
                     font,
                     x,

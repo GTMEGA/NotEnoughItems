@@ -40,7 +40,7 @@ public class NEIModContainer extends DummyModContainer {
     public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
 
     private static boolean gregTech5Loaded;
-    private static boolean gtnhLibLoaded;
+    private static boolean blendtronicLoaded;
 
     private static ASMDataTable asmDataTable;
 
@@ -51,12 +51,12 @@ public class NEIModContainer extends DummyModContainer {
 
     private static ModMetadata getModMetadata() {
         final ModMetadata modMetadata = new ModMetadata();
-        modMetadata.name = "NotEnoughItems";
-        modMetadata.modId = "NotEnoughItems";
-        modMetadata.version = Tags.VERSION;
-        modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123");
-        modMetadata.url = "https://github.com/GTNewHorizons/NotEnoughItems";
-        modMetadata.description = "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.";
+        modMetadata.name = Tags.MOD_NAME;
+        modMetadata.modId = Tags.MOD_ID;
+        modMetadata.version = Tags.MOD_VERSION;
+        modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123", "FalsePattern");
+        modMetadata.url = "https://github.com/GTMEGA/NotEnoughItems";
+        modMetadata.description = "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; MEGA Version includes many enhancements.";
         return modMetadata;
     }
 
@@ -64,22 +64,22 @@ public class NEIModContainer extends DummyModContainer {
         return gregTech5Loaded;
     }
 
-    public static boolean isGTNHLibLoaded() {
-        return gtnhLibLoaded;
+    public static boolean isBlendtronicLoaded() {
+        return blendtronicLoaded;
     }
 
     @Override
     public Set<ArtifactVersion> getRequirements() {
         Set<ArtifactVersion> deps = new HashSet<>();
-        deps.add(VersionParser.parseVersionReference("CodeChickenCore@[" + codechicken.core.asm.Tags.VERSION + ",)"));
+        deps.add(VersionParser.parseVersionReference("CodeChickenCore@[" + codechicken.core.asm.Tags.MOD_VERSION + ",)"));
         return deps;
     }
 
     @Override
     public List<ArtifactVersion> getDependencies() {
         List<ArtifactVersion> deps = new ArrayList<>();
-        deps.add(VersionParser.parseVersionReference("CodeChickenCore@[" + codechicken.core.asm.Tags.VERSION + ",)"));
-        deps.add(VersionParser.parseVersionReference("gtnhlib@[0.6.0,)"));
+        deps.add(VersionParser.parseVersionReference("CodeChickenCore@[" + codechicken.core.asm.Tags.MOD_VERSION + ",)"));
+        deps.add(VersionParser.parseVersionReference("blendtronic@[1.9.0,)"));
         return deps;
     }
 
@@ -118,7 +118,7 @@ public class NEIModContainer extends DummyModContainer {
     @Subscribe
     public void preInit(FMLPreInitializationEvent event) {
         gregTech5Loaded = Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi_post");
-        gtnhLibLoaded = Loader.isModLoaded("gtnhlib");
+        blendtronicLoaded = Loader.isModLoaded("blendtronic");
         if (CommonUtils.isClient()) ClientHandler.preInit();
         asmDataTable = event.getAsmData();
     }

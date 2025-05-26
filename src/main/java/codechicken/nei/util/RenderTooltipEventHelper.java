@@ -1,6 +1,6 @@
 package codechicken.nei.util;
 
-import static com.gtnewhorizon.gtnhlib.client.event.RenderTooltipEvent.*;
+import mega.blendtronic.api.client.event.RenderTooltipEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
-import com.gtnewhorizon.gtnhlib.client.event.RenderTooltipEvent;
+import static mega.blendtronic.api.client.event.RenderTooltipEvent.*;
 
 public class RenderTooltipEventHelper {
 

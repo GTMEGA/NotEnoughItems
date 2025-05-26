@@ -1,10 +1,26 @@
-# NotEnoughItems Unofficial - By the GTNH Team
+# NotEnoughItems MEGA
 
-A continuation of NotEnoughItems for 1.7.10 by the developers of Gregtech: New Horizons modpack, with features either inspired and/or backported from JustEnoughItems
+Fork of the GTNewHorizons NotEnoughItems Unofficial, with pack-specific changes for the MEGA modpack. Please use the GTNH forks in your pack,
+as this fork has functionality changes that don't really fit outside MEGA.
 
-We've tested this against all of the mods included in GTNH, as well as a limited set of other mods (like Reika's mods). Every effort has been made to maintain backwards compatibility, however the focus is on the mods contained in the GTNH modpack.
+## MEGA changes
 
-If you have issues with NEI outside of the GTNH modpack you may report them in the [GTNH NEI GitHub](https://github.com/GTNewHorizons/NotEnoughItems).
+* Migrated to unified buildscript
+* Moved some of the API calls from GTNHLib to Blendtronic to reduce number of dependencies
+
+
+## Branch structure
+
+* master
+  * Pack-specific changes that may be divergent from upstream. Based on upstream/migrated-buildscript.
+* migrated-buildscript
+  * Full feature parity with upstream with simple migrations: Buildscript swap, GTNHLib -> Blendtronic, CCC from MEGA maven.
+* upstream-tracking
+  * The latest dev branch from the GTNH NEI repo that the repo is managed against. Usually the `master` branch from GTNH.
+
+After the initial branch creations, EVERY upstream merge to the above branches MUST be done via merge commits. DO NOT rebase.
+
+## GTNH changes below
 
 ## New Features:
 
@@ -28,6 +44,8 @@ If you have issues with NEI outside of the GTNH modpack you may report them in t
 * Removed inventory Load/Save state
 
 ## License
+
+MEGA Modifications Copyright (c) 2025 MEGA Team
 
 GTNH Modifications Copyright (c) 2019-2024 mitchej123 and the GTNH Team
 
