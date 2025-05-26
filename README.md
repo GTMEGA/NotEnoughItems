@@ -20,6 +20,18 @@ as this fork has functionality changes that don't really fit outside MEGA.
 
 After the initial branch creations, EVERY upstream merge to the above branches MUST be done via merge commits. DO NOT rebase.
 
+## Versioning scheme
+
+To avoid divergence, we use an upstream-tracking "differential" versioning scheme:
+
+- GTNH release: 2.7.0-GTNH
+- First MEGA release: 2.7.0-mega
+- Second MEGA release: 2.7.0-mega2
+- GTNH updates: 2.7.1-GTNH
+- Third MEGA release (not yet rebased): 2.7.0-mega3
+- Fourth MEGA release (after rebase): 2.7.1-mega
+- and so on...
+
 ## GTNH changes below
 
 ## New Features:
