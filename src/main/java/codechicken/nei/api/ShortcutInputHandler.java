@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -65,11 +66,24 @@ public abstract class ShortcutInputHandler {
                     return ItemPanels.bookmarkPanel.pullBookmarkItems(groupId, NEIClientUtils.shiftKey());
                 }
 
-                if (NEIClientConfig.autocraftingEnabled() && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)
-                        && NEIClientConfig.isKeyHashDown("gui.craft")) {
-                    AutoCraftingManager
-                            .runProcessing(ItemPanels.bookmarkPanel.getGrid().createRecipeChainMath(groupId));
-                    return true;
+                if (NEIClientConfig.autocraftingEnabled()
+                        && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)) {
+                    final boolean ignoreInventory = NEIClientConfig.isKeyHashDown("gui.craft_all");
+
+                    if (ignoreInventory || NEIClientConfig.isKeyHashDown("gui.craft_missing")) {
+                        final RecipeChainMath math = ItemPanels.bookmarkPanel.getGrid().createRecipeChainMath(groupId);
+
+                        if (math != null) {
+
+                            if (ignoreInventory) {
+                                autocraftingIgnoreInventory(math);
+                            }
+
+                            AutoCraftingManager.runProcessing(math);
+                            return true;
+                        }
+                    }
+
                 }
 
             }
@@ -107,8 +121,12 @@ public abstract class ShortcutInputHandler {
             return pullRecipeItems(stackover, NEIClientUtils.shiftKey());
         }
 
-        if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft")) {
-            return runAutoCrafting(stackover);
+        if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft_missing")) {
+            return runAutoCrafting(stackover, false);
+        }
+
+        if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft_all")) {
+            return runAutoCrafting(stackover, true);
         }
 
         return false;
@@ -156,7 +174,7 @@ public abstract class ShortcutInputHandler {
         return true;
     }
 
-    private static boolean runAutoCrafting(ItemStack stackover) {
+    private static boolean runAutoCrafting(ItemStack stackover, boolean ignoreInventory) {
         final RecipeId recipeId = GuiCraftingRecipe.getRecipeId(NEIClientUtils.getGuiContainer(), stackover);
 
         if (recipeId != null) {
@@ -184,6 +202,11 @@ public abstract class ShortcutInputHandler {
             }
 
             if (math != null) {
+
+                if (ignoreInventory) {
+                    autocraftingIgnoreInventory(math);
+                }
+
                 AutoCraftingManager.runProcessing(math);
                 return true;
             }
@@ -334,7 +357,12 @@ public abstract class ShortcutInputHandler {
             }
 
             if (NEIClientConfig.autocraftingEnabled() && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)) {
-                hotkeys.put(NEIClientConfig.getKeyName("gui.craft"), NEIClientUtils.translate("bookmark.group.craft"));
+                hotkeys.put(
+                        NEIClientConfig.getKeyName("gui.craft_missing"),
+                        NEIClientUtils.translate("bookmark.group.craft_missing"));
+                hotkeys.put(
+                        NEIClientConfig.getKeyName("gui.craft_all"),
+                        NEIClientUtils.translate("bookmark.group.craft_all"));
             }
         }
 
@@ -430,13 +458,40 @@ public abstract class ShortcutInputHandler {
                 }
 
                 if (NEIClientConfig.autocraftingEnabled()) {
-                    hotkeys.put(NEIClientConfig.getKeyName("gui.craft"), NEIClientUtils.translate("itempanel.craft"));
+                    hotkeys.put(
+                            NEIClientConfig.getKeyName("gui.craft_missing"),
+                            NEIClientUtils.translate("itempanel.craft_missing"));
+                    hotkeys.put(
+                            NEIClientConfig.getKeyName("gui.craft_all"),
+                            NEIClientUtils.translate("itempanel.craft_all"));
                 }
             }
 
         }
 
         return hotkeys;
+    }
+
+    private static void autocraftingIgnoreInventory(RecipeChainMath math) {
+        final GuiContainer guiContainer = NEIClientUtils.getGuiContainer();
+        final InventoryPlayer playerInventory = guiContainer.mc.thePlayer.inventory;
+        final RecipeId rootRecipeId = math.createMasterRoot();
+
+        for (BookmarkItem item : math.recipeIngredients) {
+            if (item.amount > 0 && rootRecipeId.equals(item.recipeId)) {
+                long amount = 0;
+
+                for (ItemStack stack : playerInventory.mainInventory) {
+                    if (stack != null && NEIClientUtils.areStacksSameTypeCraftingWithNBT(stack, item.itemStack)) {
+                        amount += StackInfo.getAmount(stack);
+                    }
+                }
+
+                if (amount >= item.amount) {
+                    item.factor = item.amount = amount + item.amount - (amount % item.amount);
+                }
+            }
+        }
     }
 
     private static RecipeId getHotkeyRecipeId(GuiContainer gui, int mousex, int mousey, ItemStack stack,
