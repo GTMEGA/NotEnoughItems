@@ -82,6 +82,14 @@ public class NEIServerUtils {
         player.extinguish();
     }
 
+    public static void sendChatItemLink(EntityPlayerMP sender, ItemStack stackover) {
+        ServerUtils.sendChatToAll(
+                new ChatComponentTranslation(
+                        "nei.chat.item_link.text",
+                        sender.getDisplayName(),
+                        stackover.func_151000_E()));
+    }
+
     public static long getTime(World world) {
         return world.getWorldInfo().getWorldTime();
     }

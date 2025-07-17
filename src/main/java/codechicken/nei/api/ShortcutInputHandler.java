@@ -100,6 +100,10 @@ public abstract class ShortcutInputHandler {
             return copyItemStackOreDictionary(stackover);
         }
 
+        if (NEIClientConfig.isKeyHashDown("gui.chat_link_item")) {
+            return sendItemStackChatLink(stackover);
+        }
+
         if (NEIClientConfig.isKeyHashDown("gui.recipe")) {
             return GuiCraftingRecipe.openRecipeGui("item", stackover);
         }
@@ -145,6 +149,13 @@ public abstract class ShortcutInputHandler {
 
     private static boolean copyItemStackName(ItemStack stackover) {
         GuiScreen.setClipboardString(SearchField.getEscapedSearchText(stackover));
+        return true;
+    }
+
+    private static boolean sendItemStackChatLink(ItemStack stackover) {
+        if (stackover == null) return false;
+
+        NEIClientUtils.sendChatItemLink(stackover); // I wish clients could just send formatted messages
         return true;
     }
 
@@ -408,6 +419,9 @@ public abstract class ShortcutInputHandler {
 
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_name"), NEIClientUtils.translate("itempanel.copy_name"));
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_oredict"), NEIClientUtils.translate("itempanel.copy_oredict"));
+        hotkeys.put(
+                NEIClientConfig.getKeyName("gui.chat_link_item"),
+                NEIClientUtils.translate("itempanel.chat_link_item"));
 
         if (!(gui instanceof GuiRecipe) && NEIClientConfig.canCheatItem(stack)) {
             hotkeys.put(
