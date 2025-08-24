@@ -500,12 +500,15 @@ public class NEIClientConfig {
         API.addOption(new OptionCycled("inventory.search.widgetAutofocus", 3, true));
 
         tag.getTag("inventory.search.patternMode").setComment("Search Mode").getIntValue(1);
-        API.addOption(new OptionCycled("inventory.search.patternMode", 3, true) {
+        API.addOption(new OptionCycled("inventory.search.patternMode", 4, true) {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
         });
@@ -575,8 +578,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -600,8 +606,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -624,8 +633,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -648,8 +660,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -672,8 +687,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -691,6 +709,9 @@ public class NEIClientConfig {
 
         });
 
+        tag.getTag("inventory.search.logSearchExceptions").setComment("Search exceptions for extended+")
+                .getBooleanValue(false);
+
         String prefixRedefinitions = tag.getTag("inventory.search.prefixRedefinitions").setComment(
                 "Redefine search prefixes by providing a char-to-char map (JSON). The keys are the original prefixes, the values the new ones. Example: { \"$\": \"€\", \"#\": \"+\", \"@\": \"°\", \"%\": \"!\" }")
                 .getValue("{}");
@@ -701,6 +722,7 @@ public class NEIClientConfig {
             };
             Map<Character, Character> charMap = new Gson().fromJson(prefixRedefinitions, typeToken.getType());
             SearchField.searchParser.prefixRedefinitions.putAll(charMap);
+            SearchField.searchParser.updateRedefinedPrefixes();
         } catch (JsonParseException e) {
             logger.warn("Failed to convert prefix redefinitions from JSON to CharToCharMap:", e);
         }

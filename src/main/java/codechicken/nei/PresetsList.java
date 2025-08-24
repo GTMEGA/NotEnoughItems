@@ -68,11 +68,11 @@ public class PresetsList {
         }
     }
 
-    protected static class RecipesFilter implements IRecipeFilterProvider, IRecipeFilter {
+    protected static class PresetRecipeFilter implements IRecipeFilterProvider, IRecipeFilter {
 
         public Set<String> cache;
 
-        public IRecipeFilter getFilter() {
+        public IRecipeFilter getRecipeFilter() {
 
             if (cache == null) {
                 cache = PresetsList.presets.stream().filter(p -> p.enabled && p.mode == PresetMode.REMOVE)
@@ -145,7 +145,7 @@ public class PresetsList {
     }
 
     public static final List<Preset> presets = new ArrayList<>();
-    protected static RecipesFilter recipeFilter = new RecipesFilter();
+    protected static PresetRecipeFilter recipeFilter = new PresetRecipeFilter();
     protected static ItemPanelFilter itemFilter = new ItemPanelFilter();
 
     static {

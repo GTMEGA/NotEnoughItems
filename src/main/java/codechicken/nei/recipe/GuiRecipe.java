@@ -43,6 +43,7 @@ import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.TaggedInventoryArea;
 import codechicken.nei.drawable.DrawableBuilder;
 import codechicken.nei.drawable.DrawableResource;
+import codechicken.nei.filter.AllMultiRecipeFilter;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.guihook.IGuiClientSide;
@@ -118,86 +119,6 @@ public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer i
 
     private int yShift = 0;
 
-    public static class ItemRecipeFilter implements IRecipeFilter {
-
-        public ItemFilter filter;
-
-        public ItemRecipeFilter(ItemFilter filter) {
-            this.filter = filter;
-        }
-
-        @Override
-        public boolean matches(IRecipeHandler handler, List<PositionedStack> ingredients, PositionedStack result,
-                List<PositionedStack> others) {
-
-            if (matchPositionedStack(ingredients)) {
-                return true;
-            }
-
-            if (matchPositionedStack(result)) {
-                return true;
-            }
-
-            if (matchPositionedStack(others)) {
-                return true;
-            }
-
-            return false;
-        }
-
-        private boolean matchPositionedStack(List<PositionedStack> items) {
-            for (PositionedStack pStack : items) {
-                if (matchPositionedStack(pStack)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean matchPositionedStack(PositionedStack pStack) {
-            if (pStack == null) return false;
-
-            for (ItemStack stack : pStack.items) {
-                if (filter.matches(stack)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-    }
-
-    public static class AllMultiRecipeFilter implements IRecipeFilter {
-
-        public List<IRecipeFilter> filters;
-
-        public AllMultiRecipeFilter(List<IRecipeFilter> filters) {
-            this.filters = filters;
-        }
-
-        public AllMultiRecipeFilter(IRecipeFilter filters) {
-            this(Arrays.asList(filters));
-        }
-
-        public AllMultiRecipeFilter() {
-            this(new ArrayList<>());
-        }
-
-        @Override
-        public boolean matches(IRecipeHandler handler, List<PositionedStack> ingredients, PositionedStack result,
-                List<PositionedStack> others) {
-            for (IRecipeFilter filter : filters) {
-                try {
-                    if (filter != null && !filter.matches(handler, ingredients, result, others)) return false;
-                } catch (Exception e) {
-                    NEIClientConfig.logger.error("Exception filtering " + handler + " with " + filter, e);
-                }
-            }
-            return true;
-        }
-    }
-
     protected static final RestartableTask updateFilter = new RestartableTask("NEI Recipe Filtering") {
 
         @Override
@@ -214,7 +135,7 @@ public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer i
                         searchHandler.setSearchIndices(null);
                         guiRecipe.changePage(0);
                     } else {
-                        final IRecipeFilter filter = new ItemRecipeFilter(GuiRecipe.searchField.getFilter());
+                        final IRecipeFilter filter = GuiRecipe.searchField.getRecipeFilter();
                         final List<Integer> filtered = searchHandler.getSearchResult(filter);
 
                         if (filtered == null) {
@@ -546,7 +467,7 @@ public abstract class GuiRecipe<H extends IRecipeHandler> extends GuiContainer i
 
         synchronized (recipeFilterers) {
             for (IRecipeFilterProvider p : recipeFilterers) {
-                IRecipeFilter filter = p.getFilter();
+                IRecipeFilter filter = p.getRecipeFilter();
                 if (filter != null) {
                     recipeFilter.filters.add(filter);
                 }
