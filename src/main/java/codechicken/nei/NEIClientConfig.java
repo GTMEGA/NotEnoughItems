@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
 import net.minecraft.world.storage.SaveFormatComparator;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -59,6 +58,7 @@ import codechicken.nei.config.preset.GuiPresetList;
 import codechicken.nei.event.NEIConfigsLoadedEvent;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.InformationHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.RecipeInfo;
 import codechicken.nei.util.NEIKeyboardUtils;
@@ -146,7 +146,7 @@ public class NEIClientConfig {
         tag.getTag("inventory.widgetsenabled").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.widgetsenabled"));
 
-        tag.getTag("inventory.autocrafting").getBooleanValue(false);
+        tag.getTag("inventory.autocrafting").getBooleanValue(true);
         tag.getTag("inventory.dynamicFontSize").getBooleanValue(true);
         tag.getTag("inventory.hidden").getBooleanValue(false);
         tag.getTag("inventory.cheatmode").getIntValue(2);
@@ -212,6 +212,10 @@ public class NEIClientConfig {
         tag.getTag("inventory.bookmarks.ignorePotionOverlap").setComment("Ignore overlap with potion effect HUD")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.bookmarks.ignorePotionOverlap", true));
+
+        tag.getTag("inventory.bookmarks.bookmarkItemsWithRecipe").setComment("Bookmark items with recipe")
+                .getBooleanValue(true);
+        API.addOption(new OptionToggleButton("inventory.bookmarks.bookmarkItemsWithRecipe", true));
 
         tag.getTag("inventory.guirecipe.jeiStyleTabs").setComment("Enable/disable JEI Style Tabs")
                 .getBooleanValue(true);
@@ -408,6 +412,9 @@ public class NEIClientConfig {
         tag.getTag("inventory.optimize_gui_overlap_computation").setComment("Optimize computation for GUI overlap")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.optimize_gui_overlap_computation", true));
+
+        tag.getTag("inventory.autocrafting").setComment("Autocrafting").getBooleanValue(true);
+        API.addOption(new OptionToggleButton("inventory.autocrafting", true));
 
         tag.getTag("tools.handler_load_from_config").setComment("ADVANCED: Load handlers from config")
                 .getBooleanValue(false);
@@ -740,7 +747,7 @@ public class NEIClientConfig {
         API.addHashBind("gui.remove_recipe", Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH);
         API.addKeyBind("gui.bookmark_pull_items", Keyboard.KEY_V);
         API.addKeyBind("gui.overlay", Keyboard.KEY_S);
-        API.addHashBind("gui.craft", Keyboard.KEY_C + NEIClientUtils.SHIFT_HASH);
+        API.addKeyBind("gui.craft_items", Keyboard.KEY_C);
         API.addHashBind("gui.hide_bookmarks", Keyboard.KEY_B);
         API.addKeyBind("gui.getprevioussearch", Keyboard.KEY_UP);
         API.addKeyBind("gui.getnextsearch", Keyboard.KEY_DOWN);
@@ -763,6 +770,7 @@ public class NEIClientConfig {
         API.addKeyBind("world.creative", 0);
         API.addHashBind("gui.copy_name", Keyboard.KEY_C + NEIClientUtils.CTRL_HASH);
         API.addHashBind("gui.copy_oredict", Keyboard.KEY_D + NEIClientUtils.CTRL_HASH);
+        API.addHashBind("gui.chat_link_item", Keyboard.KEY_L + NEIClientUtils.CTRL_HASH);
     }
 
     public static OptionList getOptionList() {
@@ -786,7 +794,7 @@ public class NEIClientConfig {
             }
 
             world = new ConfigSet(new File(specificDir, "NEI.dat"), new ConfigFile(new File(specificDir, "NEI.cfg")));
-            bootNEI(ClientUtils.getWorld());
+            bootNEI();
             onWorldLoad(newWorld);
         }
     }
@@ -881,17 +889,18 @@ public class NEIClientConfig {
         return NEIKeyboardUtils.getKeyName(hash + meta);
     }
 
-    public static void bootNEI(World world) {
+    public static void bootNEI() {
 
         if (!mainNEIConfigLoaded) {
             // main NEI config loading
-            ItemInfo.load(world);
+            ItemInfo.load();
             GuiInfo.load();
             RecipeInfo.load();
             HeldItemHandler.load();
             LayoutManager.load();
             NEIController.load();
             BookmarkContainerInfo.load();
+            InformationHandler.load();
             mainNEIConfigLoaded = true;
 
             new Thread("NEI Plugin Loader") {
@@ -914,6 +923,7 @@ public class NEIClientConfig {
                     });
 
                     RecipeCatalysts.loadCatalystInfo();
+                    SubsetWidget.loadCustomSubsets();
                     SubsetWidget.loadHidden();
                     CollapsibleItems.load();
                     ItemSorter.loadConfig();

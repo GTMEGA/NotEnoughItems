@@ -55,4 +55,5 @@ public class DefaultStackStringifyHandler implements IStackStringifyHandler {
 
         return fluidStack;
     }
+
 }
