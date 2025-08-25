@@ -9,33 +9,20 @@ import java.util.List;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.FastTransferManager;
 import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.util.NBTHelper;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class DefaultOverlayHandler implements IOverlayHandler {
-
-    private static Class<?> gtItem;
-
-    static {
-        try {
-            final ClassLoader loader = DefaultOverlayHandler.class.getClassLoader();
-            gtItem = ReflectionHelper
-                    .getClass(loader, "gregtech.api.items.MetaBaseItem", "gregtech.api.items.GT_MetaBase_Item");
-        } catch (Exception ignored) {
-            /* Do nothing */
-        }
-    }
 
     public static class DistributedIngred {
 
@@ -48,6 +35,7 @@ public class DefaultOverlayHandler implements IOverlayHandler {
         public int distributed;
         public int numSlots;
         public int recipeAmount;
+        public boolean isContainerItem = false;
     }
 
     public static class IngredientDistribution {
@@ -94,21 +82,20 @@ public class DefaultOverlayHandler implements IOverlayHandler {
         assignIngredSlots(gui, ingredients, assignedIngredients);
         multiplier = Math.min(multiplier == 0 ? 64 : multiplier, calculateRecipeQuantity(assignedIngredients));
 
-        if (multiplier != 0) {
-            moveIngredients(gui, assignedIngredients, (int) multiplier);
-        }
+        moveIngredients(gui, assignedIngredients, Math.max(1, multiplier));
 
-        return multiplier;
+        return assignedIngredients.stream().anyMatch(distrib -> distrib.distrib.distributed == 0) ? 0 : multiplier;
     }
 
     @Override
     public boolean canFillCraftingGrid(GuiContainer firstGui, IRecipeHandler handler, int recipeIndex) {
-        return presenceOverlay(firstGui, handler, recipeIndex).stream().allMatch(state -> state.isPresent());
+        return true;
     }
 
     @Override
     public boolean canCraft(GuiContainer firstGui, IRecipeHandler handler, int recipeIndex) {
-        return canFillCraftingGrid(firstGui, handler, recipeIndex);
+        return canFillCraftingGrid(firstGui, handler, recipeIndex)
+                && presenceOverlay(firstGui, handler, recipeIndex).stream().allMatch(state -> state.isPresent());
     }
 
     @Override
@@ -135,6 +122,8 @@ public class DefaultOverlayHandler implements IOverlayHandler {
 
         }
 
+        clearIngredients(firstGui);
+
         return craft;
     }
 
@@ -150,67 +139,104 @@ public class DefaultOverlayHandler implements IOverlayHandler {
             }
         }
 
-        return true;
+        return dropOffMouseStack(thePlayer, gui);
     }
 
     private void moveIngredients(GuiContainer gui, List<IngredientDistribution> assignedIngredients, int multiplier) {
-        for (IngredientDistribution distrib : assignedIngredients) {
-            if (distrib.slots.length == 0) continue;
+        final EntityClientPlayerMP thePlayer = NEIClientUtils.mc().thePlayer;
 
-            ItemStack pstack = distrib.permutation;
-            int transferCap = multiplier * pstack.stackSize;
-            int transferred = 0;
+        for (Slot slot : gui.inventorySlots.inventorySlots) {
+            if (slot instanceof SlotCrafting || !slot.getHasStack()
+                    || !canMoveFrom(slot, gui)
+                    || !slot.canTakeStack(thePlayer))
+                continue;
+            ItemStack stack = slot.getStack();
+            int slotTransferCap = stack.getMaxStackSize();
 
-            int destSlotIndex = 0;
-            Slot dest = distrib.slots[0];
-            int slotTransferred = 0;
-            int slotTransferCap = pstack.getMaxStackSize();
+            for (IngredientDistribution distrib : assignedIngredients) {
+                if (distrib.slots.length == 0 || !slot.getHasStack() || !canStack(distrib.permutation, stack)) continue;
+                int transferCap = Math.min(slotTransferCap, multiplier * distrib.permutation.stackSize);
+                int stackSize = slot.getStack().stackSize;
+                boolean pickup = false;
 
-            for (Slot slot : gui.inventorySlots.inventorySlots) {
-                if (!slot.getHasStack() || !canMoveFrom(slot, gui)) continue;
+                for (Slot dest : distrib.slots) {
+                    int amount = Math
+                            .min(transferCap - (dest.getHasStack() ? dest.getStack().stackSize : 0), stackSize);
 
-                ItemStack stack = slot.getStack();
-                if (!canStack(pstack, stack)) continue;
+                    if (stackSize <= amount) {
 
-                int amount = Math.min(transferCap - transferred, stack.stackSize);
-                FastTransferManager.clickSlot(gui, slot.slotNumber);
-                for (int c = 0; c < amount; c++) {
-                    FastTransferManager.clickSlot(gui, dest.slotNumber, 1);
-                    transferred++;
-                    slotTransferred++;
-                    if (slotTransferred >= slotTransferCap) {
-                        destSlotIndex++;
-                        if (destSlotIndex == distrib.slots.length) {
-                            dest = null;
-                            break;
+                        if (!pickup) {
+                            FastTransferManager.clickSlot(gui, slot.slotNumber);
                         }
-                        dest = distrib.slots[destSlotIndex];
-                        slotTransferred = 0;
+
+                        FastTransferManager.clickSlot(gui, dest.slotNumber);
+                        break;
+                    } else {
+
+                        for (int c = 0; c < amount; c++) {
+
+                            if (pickup != (pickup = true)) {
+                                FastTransferManager.clickSlot(gui, slot.slotNumber);
+                            }
+
+                            FastTransferManager.clickSlot(gui, dest.slotNumber, 1);
+                            stackSize--;
+                        }
                     }
+
                 }
-                FastTransferManager.clickSlot(gui, slot.slotNumber);
-                if (transferred >= transferCap || dest == null) break;
+
+                if (thePlayer.inventory.getItemStack() != null) {
+                    FastTransferManager.clickSlot(gui, slot.slotNumber);
+                }
+            }
+
+        }
+    }
+
+    protected boolean dropOffMouseStack(EntityPlayer entityPlayer, GuiContainer gui) {
+
+        if (entityPlayer.inventory.getItemStack() == null) {
+            return true;
+        }
+
+        for (int i = 0; i < gui.inventorySlots.inventorySlots.size(); i++) {
+            Slot slot = gui.inventorySlots.inventorySlots.get(i);
+
+            if (slot.inventory == entityPlayer.inventory) {
+                ItemStack mouseItem = entityPlayer.inventory.getItemStack();
+                ItemStack slotStack = slot.getStack();
+
+                if (slotStack == null || NEIClientUtils.areStacksSameType(mouseItem, slotStack)) {
+                    FastTransferManager.clickSlot(gui, i, 0, 0);
+                }
+
+                if (entityPlayer.inventory.getItemStack() == null) {
+                    return true;
+                }
+
             }
         }
+
+        return entityPlayer.inventory.getItemStack() == null;
     }
 
     private int calculateRecipeQuantity(List<IngredientDistribution> assignedIngredients) {
         int quantity = Integer.MAX_VALUE;
 
         for (IngredientDistribution distrib : assignedIngredients) {
-            DistributedIngred istack = distrib.distrib;
+            final DistributedIngred istack = distrib.distrib;
+            if (istack.distributed == 0) continue;
             if (istack.numSlots == 0) return 0;
 
             final int maxStackSize = istack.stack.getMaxStackSize();
-            int allSlots = istack.invAmount;
-            if (allSlots / istack.numSlots > maxStackSize) allSlots = istack.numSlots * maxStackSize;
-
-            final int newQuantity = allSlots / istack.distributed;
-            if (maxStackSize == 1) {
+            if (maxStackSize == 1 && istack.isContainerItem) {
                 // If non-stackable, fill up as much as possible of the other ingredients
                 continue;
             }
-            quantity = Math.min(quantity, newQuantity);
+
+            final int allSlots = Math.min(istack.invAmount, istack.numSlots * maxStackSize);
+            quantity = Math.min(quantity, allSlots / istack.distributed);
         }
 
         if (quantity == Integer.MAX_VALUE) {
@@ -292,8 +318,10 @@ public class DefaultOverlayHandler implements IOverlayHandler {
                 }
             }
 
-            if (biggestIngred == null) // not enough ingreds
-                return null;
+            if (biggestIngred == null) {
+                biggestIngred = new DistributedIngred(posstack.item);
+                permutation = InventoryUtils.copyStack(posstack.item, 0);
+            }
 
             biggestIngred.distributed += permutation.stackSize;
             assignedIngredients.add(new IngredientDistribution(biggestIngred, permutation));
@@ -305,9 +333,31 @@ public class DefaultOverlayHandler implements IOverlayHandler {
     private void findInventoryQuantities(GuiContainer gui, List<DistributedIngred> ingredStacks) {
         for (Slot slot : gui.inventorySlots.inventorySlots) /* work out how much we have to go round */ {
             if (slot.getHasStack() && canMoveFrom(slot, gui)) {
-                ItemStack pstack = slot.getStack();
-                DistributedIngred istack = findIngred(ingredStacks, pstack);
-                if (istack != null) istack.invAmount += pstack.stackSize;
+                final ItemStack pstack = slot.getStack();
+                final DistributedIngred istack = findIngred(ingredStacks, pstack);
+
+                if (istack != null) {
+                    istack.invAmount += pstack.stackSize;
+
+                    if (!istack.isContainerItem && pstack.getMaxStackSize() == 1
+                            && pstack.getItem().hasContainerItem(pstack)) {
+                        final NBTTagCompound tagCompound = pstack.getTagCompound();
+
+                        if (tagCompound != null && tagCompound.hasKey("GT.ToolStats")) {
+                            istack.isContainerItem = true;
+                        } else {
+                            final boolean isPausedItemDamageSound = StackInfo.isPausedItemDamageSound();
+                            StackInfo.pauseItemDamageSound(true);
+
+                            final ItemStack containerItem = pstack.getItem().getContainerItem(pstack);
+                            if (containerItem != null) {
+                                istack.isContainerItem = pstack.getItem() == containerItem.getItem();
+                            }
+
+                            StackInfo.pauseItemDamageSound(isPausedItemDamageSound);
+                        }
+                    }
+                }
             }
         }
     }
@@ -351,16 +401,6 @@ public class DefaultOverlayHandler implements IOverlayHandler {
 
     protected boolean canStack(ItemStack stack1, ItemStack stack2) {
         if (stack1 == null || stack2 == null) return true;
-        if (NEIServerUtils.areStacksSameTypeCrafting(stack2, stack1)) {
-            if (NBTHelper.matchTag(stack1.getTagCompound(), stack2.getTagCompound())) return true;
-
-            // GT Items don't have any NBT set for the recipe, so if either of the stacks has a NULL nbt, and the other
-            // doesn't, pretend they stack
-            if (((gtItem != null && gtItem.isInstance(stack1.getItem()))
-                    || (stack1.getMaxStackSize() == 1 && stack2.getMaxStackSize() == 1))
-                    && (stack1.stackTagCompound == null ^ stack2.stackTagCompound == null))
-                return true;
-        }
-        return false;
+        return NEIClientUtils.areStacksSameTypeCraftingWithNBT(stack1, stack2);
     }
 }

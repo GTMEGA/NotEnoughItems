@@ -65,11 +65,20 @@ public abstract class ShortcutInputHandler {
                     return ItemPanels.bookmarkPanel.pullBookmarkItems(groupId, NEIClientUtils.shiftKey());
                 }
 
-                if (NEIClientConfig.autocraftingEnabled() && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)
-                        && NEIClientConfig.isKeyHashDown("gui.craft")) {
-                    AutoCraftingManager
-                            .runProcessing(ItemPanels.bookmarkPanel.getGrid().createRecipeChainMath(groupId));
-                    return true;
+                if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft_items")
+                        && NEIClientUtils.shiftKey()
+                        && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)) {
+                    final RecipeChainMath math = ItemPanels.bookmarkPanel.getGrid().createRecipeChainMath(groupId);
+
+                    if (math != null) {
+
+                        if (!NEIClientUtils.controlKey()) {
+                            autocraftingIgnoreInventory(math);
+                        }
+
+                        AutoCraftingManager.runProcessing(math);
+                        return true;
+                    }
                 }
 
             }
@@ -91,6 +100,10 @@ public abstract class ShortcutInputHandler {
             return copyItemStackOreDictionary(stackover);
         }
 
+        if (NEIClientConfig.isKeyHashDown("gui.chat_link_item")) {
+            return sendItemStackChatLink(stackover);
+        }
+
         if (NEIClientConfig.isKeyHashDown("gui.recipe")) {
             return GuiCraftingRecipe.openRecipeGui("item", stackover);
         }
@@ -107,8 +120,9 @@ public abstract class ShortcutInputHandler {
             return pullRecipeItems(stackover, NEIClientUtils.shiftKey());
         }
 
-        if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft")) {
-            return runAutoCrafting(stackover);
+        if (NEIClientConfig.autocraftingEnabled() && NEIClientConfig.isKeyHashDown("gui.craft_items")
+                && NEIClientUtils.shiftKey()) {
+            return runAutoCrafting(stackover, !NEIClientUtils.controlKey());
         }
 
         return false;
@@ -138,6 +152,13 @@ public abstract class ShortcutInputHandler {
         return true;
     }
 
+    private static boolean sendItemStackChatLink(ItemStack stackover) {
+        if (stackover == null) return false;
+
+        NEIClientUtils.sendChatItemLink(stackover); // I wish clients could just send formatted messages
+        return true;
+    }
+
     private static boolean copyItemStackOreDictionary(ItemStack stackover) {
         StringBuilder builder = new StringBuilder();
 
@@ -156,7 +177,7 @@ public abstract class ShortcutInputHandler {
         return true;
     }
 
-    private static boolean runAutoCrafting(ItemStack stackover) {
+    private static boolean runAutoCrafting(ItemStack stackover, boolean ignoreInventory) {
         final RecipeId recipeId = GuiCraftingRecipe.getRecipeId(NEIClientUtils.getGuiContainer(), stackover);
 
         if (recipeId != null) {
@@ -184,6 +205,11 @@ public abstract class ShortcutInputHandler {
             }
 
             if (math != null) {
+
+                if (ignoreInventory) {
+                    autocraftingIgnoreInventory(math);
+                }
+
                 AutoCraftingManager.runProcessing(math);
                 return true;
             }
@@ -242,7 +268,8 @@ public abstract class ShortcutInputHandler {
             } else {
                 final RecipeId recipeId = recipe != null ? recipe.getRecipeId() : null;
                 final boolean existsRecipe = recipeId != null
-                        && ItemPanels.bookmarkPanel.existsRecipe(recipeId, BookmarkGrid.DEFAULT_GROUP_ID);
+                        && ItemPanels.bookmarkPanel.existsRecipe(recipeId, BookmarkGrid.DEFAULT_GROUP_ID)
+                        || NEIClientConfig.getBooleanSetting("inventory.bookmarks.bookmarkItemsWithRecipe");
 
                 if (!ItemPanels.bookmarkPanel
                         .removeItem(stackover, existsRecipe ? recipeId : null, BookmarkGrid.DEFAULT_GROUP_ID)) {
@@ -279,7 +306,7 @@ public abstract class ShortcutInputHandler {
                 recipe.getIngredients().stream().forEach(ingr -> {
                     final List<ItemStack> permutations = ingr.getPermutations();
                     for (int index = 0; index < permutations.size(); index++) {
-                        if (FavoriteRecipes.getFavorite(permutations.get(index)) != null) {
+                        if (FavoriteRecipes.contains(permutations.get(index))) {
                             ingr.setActiveIndex(index);
                             break;
                         }
@@ -333,7 +360,13 @@ public abstract class ShortcutInputHandler {
             }
 
             if (NEIClientConfig.autocraftingEnabled() && ItemPanels.bookmarkPanel.getGrid().isCraftingMode(groupId)) {
-                hotkeys.put(NEIClientConfig.getKeyName("gui.craft"), NEIClientUtils.translate("bookmark.group.craft"));
+                hotkeys.put(
+                        NEIClientConfig
+                                .getKeyName("gui.craft_items", NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH),
+                        NEIClientUtils.translate("bookmark.group.craft_missing"));
+                hotkeys.put(
+                        NEIClientConfig.getKeyName("gui.craft_items", NEIClientUtils.SHIFT_HASH),
+                        NEIClientUtils.translate("bookmark.group.craft_all"));
             }
         }
 
@@ -386,6 +419,9 @@ public abstract class ShortcutInputHandler {
 
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_name"), NEIClientUtils.translate("itempanel.copy_name"));
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_oredict"), NEIClientUtils.translate("itempanel.copy_oredict"));
+        hotkeys.put(
+                NEIClientConfig.getKeyName("gui.chat_link_item"),
+                NEIClientUtils.translate("itempanel.chat_link_item"));
 
         if (!(gui instanceof GuiRecipe) && NEIClientConfig.canCheatItem(stack)) {
             hotkeys.put(
@@ -429,7 +465,14 @@ public abstract class ShortcutInputHandler {
                 }
 
                 if (NEIClientConfig.autocraftingEnabled()) {
-                    hotkeys.put(NEIClientConfig.getKeyName("gui.craft"), NEIClientUtils.translate("itempanel.craft"));
+                    hotkeys.put(
+                            NEIClientConfig.getKeyName(
+                                    "gui.craft_items",
+                                    NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH),
+                            NEIClientUtils.translate("itempanel.craft_missing"));
+                    hotkeys.put(
+                            NEIClientConfig.getKeyName("gui.craft_items", NEIClientUtils.SHIFT_HASH),
+                            NEIClientUtils.translate("itempanel.craft_all"));
                 }
             }
 
@@ -438,11 +481,33 @@ public abstract class ShortcutInputHandler {
         return hotkeys;
     }
 
+    private static void autocraftingIgnoreInventory(RecipeChainMath math) {
+        final GuiContainer guiContainer = NEIClientUtils.getGuiContainer();
+        final List<ItemStack> playerInventory = AutoCraftingManager.getInventoryItems(guiContainer).values();
+        final RecipeId rootRecipeId = math.createMasterRoot();
+
+        for (BookmarkItem item : math.recipeIngredients) {
+            if (item.amount > 0 && rootRecipeId.equals(item.recipeId)) {
+                long amount = 0;
+
+                for (ItemStack stack : playerInventory) {
+                    if (NEIClientUtils.areStacksSameTypeCraftingWithNBT(stack, item.itemStack)) {
+                        amount += StackInfo.getAmount(stack);
+                    }
+                }
+
+                if (amount >= item.amount) {
+                    item.factor = item.amount = amount + item.amount - (amount % item.amount);
+                }
+            }
+        }
+    }
+
     private static RecipeId getHotkeyRecipeId(GuiContainer gui, int mousex, int mousey, ItemStack stack,
             BookmarksGridSlot slot) {
 
         if (slot != null) {
-            return slot.getRecipeId();
+            return slot.isIngredient() ? null : slot.getRecipeId();
         } else if (ItemPanels.itemPanel.contains(mousex, mousey)
                 || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey)) {
                     return FavoriteRecipes.getFavorite(stack);

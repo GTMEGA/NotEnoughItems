@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,6 +23,7 @@ import codechicken.nei.api.ItemInfo;
 import codechicken.nei.recipe.stackinfo.DefaultStackStringifyHandler;
 import codechicken.nei.recipe.stackinfo.GTFluidStackStringifyHandler;
 import codechicken.nei.util.ItemStackKey;
+import codechicken.nei.util.NBTHelper;
 
 public class StackInfo {
 
@@ -30,6 +32,7 @@ public class StackInfo {
     private static final Map<String, HashMap<String, String[]>> guidfilters = new HashMap<>();
     private static final ItemStackMap<String> guidcache = new ItemStackMap<>();
     private static final LRUCache<ItemStackKey, FluidStack> fluidcache = new LRUCache<>(200);
+    private static boolean isPausedItemDamageSound = false;
 
     static {
         stackStringifyHandlers.add(new DefaultStackStringifyHandler());
@@ -71,6 +74,18 @@ public class StackInfo {
         }
 
         return stack;
+    }
+
+    public static void pauseItemDamageSound(boolean pause) {
+        if (isPausedItemDamageSound != (isPausedItemDamageSound = pause)) {
+            for (IStackStringifyHandler handler : stackStringifyHandlers) {
+                handler.pauseItemDamageSound(pause);
+            }
+        }
+    }
+
+    public static boolean isPausedItemDamageSound() {
+        return isPausedItemDamageSound;
     }
 
     public static ItemStack withAmount(ItemStack stack, long customCount) {
@@ -131,7 +146,7 @@ public class StackInfo {
         final NBTTagCompound nbTag = itemStackToNBT(stack, false);
 
         if (nbTag == null) {
-            return null;
+            return "unknown";
         }
 
         nbTag.removeTag("Count");
@@ -144,9 +159,11 @@ public class StackInfo {
             nbTag.removeTag("tag");
         }
 
-        if (nbTag.hasKey("strId") && guidfilters.containsKey(nbTag.getString("strId"))) {
+        if (nbTag.hasKey("strId") && (guidfilters.containsKey(nbTag.getString("strId"))
+                || guidfilters.containsKey(nbTag.getString("strId") + "&" + nbTag.getShort("Damage")))) {
+            final String strId = nbTag.getString("strId")
+                    + (guidfilters.containsKey(nbTag.getString("strId")) ? "" : "&" + nbTag.getShort("Damage"));
             final ArrayList<String> keys = new ArrayList<>();
-            final String strId = nbTag.getString("strId");
 
             keys.add(strId);
 
@@ -171,7 +188,7 @@ public class StackInfo {
                 }
 
                 if (local instanceof NBTBase item) {
-                    keys.add(item.toString());
+                    keys.add(NBTHelper.toString(item));
                 } else if (local != null) {
                     keys.add(String.valueOf(local));
                 }
@@ -182,7 +199,7 @@ public class StackInfo {
             }
         } else {
             synchronized (guidcache) {
-                guidcache.put(stack, nbTag.toString());
+                guidcache.put(stack, NBTHelper.toString(nbTag));
             }
         }
 
@@ -205,13 +222,17 @@ public class StackInfo {
     }
 
     public static ItemStack getItemStackWithMinimumDamage(ItemStack[] stacks) {
-        int damage = Short.MAX_VALUE;
         ItemStack result = stacks[0];
 
         if (stacks.length > 1) {
             for (ItemStack stack : stacks) {
-                if (stack.getItem() != null && !ItemInfo.isHidden(stack) && stack.getItemDamage() < damage) {
-                    damage = stack.getItemDamage();
+                // to optimize compare recipes from permutation, an item with a minimum strId and damage is taken so as
+                // not to check everything permutation items
+                if (stack.getItem() != null && !ItemInfo.isHidden(stack)
+                        && (stack.getItemDamage() < result.getItemDamage()
+                                || stack.getItemDamage() == result.getItemDamage()
+                                        && Item.itemRegistry.getNameForObject(stack.getItem())
+                                                .compareTo(Item.itemRegistry.getNameForObject(result.getItem())) < 0)) {
                     result = stack;
                 }
             }

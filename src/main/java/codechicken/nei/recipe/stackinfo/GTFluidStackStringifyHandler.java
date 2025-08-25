@@ -1,5 +1,6 @@
 package codechicken.nei.recipe.stackinfo;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import net.minecraft.item.Item;
@@ -19,6 +20,8 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
     protected static Method getFluidDisplayStack = null;
     protected static Method getFluidFromDisplayStack = null;
     public static boolean replaceAE2FCFluidDrop = false;
+    private static Class<?> gtMetaGeneratedTool = null;
+    private static Field playSound = null;
 
     static {
         try {
@@ -32,6 +35,12 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
                     "gregtech.common.items.GT_FluidDisplayItem");
             getFluidFromDisplayStack = gtUtility.getMethod("getFluidFromDisplayStack", ItemStack.class);
             getFluidDisplayStack = gtUtility.getMethod("getFluidDisplayStack", FluidStack.class, boolean.class);
+
+            gtMetaGeneratedTool = ReflectionHelper.getClass(
+                    loader,
+                    "gregtech.api.items.MetaGeneratedTool",
+                    "gregtech.api.items.GT_MetaGenerated_Tool");
+            playSound = gtMetaGeneratedTool.getDeclaredField("playSound");
         } catch (Exception ignored) {
             /* Do nothing */
         }
@@ -104,4 +113,15 @@ public class GTFluidStackStringifyHandler implements IStackStringifyHandler {
 
         return null;
     }
+
+    @Override
+    public void pauseItemDamageSound(boolean pause) {
+        if (playSound != null) {
+            try {
+                playSound.setBoolean(null, !pause);
+            } catch (Exception e) {}
+        }
+
+    }
+
 }
