@@ -11,8 +11,10 @@ import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.BookmarkPanel.BookmarkViewMode;
 import codechicken.nei.FavoriteRecipes;
 import codechicken.nei.ItemPanels;
+import codechicken.nei.ItemsGrid.ItemsGridSlot;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.api.ShortcutInputHandler;
+import codechicken.nei.bookmark.BookmarkItem.BookmarkItemType;
 import codechicken.nei.bookmark.BookmarksGridSlot;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
@@ -36,23 +38,16 @@ public class RecipeItemInputHandler implements IContainerInputHandler, IContaine
 
     @Override
     public boolean mouseClicked(GuiContainer gui, int mousex, int mousey, int button) {
-        if (!(gui instanceof GuiRecipe) || ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.bookmarkPanel.contains(mousex, mousey)
-                || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey))
-            return false;
-
-        return ShortcutInputHandler.handleMouseClick(GuiContainerManager.getStackMouseOver(gui));
+        return false;
     }
 
     @Override
     public Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey, Map<String, String> hotkeys) {
 
-        if ((gui instanceof GuiRecipe) || ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.bookmarkPanel.contains(mousex, mousey)
-                || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey)) {
+        if (gui instanceof GuiRecipe || ItemPanels.itemPanel.containsWithSubpanels(mousex, mousey)
+                || ItemPanels.bookmarkPanel.contains(mousex, mousey)) {
             hotkeys.putAll(
-                    ShortcutInputHandler
-                            .handleHotkeys(gui, mousex, mousey, GuiContainerManager.getStackMouseOver(gui)));
+                    ShortcutInputHandler.handleHotkeys(mousex, mousey, GuiContainerManager.getStackMouseOver(gui)));
         }
 
         return hotkeys;
@@ -87,7 +82,7 @@ public class RecipeItemInputHandler implements IContainerInputHandler, IContaine
             final BookmarksGridSlot slot = ItemPanels.bookmarkPanel.getSlotMouseOver(mousex, mousey);
 
             if (slot != null && slot.getRecipeId() != null
-                    && !slot.isIngredient()
+                    && slot.getType() != BookmarkItemType.INGREDIENT
                     && NEIClientConfig.getRecipeTooltipsMode() != 0) {
                 final int tooltipMode = NEIClientConfig.getRecipeTooltipsMode();
                 final BookmarkViewMode viewMode = slot.getGroup().viewMode;
@@ -100,9 +95,20 @@ public class RecipeItemInputHandler implements IContainerInputHandler, IContaine
             return null;
         }
 
-        if (ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey)) {
-            return NEIClientConfig.showRecipeTooltipInPanel() ? FavoriteRecipes.getFavorite(itemstack) : null;
+        if (NEIClientConfig.showRecipeTooltipInPanel()) {
+            ItemsGridSlot panelSlot = ItemPanels.itemPanel.getSlotMouseOver(mousex, mousey);
+
+            if (panelSlot == null) {
+                panelSlot = ItemPanels.itemPanel.historyPanel.getSlotMouseOver(mousex, mousey);
+            }
+
+            if (panelSlot == null) {
+                panelSlot = ItemPanels.itemPanel.craftablesPanel.getSlotMouseOver(mousex, mousey);
+            }
+
+            if (panelSlot != null) {
+                return panelSlot.getRecipeId();
+            }
         }
 
         if (gui instanceof GuiRecipe<?>guiRecipe

@@ -281,3 +281,5 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,scala,gradle,kotlin,forgegradle,intellij+all,eclipse,emacs
+config/
+saves/

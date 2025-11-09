@@ -37,7 +37,7 @@ public abstract class OptionButton extends Option {
     }
 
     public OptionButton(String name) {
-        this(null, name, name + ".tip");
+        this(null, name, (name == null ? "null" : name) + ".tip");
     }
 
     public boolean isEnabled() {

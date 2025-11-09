@@ -38,6 +38,10 @@ public class FormattedTextField extends GuiTextField {
         this.formatter = formatter;
     }
 
+    public TextFormatter getFormatter() {
+        return this.formatter;
+    }
+
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
     }
@@ -55,6 +59,11 @@ public class FormattedTextField extends GuiTextField {
         }
 
         super.setFocused(focus);
+    }
+
+    @Override
+    public void setText(String rawText) {
+        super.setText(EnumChatFormatting.getTextWithoutFormattingCodes(rawText));
     }
 
     @Override

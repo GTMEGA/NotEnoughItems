@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import codechicken.core.CommonUtils;
+import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.api.API;
 import codechicken.nei.api.GuiInfo;
 import codechicken.nei.api.IInfiniteItemHandler;
@@ -21,6 +22,7 @@ import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.commands.CommandBookmarkAdd;
 import codechicken.nei.commands.CommandRecipeId;
+import codechicken.nei.commands.CommandUntranslator;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerSlotClickHandler;
@@ -68,6 +70,7 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
     public static void registerClientCommands() {
         ClientCommandHandler.instance.registerCommand(new CommandBookmarkAdd());
         ClientCommandHandler.instance.registerCommand(new CommandRecipeId());
+        ClientCommandHandler.instance.registerCommand(new CommandUntranslator());
     }
 
     public static void updateUnlimitedItems(InventoryPlayer inventory) {
@@ -136,7 +139,7 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
             return true;
         }
 
-        if (button == 1 && slot instanceof SlotCrafting) // right click
+        if (button == 1 && modifier != 2 && slot instanceof SlotCrafting) // right click
         {
             for (int i1 = 0; i1 < 64; i1++) // click this slot 64 times
                 manager.handleSlotClick(slot.slotNumber, button, 0);
@@ -154,20 +157,32 @@ public class NEIController implements IContainerSlotClickHandler, IContainerInpu
 
         if (GuiInfo.hasCustomSlots(gui)) return false;
 
-        if (slotIndex >= 0 && NEIClientUtils.shiftKey()
-                && NEIClientUtils.getHeldItem() != null
-                && !slot.getHasStack()) {
-            ItemStack held = NEIClientUtils.getHeldItem();
-            manager.handleSlotClick(slot.slotNumber, button, 0);
-            if (slot.isItemValid(held) && !ItemInfo.fastTransferExemptions.contains(slot.getClass()))
-                fastTransferManager.performMassTransfer(gui, pickedUpFromSlot, slotIndex, held);
+        if (NEIClientUtils.shiftKey()) {
+            // fix small mouse movement while clicking causing slotIndex to be -999
+            if (slotIndex == -999) {
+                final Point mouse = GuiDraw.getMousePosition();
+                slot = gui.getSlotAtPosition(mouse.x, mouse.y);
 
-            return true;
-        }
+                if (slot != null) {
+                    slotIndex = slot.slotNumber;
+                }
+            }
 
-        if (slotIndex == -999 && NEIClientUtils.shiftKey() && button == 0) {
-            fastTransferManager.throwAll(gui, pickedUpFromSlot);
-            return true;
+            if (slotIndex >= 0 && NEIClientUtils.getHeldItem() != null && !slot.getHasStack()) {
+                final ItemStack held = NEIClientUtils.getHeldItem();
+                manager.handleSlotClick(slot.slotNumber, button, 0);
+
+                if (slot.isItemValid(held) && !ItemInfo.fastTransferExemptions.contains(slot.getClass())) {
+                    fastTransferManager.performMassTransfer(gui, pickedUpFromSlot, slotIndex, held);
+                }
+
+                return true;
+            }
+
+            if (slotIndex == -999 && button == 0) {
+                fastTransferManager.throwAll(gui, pickedUpFromSlot);
+                return true;
+            }
         }
 
         return false;

@@ -170,13 +170,13 @@ public class RecipeChainTooltipLineHandler implements ITooltipLineHandler {
 
         inputs.sort(
                 Comparator.comparing((ItemStack stack) -> StackInfo.getFluid(stack) != null)
-                        .thenComparing(ItemSorter.instance));
+                        .thenComparingInt(stack -> -1 * stack.stackSize).thenComparing(ItemSorter.instance));
         outputs.sort(
                 Comparator.comparing((ItemStack stack) -> StackInfo.getFluid(stack) != null)
-                        .thenComparing(ItemSorter.instance));
+                        .thenComparingInt(stack -> -1 * stack.stackSize).thenComparing(ItemSorter.instance));
         remainder.sort(
                 Comparator.comparing((ItemStack stack) -> StackInfo.getFluid(stack) != null)
-                        .thenComparing(ItemSorter.instance));
+                        .thenComparingInt(stack -> -1 * stack.stackSize).thenComparing(ItemSorter.instance));
 
         this.inputs = new ItemsTooltipLineHandler(
                 this.lastShiftKey ? NEIClientUtils.translate("bookmark.crafting_chain.missing")
@@ -208,6 +208,8 @@ public class RecipeChainTooltipLineHandler implements ITooltipLineHandler {
             this.available.setLabelColor(EnumChatFormatting.GREEN);
         }
 
+        this.size.height = this.size.width = 0;
+
         if (!this.inputs.isEmpty() || !this.outputs.isEmpty()
                 || !this.remainder.isEmpty()
                 || !this.available.isEmpty()) {
@@ -225,8 +227,6 @@ public class RecipeChainTooltipLineHandler implements ITooltipLineHandler {
             this.size.height += this.inputs.getSize().height + this.outputs.getSize().height
                     + this.remainder.getSize().height
                     + this.available.getSize().height;
-        } else {
-            this.size.height = this.size.width = 0;
         }
 
     }

@@ -49,6 +49,7 @@ import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.NEIModContainer;
 import codechicken.nei.recipe.StackInfo;
+import codechicken.nei.util.ItemUntranslator;
 import codechicken.nei.util.ReadableNumberConverter;
 import codechicken.nei.util.RenderTooltipEventHelper;
 
@@ -60,6 +61,10 @@ public class GuiContainerManager {
         public void onResourceManagerReload(IResourceManager p_110549_1_) {
             renderingErrorItems.clear();
             ItemList.loadItems.restart();
+
+            if (NEIClientConfig.enableItemUntranslator()) {
+                ItemUntranslator.getInstance().load();
+            }
         }
     }
 
@@ -76,6 +81,9 @@ public class GuiContainerManager {
             new CopyOnWriteArrayList<>());
     public static final LinkedList<IContainerSlotClickHandler> slotClickHandlers = new HideousLinkedList<>(
             new CopyOnWriteArrayList<>());
+
+    // Any item rendered with this z offset should render it on top of every other gui element
+    public static final int TOOLTIP_Z_OFFSET = 400;
 
     static {
         addSlotClickHandler(new DefaultSlotClickHandler());
@@ -399,7 +407,7 @@ public class GuiContainerManager {
 
     public static void enableMatrixStackLogging() {
         if (!contextEnabled) {
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+            GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
             modelviewDepth = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);
             contextEnabled = true;
         }
@@ -590,9 +598,7 @@ public class GuiContainerManager {
             }
         }
 
-        if (!tooltip.isEmpty()) tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE); // add space after 'title'
-
-        if (showTooltip) {
+        if (showTooltip && NEIClientConfig.getBooleanSetting("inventory.showHotkeys")) {
             List<String> hotkeystips = collectHotkeyTips(mousex, mousey);
 
             if (!hotkeystips.isEmpty()) {
@@ -603,6 +609,19 @@ public class GuiContainerManager {
                     tooltip.addAll(1, hotkeystips);
                 }
             }
+        }
+
+        if (showTooltip && stack != null && !tooltip.isEmpty()) {
+            final String secondDisplayName = ItemUntranslator.getInstance().getItemStackDisplayName(stack);
+
+            if (!secondDisplayName.isEmpty()) {
+                tooltip.add(1, EnumChatFormatting.DARK_GRAY + secondDisplayName + GuiDraw.TOOLTIP_LINESPACE);
+            } else {
+                tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE);
+            }
+
+        } else if (!tooltip.isEmpty()) {
+            tooltip.set(0, tooltip.get(0) + GuiDraw.TOOLTIP_LINESPACE);
         }
 
         if (NEIModContainer.isBlendtronicLoaded() && !tooltip.isEmpty()) {
@@ -632,9 +651,6 @@ public class GuiContainerManager {
             drawPagedTooltip(font, mousex + 12, mousey - 12, tooltip);
         }
 
-        for (IContainerDrawHandler drawHandler : drawHandlers) {
-            drawHandler.postRenderTooltips(window, mousex, mousey, tooltip);
-        }
     }
 
     private List<String> collectHotkeyTips(int mousex, int mousey) {
@@ -648,12 +664,12 @@ public class GuiContainerManager {
                 }
             }
 
+            hotkeys.remove(null);
+            hotkeys.remove("");
+
             if (!hotkeys.isEmpty()) {
                 List<String> hotkeystips = new ArrayList<>();
-
                 Map<String, List<String>> messages = new HashMap<>();
-                hotkeys.remove(null);
-                hotkeys.remove("");
 
                 for (Map.Entry<String, String> entry : hotkeys.entrySet()) {
                     messages.computeIfAbsent(entry.getValue(), m -> new ArrayList<>()).add(entry.getKey());
@@ -688,13 +704,19 @@ public class GuiContainerManager {
             }
 
         } else if (NEIClientConfig.getBooleanSetting("inventory.hotkeysHelpText")) {
+            Map<String, String> hotkeys = new HashMap<>();
             boolean existsHotkeys = false;
 
             synchronized (instanceTooltipHandlers) {
                 for (IContainerTooltipHandler handler : instanceTooltipHandlers) {
-                    if (!handler.handleHotkeys(window, mousex, mousey, new HashMap<>()).isEmpty()) {
-                        existsHotkeys = true;
-                        break;
+                    if (!(hotkeys = handler.handleHotkeys(window, mousex, mousey, hotkeys)).isEmpty()) {
+                        hotkeys.remove("");
+                        hotkeys.remove(null);
+
+                        if (!hotkeys.isEmpty()) {
+                            existsHotkeys = true;
+                            break;
+                        }
                     }
                 }
             }
