@@ -80,7 +80,7 @@ dependencies {
     shadowImplementation("org.apache.commons:commons-csv:1.10.0")
     compileOnly(deobfModrinth("forge-essentials:7.5.1"))
 
-    antlr("org.antlr:antlr4:4.13.2n")
+    antlr("org.antlr:antlr4:4.13.2")
     shadowImplementation("org.antlr:antlr4-runtime:4.13.2")
 
 
