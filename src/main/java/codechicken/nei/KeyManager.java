@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import org.lwjgl.input.Keyboard;
+
+import codechicken.nei.util.NEIKeyboardUtils;
+
 /**
  * Good old down/held/up keystate tracker
  */
@@ -26,7 +30,8 @@ public class KeyManager {
 
     public static void tickKeyStates() {
         for (Entry<String, KeyState> entry : keyStates.entrySet()) {
-            final boolean down = NEIClientConfig.isKeyHashDown(entry.getKey());
+            final int keyCode = NEIKeyboardUtils.unhash(NEIClientConfig.getKeyBinding(entry.getKey()));
+            final boolean down = keyCode > 0 && keyCode < Keyboard.KEYBOARD_SIZE && Keyboard.isKeyDown(keyCode);
             final KeyState state = entry.getValue();
 
             if (down) {

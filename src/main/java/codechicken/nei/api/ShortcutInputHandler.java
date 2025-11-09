@@ -19,15 +19,19 @@ import codechicken.nei.BookmarkContainerInfo;
 import codechicken.nei.FavoriteRecipes;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.ItemQuantityField;
+import codechicken.nei.ItemsGrid.ItemsGridSlot;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.SearchField;
 import codechicken.nei.bookmark.BookmarkGrid;
+import codechicken.nei.bookmark.BookmarkGroup;
 import codechicken.nei.bookmark.BookmarkItem;
+import codechicken.nei.bookmark.BookmarkItem.BookmarkItemType;
 import codechicken.nei.bookmark.BookmarksGridSlot;
 import codechicken.nei.recipe.AutoCraftingManager;
 import codechicken.nei.recipe.GuiCraftingRecipe;
+import codechicken.nei.recipe.GuiFavoriteButton;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import codechicken.nei.recipe.Recipe;
@@ -38,6 +42,31 @@ import codechicken.nei.recipe.chain.RecipeChainMath;
 import codechicken.nei.util.NEIMouseUtils;
 
 public abstract class ShortcutInputHandler {
+
+    private static class HotkeysCache {
+
+        public int mousex;
+        public int mousey;
+        public ItemStack stack;
+        public int groupId;
+        public Map<String, String> hotkeys = new HashMap<>();
+
+        public boolean matches(int mousex, int mousey, ItemStack stack, int groupId) {
+            return Math.abs(this.mousex - mousex) < 16 && Math.abs(this.mousey - mousey) < 16
+                    && (this.stack == null ? stack == null && this.groupId == groupId
+                            : stack != null && NEIClientUtils.areStacksSameTypeWithNBT(stack, this.stack));
+        }
+
+        public void update(int mousex, int mousey, ItemStack stack, int groupId, Map<String, String> hotkeys) {
+            this.mousex = mousex;
+            this.mousey = mousey;
+            this.stack = stack != null ? stack.copy() : null;
+            this.groupId = groupId;
+            this.hotkeys = hotkeys;
+        }
+    }
+
+    private static HotkeysCache hotkeysCache = new HotkeysCache();
 
     public static boolean handleKeyEvent(ItemStack stackover) {
 
@@ -95,6 +124,9 @@ public abstract class ShortcutInputHandler {
         if (NEIClientConfig.isKeyHashDown("gui.copy_name")) {
             return copyItemStackName(stackover);
         }
+        if (NEIClientConfig.isKeyHashDown("gui.copy_id")) {
+            return copyItemStackID(stackover);
+        }
 
         if (NEIClientConfig.isKeyHashDown("gui.copy_oredict")) {
             return copyItemStackOreDictionary(stackover);
@@ -110,6 +142,10 @@ public abstract class ShortcutInputHandler {
 
         if (NEIClientConfig.isKeyHashDown("gui.usage")) {
             return GuiUsageRecipe.openRecipeGui("item", stackover);
+        }
+
+        if (NEIClientConfig.isKeyHashDown("gui.favorite")) {
+            return saveFavoriteTree(stackover);
         }
 
         if (NEIClientConfig.isKeyHashDown("gui.bookmark")) {
@@ -138,9 +174,9 @@ public abstract class ShortcutInputHandler {
             final int button = Mouse.getEventButton();
 
             if (button == 0) {
-                return GuiCraftingRecipe.openRecipeGui("item", stackover);
+                return GuiCraftingRecipe.openRecipeGui("item", stackover.copy());
             } else if (button == 1) {
-                return GuiUsageRecipe.openRecipeGui("item", stackover);
+                return GuiUsageRecipe.openRecipeGui("item", stackover.copy());
             }
         }
 
@@ -149,6 +185,14 @@ public abstract class ShortcutInputHandler {
 
     private static boolean copyItemStackName(ItemStack stackover) {
         GuiScreen.setClipboardString(SearchField.getEscapedSearchText(stackover));
+        return true;
+    }
+
+    private static boolean copyItemStackID(ItemStack stackover) {
+        if (stackover == null || stackover.getItem() == null) return false;
+        GuiScreen.setClipboardString(
+                stackover.getItem().delegate.name()
+                        + (stackover.getItemDamage() != 0 ? "/" + stackover.getItemDamage() : ""));
         return true;
     }
 
@@ -190,7 +234,7 @@ public abstract class ShortcutInputHandler {
                 if (recipe != null) {
                     math = RecipeChainMath.of(recipe, 1);
                 }
-            } else if (slot.getRecipeId() != null && !slot.isIngredient()) {
+            } else if (slot.getRecipeId() != null && slot.getType() == BookmarkItemType.RESULT) {
 
                 if (slot.getGroup().crafting == null) {
                     final Recipe recipe = Recipe.of(slot.getRecipeId());
@@ -247,14 +291,36 @@ public abstract class ShortcutInputHandler {
         return false;
     }
 
+    private static boolean saveFavoriteTree(ItemStack stackover) {
+        final Point mouse = GuiDraw.getMousePosition();
+
+        if (ItemPanels.itemPanel.contains(mouse.x, mouse.y)
+                || ItemPanels.itemPanel.historyPanel.contains(mouse.x, mouse.y)) {
+            final RecipeHandlerRef handlerRef = RecipeHandlerRef.of(FavoriteRecipes.getFavorite(stackover));
+
+            if (handlerRef != null) {
+                final GuiFavoriteButton button = new GuiFavoriteButton(handlerRef, 0, 0);
+                button.saveRecipeInBookmark();
+                return true;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private static boolean saveRecipeInBookmark(ItemStack stackover, boolean saveIngredients, boolean saveStackSize) {
         final Point mousePos = GuiDraw.getMousePosition();
 
+        // If no slot was removed from the bookmark panel on click:
         if (!ItemPanels.bookmarkPanel.removeSlot(mousePos.x, mousePos.y, saveIngredients)) {
             final Recipe recipe = getFocusedRecipe(stackover, mousePos.x, mousePos.y, saveIngredients);
 
+            // --- Case 1: saving a recipe (with ingredients) ---
             if (recipe != null && saveIngredients) {
 
+                // If the recipe is not already bookmarked, add it
                 if (!ItemPanels.bookmarkPanel.removeRecipe(recipe.getRecipeId(), BookmarkGrid.DEFAULT_GROUP_ID)) {
                     final Recipe singleRecipe = Recipe.of(
                             Arrays.asList(recipe.getResult(stackover)),
@@ -262,26 +328,38 @@ public abstract class ShortcutInputHandler {
                             recipe.getIngredients());
                     singleRecipe.setCustomRecipeId(recipe.getRecipeId());
 
-                    ItemPanels.bookmarkPanel.addRecipe(singleRecipe, BookmarkGrid.DEFAULT_GROUP_ID);
+                    ItemPanels.bookmarkPanel.addRecipe(
+                            singleRecipe,
+                            // Determine if stack size should be saved
+                            saveStackSize
+                                    || NEIClientConfig.getBooleanSetting("inventory.bookmarks.bookmarkRecipeWithCount")
+                                            ? 1
+                                            : 0,
+                            BookmarkGrid.DEFAULT_GROUP_ID);
                 }
 
+                // --- Case 2: saving an item only ---
             } else {
                 final RecipeId recipeId = recipe != null ? recipe.getRecipeId() : null;
+
+                // Determine if the item is associated with a recipe and should be saved with it
                 final boolean existsRecipe = recipeId != null
                         && ItemPanels.bookmarkPanel.existsRecipe(recipeId, BookmarkGrid.DEFAULT_GROUP_ID)
                         || NEIClientConfig.getBooleanSetting("inventory.bookmarks.bookmarkItemsWithRecipe");
 
+                // If the item was not removed from the bookmarks, add it
                 if (!ItemPanels.bookmarkPanel
                         .removeItem(stackover, existsRecipe ? recipeId : null, BookmarkGrid.DEFAULT_GROUP_ID)) {
+
+                    // Determine whether to preserve the item count
                     saveStackSize = saveStackSize || saveIngredients
                             || ItemPanels.bookmarkPanel.existsRecipe(recipeId, BookmarkGrid.DEFAULT_GROUP_ID);
 
                     if (!saveStackSize) {
                         stackover = StackInfo.withAmount(stackover, 0);
-                    } else if (ItemPanels.itemPanel.contains(mousePos.x, mousePos.y)
-                            || ItemPanels.itemPanel.historyPanel.contains(mousePos.x, mousePos.y)) {
-                                stackover = ItemQuantityField.prepareStackWithQuantity(stackover, 0);
-                            }
+                    } else if (ItemPanels.itemPanel.containsWithSubpanels(mousePos.x, mousePos.y)) {
+                        stackover = ItemQuantityField.prepareStackWithQuantity(stackover, 0);
+                    }
 
                     ItemPanels.bookmarkPanel
                             .addItem(stackover, existsRecipe ? recipeId : null, BookmarkGrid.DEFAULT_GROUP_ID);
@@ -297,25 +375,38 @@ public abstract class ShortcutInputHandler {
         final GuiContainer gui = NEIClientUtils.getGuiContainer();
         Recipe recipe = null;
 
-        if (useFavorites && (ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey))) {
-            recipe = Recipe.of(FavoriteRecipes.getFavorite(stackover));
+        if (useFavorites) {
+            ItemsGridSlot itemSlot = ItemPanels.itemPanel.getSlotMouseOver(mousex, mousey);
 
-            if (recipe != null) {
-
-                recipe.getIngredients().stream().forEach(ingr -> {
-                    final List<ItemStack> permutations = ingr.getPermutations();
-                    for (int index = 0; index < permutations.size(); index++) {
-                        if (FavoriteRecipes.contains(permutations.get(index))) {
-                            ingr.setActiveIndex(index);
-                            break;
-                        }
-                    }
-                });
-
+            if (itemSlot == null) {
+                itemSlot = ItemPanels.itemPanel.historyPanel.getSlotMouseOver(mousex, mousey);
             }
 
-        } else if (gui instanceof GuiRecipe guiRecipe) {
+            if (itemSlot == null) {
+                itemSlot = ItemPanels.itemPanel.craftablesPanel.getSlotMouseOver(mousex, mousey);
+            }
+
+            if (itemSlot != null) {
+                final RecipeId recipeId = itemSlot.getRecipeId();
+
+                if (recipeId != null && (recipe = Recipe.of(recipeId)) != null) {
+
+                    recipe.getIngredients().stream().forEach(ingr -> {
+                        final List<ItemStack> permutations = ingr.getPermutations();
+                        for (int index = 0; index < permutations.size(); index++) {
+                            if (FavoriteRecipes.contains(permutations.get(index))) {
+                                ingr.setActiveIndex(index);
+                                break;
+                            }
+                        }
+                    });
+
+                }
+
+            }
+        }
+
+        if (gui instanceof GuiRecipe guiRecipe) {
             recipe = guiRecipe.getFocusedRecipe();
         }
 
@@ -340,8 +431,14 @@ public abstract class ShortcutInputHandler {
         return ItemPanels.bookmarkPanel.pullBookmarkItems(math, shift);
     }
 
-    public static Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey, ItemStack stack) {
+    public static Map<String, String> handleHotkeys(int mousex, int mousey, ItemStack stack) {
         final int groupId = ItemPanels.bookmarkPanel.getHoveredGroupId(true);
+
+        if (hotkeysCache.matches(mousex, mousey, stack, groupId)) {
+            return hotkeysCache.hotkeys;
+        }
+
+        final GuiContainer gui = NEIClientUtils.getGuiContainer();
         final Map<String, String> hotkeys = new HashMap<>();
 
         if (groupId != -1) {
@@ -368,9 +465,13 @@ public abstract class ShortcutInputHandler {
                         NEIClientConfig.getKeyName("gui.craft_items", NEIClientUtils.SHIFT_HASH),
                         NEIClientUtils.translate("bookmark.group.craft_all"));
             }
+
+            hotkeysCache.update(mousex, mousey, stack, groupId, hotkeys);
+            return hotkeys;
         }
 
         if (stack == null) {
+            hotkeysCache.update(mousex, mousey, stack, groupId, hotkeys);
             return hotkeys;
         }
 
@@ -378,15 +479,57 @@ public abstract class ShortcutInputHandler {
         final RecipeId recipeId = getHotkeyRecipeId(gui, mousex, mousey, stack, slot);
 
         if (slot != null) {
-            hotkeys.put(
-                    NEIClientConfig.getKeyName("gui.bookmark"),
-                    NEIClientUtils.translate(slot.isIngredient() ? "bookmark.remove_item" : "bookmark.remove_recipe"));
+            final BookmarkGroup group = slot.getGroup();
 
-            if (slot.isIngredient()) {
+            if (group.crafting != null && group.collapsed) {
                 hotkeys.put(
                         NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
-                        NEIClientUtils.translate("bookmark.remove_recipe"));
-            }
+                        NEIClientUtils.translate("bookmark.group.remove_recipe"));
+            } else if (slot.getRecipeId() == null || slot.getType() == BookmarkItemType.ITEM) {
+                hotkeys.put(
+                        NEIClientConfig.getKeyName("gui.bookmark"),
+                        NEIClientUtils.translate("bookmark.remove_item"));
+            } else if (group.crafting != null && group.crafting.recipeRelations.entrySet().stream().anyMatch(
+                    entry -> entry.getKey().equals(slot.getRecipeId())
+                            || entry.getValue().contains(slot.getRecipeId()))) {
+                                hotkeys.put(
+                                        NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
+                                        NEIClientUtils.translate("bookmark.remove_recipe"));
+                            } else {
+                                hotkeys.put(
+                                        NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
+                                        NEIClientUtils.translate("bookmark.remove_recipe"));
+
+                                if (slot.getType() == BookmarkItemType.INGREDIENT) {
+                                    hotkeys.put(
+                                            NEIClientConfig.getKeyName("gui.bookmark"),
+                                            NEIClientUtils.translate("bookmark.remove_item"));
+
+                                    hotkeys.put(
+                                            NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
+                                            NEIClientUtils.translate("bookmark.remove_recipe"));
+                                } else {
+                                    final BookmarkItem item = slot.getBookmarkItem();
+
+                                    if (ItemPanels.bookmarkPanel.getGrid().createChainItems(groupId).values().stream()
+                                            .noneMatch(
+                                                    m -> m.type == BookmarkItemType.RESULT && !m.equals(item)
+                                                            && item.equalsRecipe(m))) {
+                                        hotkeys.put(
+                                                NEIClientConfig.getKeyName("gui.bookmark"),
+                                                NEIClientUtils.translate("bookmark.remove_recipe"));
+                                    } else {
+                                        hotkeys.put(
+                                                NEIClientConfig.getKeyName("gui.bookmark"),
+                                                NEIClientUtils.translate("bookmark.remove_item"));
+                                        hotkeys.put(
+                                                NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
+                                                NEIClientUtils.translate("bookmark.remove_recipe"));
+                                    }
+
+                                }
+
+                            }
 
             if (BookmarkContainerInfo.getBookmarkContainerHandler(gui) != null) {
                 hotkeys.put(
@@ -408,8 +551,19 @@ public abstract class ShortcutInputHandler {
 
             if (recipeId != null) {
                 hotkeys.put(
+                        NEIClientConfig
+                                .getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH),
+                        NEIClientUtils.translate("bookmark.add_item_with_recipe_and_count"));
+                hotkeys.put(
                         NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
                         NEIClientUtils.translate("bookmark.add_item_with_recipe"));
+            }
+
+            if ((ItemPanels.itemPanel.contains(mousex, mousey)
+                    || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey)) && FavoriteRecipes.contains(stack)) {
+                hotkeys.put(
+                        NEIClientConfig.getKeyName("gui.favorite"),
+                        NEIClientUtils.translate("recipe.favorite.bookmark_recipe"));
             }
 
         }
@@ -419,6 +573,7 @@ public abstract class ShortcutInputHandler {
 
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_name"), NEIClientUtils.translate("itempanel.copy_name"));
         hotkeys.put(NEIClientConfig.getKeyName("gui.copy_oredict"), NEIClientUtils.translate("itempanel.copy_oredict"));
+        hotkeys.put(NEIClientConfig.getKeyName("gui.copy_id"), NEIClientUtils.translate("itempanel.copy_id"));
         hotkeys.put(
                 NEIClientConfig.getKeyName("gui.chat_link_item"),
                 NEIClientUtils.translate("itempanel.chat_link_item"));
@@ -478,6 +633,8 @@ public abstract class ShortcutInputHandler {
 
         }
 
+        hotkeysCache.update(mousex, mousey, stack, groupId, hotkeys);
+
         return hotkeys;
     }
 
@@ -507,18 +664,30 @@ public abstract class ShortcutInputHandler {
             BookmarksGridSlot slot) {
 
         if (slot != null) {
-            return slot.isIngredient() ? null : slot.getRecipeId();
-        } else if (ItemPanels.itemPanel.contains(mousex, mousey)
-                || ItemPanels.itemPanel.historyPanel.contains(mousex, mousey)) {
-                    return FavoriteRecipes.getFavorite(stack);
-                } else
-            if (gui instanceof GuiRecipe guiRecipe) {
-                final Recipe focusedRecipe = guiRecipe.getFocusedRecipe();
+            return slot.getType() == BookmarkItemType.INGREDIENT ? null : slot.getRecipeId();
+        }
 
-                if (focusedRecipe != null) {
-                    return focusedRecipe.getRecipeId();
-                }
+        ItemsGridSlot itemSlot = ItemPanels.itemPanel.getSlotMouseOver(mousex, mousey);
+
+        if (itemSlot == null) {
+            itemSlot = ItemPanels.itemPanel.historyPanel.getSlotMouseOver(mousex, mousey);
+        }
+
+        if (itemSlot == null) {
+            itemSlot = ItemPanels.itemPanel.craftablesPanel.getSlotMouseOver(mousex, mousey);
+        }
+
+        if (itemSlot != null) {
+            return itemSlot.getRecipeId();
+        }
+
+        if (gui instanceof GuiRecipe guiRecipe) {
+            final Recipe focusedRecipe = guiRecipe.getFocusedRecipe();
+
+            if (focusedRecipe != null) {
+                return focusedRecipe.getRecipeId();
             }
+        }
 
         return null;
     }

@@ -15,11 +15,11 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.api.GuiInfo;
 import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.recipe.Recipe.RecipeId;
 import codechicken.nei.recipe.StackInfo;
 
 public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends ItemsGrid.MouseContext> {
@@ -51,7 +51,7 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
         }
 
         public void captureScreen(Runnable callback, int mode) {
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+            GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
 
             resetFramebuffer();
             this.framebuffer.bindFramebuffer(false);
@@ -84,21 +84,6 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
             } else {
                 this.framebuffer.framebufferClear();
             }
-
-            // copy depth buffer from MC (fix Angelica)
-            OpenGlHelper.func_153171_g(GL30.GL_READ_FRAMEBUFFER, minecraft.getFramebuffer().framebufferObject);
-            OpenGlHelper.func_153171_g(GL30.GL_DRAW_FRAMEBUFFER, this.framebuffer.framebufferObject);
-            GL30.glBlitFramebuffer(
-                    0,
-                    0,
-                    minecraft.displayWidth,
-                    minecraft.displayHeight,
-                    0,
-                    0,
-                    minecraft.displayWidth,
-                    minecraft.displayHeight,
-                    GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT,
-                    GL11.GL_NEAREST);
         }
 
         public void renderCapturedScreen() {
@@ -170,6 +155,10 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
         }
 
         public <M extends MouseContext> void afterDraw(Rectangle4i rect, M mouseContext) {}
+
+        public RecipeId getRecipeId() {
+            return null;
+        }
 
         public void drawItem(Rectangle4i rect) {
             drawItem(getItemStack(), rect);
@@ -276,8 +265,6 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
 
     protected boolean[] invalidSlotMap;
 
-    protected Label messageLabel = new Label(getMessageOnEmpty(), true);
-
     protected ScreenCapture screenCapture = null;
 
     public ArrayList<ItemStack> getItems() {
@@ -355,9 +342,6 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
         rows = height / SLOT_SIZE;
 
         paddingLeft = (width % SLOT_SIZE) / 2;
-
-        messageLabel.x = marginLeft + width / 2;
-        messageLabel.y = marginTop + height / 2;
     }
 
     public void shiftPage(int shift) {
@@ -561,12 +545,6 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
         afterDrawItems(mousex, mousey, mouseContext);
     }
 
-    public void setVisible() {
-        if (getItems().isEmpty() && getMessageOnEmpty() != null) {
-            LayoutManager.addWidget(messageLabel);
-        }
-    }
-
     public boolean contains(int px, int py) {
         final Rectangle4i rect = new Rectangle4i(
                 marginLeft + paddingLeft,
@@ -581,7 +559,4 @@ public abstract class ItemsGrid<T extends ItemsGrid.ItemsGridSlot, M extends Ite
         return !isInvalidSlot(columns * getRowIndex(py) + getColumnIndex(px));
     }
 
-    public String getMessageOnEmpty() {
-        return null;
-    }
 }

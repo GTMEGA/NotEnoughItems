@@ -12,6 +12,8 @@ public class HandlerInfo {
 
     public static int DEFAULT_HEIGHT = 65;
     public static int DEFAULT_WIDTH = 166;
+
+    @Deprecated
     public static int DEFAULT_MAX_PER_PAGE = 1;
 
     private String handlerName;
@@ -21,15 +23,16 @@ public class HandlerInfo {
     private boolean requiresMod;
     private String excludedModId;
 
-    private String itemId;
-    private String nbtString;
-
     private int yShift = 0;
     private int height = DEFAULT_HEIGHT;
     private int width = DEFAULT_WIDTH;
+
+    @Deprecated
     private int maxRecipesPerPage = DEFAULT_MAX_PER_PAGE;
+    private boolean multipleWidgetsAllowed = false;
     private boolean showFavoritesButton = true;
     private boolean showOverlayButton = true;
+    private boolean useCustomScroll = false;
 
     private ItemStack itemStack = null;
     private DrawableResource image = null;
@@ -42,22 +45,27 @@ public class HandlerInfo {
         this.excludedModId = excludedModId;
     }
 
+    @Deprecated
     public void setHandlerDimensions(int height, int width, int maxRecipesPerPage) {
+        setHandlerDimensions(width, height, maxRecipesPerPage > 1);
+    }
+
+    public void setHandlerDimensions(int width, int height, boolean multipleWidgetsAllowed) {
         this.height = height;
         this.width = width;
-        this.maxRecipesPerPage = maxRecipesPerPage;
+        this.multipleWidgetsAllowed = multipleWidgetsAllowed;
     }
 
     public boolean setItem(String itemId, String nbtString) {
         if (hasImageOrItem()) return false;
 
-        itemStack = NEIServerUtils.getModdedItem(itemId, nbtString);
-        if (itemStack == null) NEIClientConfig.logger.info("Couldn't find " + modName + " - " + itemId);
-        else {
-            this.itemId = itemId;
-            this.nbtString = nbtString;
+        this.itemStack = NEIServerUtils.getModdedItem(itemId, nbtString);
+
+        if (this.itemStack == null) {
+            NEIClientConfig.logger.info("Couldn't find " + this.modName + " - " + itemId);
         }
-        return (itemStack != null);
+
+        return this.itemStack != null;
     }
 
     public boolean setImage(String resourceLocation, int imageX, int imageY, int imageWidth, int imageHeight) {
@@ -68,46 +76,48 @@ public class HandlerInfo {
     }
 
     public DrawableResource getImage() {
-        return image;
+        return this.image;
     }
 
     public ItemStack getItemStack() {
-        return itemStack;
+        return this.itemStack;
     }
 
     public String getModName() {
-        return modName;
+        return this.modName;
     }
 
     public String getModId() {
-        return modId;
+        return this.modId;
     }
 
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
+    @Deprecated
     public int getMaxRecipesPerPage() {
-        return Math.max(maxRecipesPerPage, 1);
+        return this.multipleWidgetsAllowed ? Integer.MAX_VALUE : 1;
+    }
+
+    public boolean isMultipleWidgetsAllowed() {
+        return this.multipleWidgetsAllowed;
     }
 
     public int getYShift() {
-        return yShift;
+        return this.yShift;
     }
 
     public String getHandlerName() {
-        return handlerName;
+        return this.handlerName;
     }
 
     public boolean hasImageOrItem() {
-        if (image != null) return true;
-        if (itemStack != null) return true;
-
-        return false;
+        return this.image != null || this.itemStack != null;
     }
 
     public void setYShift(int yShift) {
@@ -130,6 +140,14 @@ public class HandlerInfo {
         this.showOverlayButton = showOverlayButton;
     }
 
+    public boolean getUseCustomScroll() {
+        return this.useCustomScroll;
+    }
+
+    public void setUseCustomScroll(boolean useCustomScroll) {
+        this.useCustomScroll = useCustomScroll;
+    }
+
     public static class Builder {
 
         private final HandlerInfo info;
@@ -144,46 +162,57 @@ public class HandlerInfo {
         }
 
         public Builder setDisplayStack(ItemStack stack) {
-            info.image = null;
-            info.itemStack = stack;
+            this.info.image = null;
+            this.info.itemStack = stack;
             return this;
         }
 
         public Builder setDisplayImage(DrawableResource drawable) {
-            info.itemStack = null;
-            info.image = drawable;
+            this.info.itemStack = null;
+            this.info.image = drawable;
             return this;
         }
 
         public Builder setDisplayImage(ResourceLocation location, int imageX, int imageY, int imageWidth,
                 int imageHeight) {
-            info.itemStack = null;
-            info.setImage(location.toString(), imageX, imageY, imageWidth, imageHeight);
+            this.info.itemStack = null;
+            this.info.setImage(location.toString(), imageX, imageY, imageWidth, imageHeight);
+            return this;
+        }
+
+        public Builder setUseCustomScroll(boolean useCustomScroll) {
+            this.info.setUseCustomScroll(useCustomScroll);
             return this;
         }
 
         public Builder setShiftY(int shiftY) {
-            info.setYShift(shiftY);
+            this.info.setYShift(shiftY);
             return this;
         }
 
         public Builder setWidth(int width) {
-            info.setHandlerDimensions(info.height, width, info.maxRecipesPerPage);
+            this.info.width = width;
             return this;
         }
 
         public Builder setHeight(int height) {
-            info.setHandlerDimensions(height, info.width, info.maxRecipesPerPage);
+            this.info.height = height;
             return this;
         }
 
+        @Deprecated
         public Builder setMaxRecipesPerPage(int maxRecipesPerPage) {
-            info.setHandlerDimensions(info.height, info.width, maxRecipesPerPage);
+            this.info.multipleWidgetsAllowed = maxRecipesPerPage > 1;
+            return this;
+        }
+
+        public Builder setMultipleWidgetsAllowed(boolean multipleWidgetsAllowed) {
+            this.info.multipleWidgetsAllowed = multipleWidgetsAllowed;
             return this;
         }
 
         public HandlerInfo build() {
-            return info;
+            return this.info;
         }
     }
 }

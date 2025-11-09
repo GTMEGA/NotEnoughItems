@@ -15,11 +15,12 @@ import net.minecraft.item.ItemStack;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.FavoriteRecipes;
 import codechicken.nei.ItemPanels;
+import codechicken.nei.ItemsGrid.ItemsGridSlot;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
+import codechicken.nei.bookmark.BookmarkItem.BookmarkItemType;
 import codechicken.nei.bookmark.BookmarksGridSlot;
 import codechicken.nei.recipe.Recipe.RecipeId;
-import codechicken.nei.recipe.stackinfo.GTFluidStackStringifyHandler;
 
 public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
 
@@ -35,10 +36,13 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
         final Minecraft mc = NEIClientUtils.mc();
         final RecipeId recipeId;
 
-        if ("item".equals(outputId)) {
-            for (int i = 0; i < results.length; i++) {
-                results[i] = normalizeItemStack((ItemStack) results[i]);
+        for (int i = 0; i < results.length; i++) {
+            if (results[i] instanceof ItemStack stack) {
+                results[i] = StackInfo.normalizeRecipeQueryStack(stack.copy());
             }
+        }
+
+        if ("item".equals(outputId)) {
             recipeId = getRecipeId(mc.currentScreen, (ItemStack) results[0]);
         } else if ("recipeId".equals(outputId)) {
             recipeId = (RecipeId) results[1];
@@ -49,9 +53,15 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
         final ArrayList<ICraftingHandler> handlers = getCraftingHandlers(outputId, results);
 
         if (!handlers.isEmpty()) {
-            final GuiCraftingRecipe gui = new GuiCraftingRecipe(handlers, "recipeId".equals(outputId));
+            final GuiCraftingRecipe gui = new GuiCraftingRecipe(handlers);
 
             if (open) {
+
+                if (NEIClientConfig.showHistoryPanelWidget() && "item".equals(outputId)
+                        && results[0] instanceof ItemStack stack) {
+                    ItemPanels.itemPanel.historyPanel.addItem(stack);
+                }
+
                 mc.displayGuiScreen(gui);
             }
 
@@ -98,13 +108,6 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
         return GuiRecipeTab.getHandlerInfo(handler).getHandlerName();
     }
 
-    private static ItemStack normalizeItemStack(ItemStack stack) {
-        GTFluidStackStringifyHandler.replaceAE2FCFluidDrop = true;
-        stack = StackInfo.loadFromNBT(StackInfo.itemStackToNBT(stack));
-        GTFluidStackStringifyHandler.replaceAE2FCFluidDrop = false;
-        return stack;
-    }
-
     public static RecipeId getRecipeId(GuiScreen gui, ItemStack stackover) {
 
         if (gui instanceof GuiRecipe guiRecipe) {
@@ -117,22 +120,32 @@ public class GuiCraftingRecipe extends GuiRecipe<ICraftingHandler> {
 
         final Point mouseover = GuiDraw.getMousePosition();
         final BookmarksGridSlot panelSlot = ItemPanels.bookmarkPanel.getSlotMouseOver(mouseover.x, mouseover.y);
-        RecipeId recipeId = null;
 
-        if (panelSlot != null && !panelSlot.isIngredient()) {
-            recipeId = panelSlot.getRecipeId();
+        if (panelSlot != null) {
+            return panelSlot.getType() == BookmarkItemType.INGREDIENT || panelSlot.getRecipeId() == null
+                    ? FavoriteRecipes.getFavorite(stackover)
+                    : panelSlot.getRecipeId();
         }
 
-        if (recipeId == null) {
-            recipeId = FavoriteRecipes.getFavorite(stackover);
+        ItemsGridSlot itemSlot = ItemPanels.itemPanel.getSlotMouseOver(mouseover.x, mouseover.y);
+
+        if (itemSlot == null) {
+            itemSlot = ItemPanels.itemPanel.historyPanel.getSlotMouseOver(mouseover.x, mouseover.y);
         }
 
-        return recipeId;
+        if (itemSlot == null) {
+            itemSlot = ItemPanels.itemPanel.craftablesPanel.getSlotMouseOver(mouseover.x, mouseover.y);
+        }
+
+        if (itemSlot != null) {
+            return itemSlot.getRecipeId();
+        }
+
+        return null;
     }
 
-    private GuiCraftingRecipe(ArrayList<ICraftingHandler> handlers, boolean limitToOneRecipe) {
+    private GuiCraftingRecipe(ArrayList<ICraftingHandler> handlers) {
         super(NEIClientUtils.mc().currentScreen);
-        this.limitToOneRecipe = limitToOneRecipe;
         this.currenthandlers = handlers;
     }
 

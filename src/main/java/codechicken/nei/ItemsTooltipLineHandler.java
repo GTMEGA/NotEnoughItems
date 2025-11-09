@@ -70,8 +70,8 @@ public class ItemsTooltipLineHandler implements ITooltipLineHandler {
     }
 
     public void setActiveStack(ItemStack activeStack) {
-        final ItemStack realStack = items.stream().filter(stack -> StackInfo.equalItemAndNBT(stack, activeStack, true))
-                .findFirst().orElse(null);
+        final ItemStack realStack = items.stream()
+                .filter(stack -> NEIClientUtils.areStacksSameTypeWithNBT(stack, activeStack)).findFirst().orElse(null);
         this.activeStackIndex = items.indexOf(realStack);
     }
 
@@ -100,13 +100,15 @@ public class ItemsTooltipLineHandler implements ITooltipLineHandler {
 
         fontRenderer.drawStringWithShadow(this.labelColor + this.label + ":", x, y, 0);
 
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-        GL11.glPushMatrix();
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+
+        GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
         RenderHelper.enableGUIStandardItemLighting();
 
-        GL11.glScaled(1, 1, 3);
-        GL11.glTranslatef(x, y + fontRenderer.FONT_HEIGHT + 2, 0);
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        final int xTranslation = x;
+        final int yTranslation = y + fontRenderer.FONT_HEIGHT + 2;
+        final int zTranslation = GuiContainerManager.TOOLTIP_Z_OFFSET;
+        GL11.glTranslatef(xTranslation, yTranslation, zTranslation);
 
         int indexShift = 0;
 
@@ -142,7 +144,7 @@ public class ItemsTooltipLineHandler implements ITooltipLineHandler {
             });
         }
 
-        GL11.glPopMatrix();
+        GL11.glTranslatef(-xTranslation, -yTranslation, -zTranslation);
         GL11.glPopAttrib();
     }
 

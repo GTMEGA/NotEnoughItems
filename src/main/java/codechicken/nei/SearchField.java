@@ -16,6 +16,8 @@ import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.ItemList.NothingItemFilter;
 import codechicken.nei.SearchTokenParser.ISearchParserProvider;
 import codechicken.nei.SearchTokenParser.SearchMode;
+import codechicken.nei.api.IRecipeFilter;
+import codechicken.nei.api.IRecipeFilter.IRecipeFilterProvider;
 import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.recipe.StackInfo;
@@ -88,9 +90,10 @@ public class SearchField extends TextField implements ItemFilterProvider {
         }
     }
 
-    public static class GuiSearchField extends FormattedTextField {
+    public static class GuiSearchField extends FormattedTextField implements ItemFilterProvider, IRecipeFilterProvider {
 
         protected final SearchTokenParser searchParser;
+        protected boolean skipRecipeTokens = false;
 
         public GuiSearchField() {
             this(SearchField.searchParser);
@@ -104,12 +107,26 @@ public class SearchField extends TextField implements ItemFilterProvider {
             setPlaceholder(NEIClientUtils.translate("inventory.search.placeholder"));
         }
 
+        public void setSkipRecipeTokens(boolean skipRecipeTokens) {
+            this.skipRecipeTokens = skipRecipeTokens;
+        }
+
+        @Override
         public ItemFilter getFilter() {
             return getFilter(getText());
         }
 
+        @Override
+        public IRecipeFilter getRecipeFilter() {
+            return getRecipeFilter(getText());
+        }
+
         public ItemFilter getFilter(String filterText) {
-            return this.searchParser.getFilter(filterText);
+            return this.searchParser.getFilter(filterText, this.skipRecipeTokens);
+        }
+
+        public IRecipeFilter getRecipeFilter(String filterText) {
+            return this.searchParser.getRecipeFilter(filterText);
         }
 
     }
@@ -272,7 +289,7 @@ public class SearchField extends TextField implements ItemFilterProvider {
             default:
                 break;
         }
-
+        // regex and extended+
         if (!search.isEmpty()) {
             try {
                 return Pattern.compile(search, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -305,6 +322,10 @@ public class SearchField extends TextField implements ItemFilterProvider {
             case 2:
                 text = text.replaceAll("[{}()\\[\\].+*?^$\\\\|]", "\\\\$0");
                 break;
+            case 3:
+                text = text.replaceAll("\"", "\\\\$0");
+                text = "\"" + text + "\"";
+                return text;
             default:
                 break;
         }
