@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.item.ItemStack;
 
+import codechicken.nei.bookmark.BookmarkItem.BookmarkItemType;
 import codechicken.nei.recipe.Recipe.RecipeId;
 import codechicken.nei.recipe.StackInfo;
 import codechicken.nei.recipe.chain.RecipeChainMath;
@@ -69,7 +70,7 @@ public class RecipeChainDetails {
                     item,
                     item.amount,
                     item.amount,
-                    item.isIngredient ? CalculatedType.INGREDIENT : CalculatedType.RESULT);
+                    item.type == BookmarkItemType.INGREDIENT ? CalculatedType.INGREDIENT : CalculatedType.RESULT);
         }
 
         public ItemStack getItemStack(long amount) {
@@ -179,9 +180,10 @@ public class RecipeChainDetails {
             if (itemIndex >= 0 && this.calculatedItems.containsKey(itemIndex)) {
                 final BookmarkItem item = entry.getValue();
                 if (this.recipeInMiddle.contains(item.recipeId)) {
-                    this.calculatedItems.get(itemIndex).setRealAmount(item.amount);
+                    this.calculatedItems.get(itemIndex)
+                            .setRealAmount(Math.max(0, item.factor * (item.getMultiplier() - 1)));
                 } else {
-                    this.calculatedItems.get(itemIndex).setRealAmount(Math.max(item.factor, item.amount));
+                    this.calculatedItems.get(itemIndex).setRealAmount(item.amount);
                 }
             }
         }
@@ -216,11 +218,12 @@ public class RecipeChainDetails {
         for (BookmarkChainItem value : items) {
             int itemIndex = sortingChainItems.get(value.getItem());
 
-            if (value.getItem().isIngredient || !recipeId.equals(value.getItem().recipeId)) {
+            if (value.getItem().type == BookmarkItemType.INGREDIENT || !recipeId.equals(value.getItem().recipeId)) {
                 itemIndex *= -1;
             }
 
-            if (!value.getItem().isIngredient && !math.outputRecipes.containsKey(value.getItem().recipeId)) {
+            if (value.getItem().type == BookmarkItemType.RESULT
+                    && !math.outputRecipes.containsKey(value.getItem().recipeId)) {
                 value.calculatedType = CalculatedType.REMAINDER;
             }
 
@@ -250,7 +253,7 @@ public class RecipeChainDetails {
         for (BookmarkChainItem value : items) {
             int itemIndex = sortingChainItems.get(value.getItem());
 
-            if (value.getItem().isIngredient || !recipeId.equals(value.getItem().recipeId)) {
+            if (value.getItem().type == BookmarkItemType.INGREDIENT || !recipeId.equals(value.getItem().recipeId)) {
                 itemIndex *= -1;
             }
 

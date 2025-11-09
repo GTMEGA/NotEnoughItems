@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
@@ -73,7 +72,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
     }
 
     public boolean isFavorite() {
-        return favorite;
+        return this.favorite;
     }
 
     public void toggleFavorite() {
@@ -85,6 +84,11 @@ public class GuiFavoriteButton extends GuiRecipeButton {
 
         FavoriteRecipes
                 .setFavorite(this.favoriteResult.getItemStack(), this.favorite ? this.recipe.getRecipeId() : null);
+    }
+
+    @Override
+    public void update() {
+        this.favorite = this.favorite && FavoriteRecipes.getFavorite(this.recipe.getRecipeId()) != null;
     }
 
     @Override
@@ -116,16 +120,16 @@ public class GuiFavoriteButton extends GuiRecipeButton {
         return Recipe.of(this.handlerRef);
     }
 
-    public void lastKeyTyped(GuiRecipe<?> gui, char keyChar, int keyID) {
+    public void lastKeyTyped(char keyChar, int keyID) {
 
         if (NEIClientConfig.isKeyHashDown("gui.bookmark") && NEIClientUtils.shiftKey()) {
-            ItemPanels.bookmarkPanel.addGroup(getRecipesTree(getRecipe()), BookmarkViewMode.TODO_LIST, true);
+            saveRecipeInBookmark();
         }
 
     }
 
     @Override
-    public Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey, Map<String, String> hotkeys) {
+    public Map<String, String> handleHotkeys(int mousex, int mousey, Map<String, String> hotkeys) {
         hotkeys.put(
                 NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
                 translate("recipe.favorite.bookmark_recipe"));
@@ -140,7 +144,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
     }
 
     @Override
-    public List<String> handleTooltip(GuiRecipe<?> gui, List<String> currenttip) {
+    public List<String> handleTooltip(List<String> currenttip) {
         currenttip.add(translate("recipe.favorite"));
 
         return currenttip;
@@ -161,7 +165,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
     }
 
     @Override
-    public boolean mouseScrolled(GuiRecipe<?> gui, int scroll) {
+    public boolean mouseScrolled(int scroll) {
         if (this.selectedResult == null) return true;
 
         final List<RecipeIngredient> results = new ArrayList<>(this.recipe.getResults());
@@ -178,6 +182,10 @@ public class GuiFavoriteButton extends GuiRecipeButton {
                 true);
 
         return true;
+    }
+
+    public void saveRecipeInBookmark() {
+        ItemPanels.bookmarkPanel.addGroup(getRecipesTree(getRecipe()), BookmarkViewMode.TODO_LIST, true);
     }
 
     private List<Recipe> getRecipesTree(Recipe mainRecipe) {

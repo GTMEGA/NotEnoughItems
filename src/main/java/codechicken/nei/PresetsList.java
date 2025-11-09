@@ -21,6 +21,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 import codechicken.core.CommonUtils;
+import codechicken.nei.SubsetWidget.SubsetTag;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IRecipeFilter;
 import codechicken.nei.api.IRecipeFilter.IRecipeFilterProvider;
@@ -33,6 +34,7 @@ import codechicken.nei.util.NBTJson;
 public class PresetsList {
 
     public enum PresetMode {
+        SUBSET,
         HIDE,
         REMOVE,
         GROUP;
@@ -66,11 +68,11 @@ public class PresetsList {
         }
     }
 
-    protected static class RecipesFilter implements IRecipeFilterProvider, IRecipeFilter {
+    protected static class PresetRecipeFilter implements IRecipeFilterProvider, IRecipeFilter {
 
         public Set<String> cache;
 
-        public IRecipeFilter getFilter() {
+        public IRecipeFilter getRecipeFilter() {
 
             if (cache == null) {
                 cache = PresetsList.presets.stream().filter(p -> p.enabled && p.mode == PresetMode.REMOVE)
@@ -81,16 +83,19 @@ public class PresetsList {
         }
 
         @Override
-        public boolean matches(IRecipeHandler handler, List<PositionedStack> ingredients, PositionedStack result,
-                List<PositionedStack> others) {
+        public boolean matches(IRecipeHandler handler, int recipeIndex) {
 
-            if (matchPositionedStack(ingredients, false)) {
+            if (matchPositionedStack(handler.getIngredientStacks(recipeIndex), false)) {
                 return false;
             }
+
+            final PositionedStack result = handler.getResultStack(recipeIndex);
 
             if (result != null && matchPositionedStack(result)) {
                 return true;
             }
+
+            final List<PositionedStack> others = handler.getOtherStacks(recipeIndex);
 
             if (!others.isEmpty() && matchPositionedStack(others, true)) {
                 return true;
@@ -143,7 +148,7 @@ public class PresetsList {
     }
 
     public static final List<Preset> presets = new ArrayList<>();
-    protected static RecipesFilter recipeFilter = new RecipesFilter();
+    protected static PresetRecipeFilter recipeFilter = new PresetRecipeFilter();
     protected static ItemPanelFilter itemFilter = new ItemPanelFilter();
 
     static {
@@ -216,6 +221,8 @@ public class PresetsList {
         if (!preset.items.isEmpty()) {
             presets.add(preset);
         }
+
+        updateSubsets();
     }
 
     public static void savePresets() {
@@ -241,9 +248,24 @@ public class PresetsList {
 
         recipeFilter.cache = null;
         itemFilter.cache = null;
+        updateSubsets();
         CollapsibleItems.saveStates();
         CollapsibleItems.load();
         LayoutManager.markItemsDirty();
+    }
+
+    private static void updateSubsets() {
+        SubsetWidget.removeTag("Presets");
+
+        for (Preset preset : PresetsList.presets) {
+            if (preset.enabled && preset.mode == PresetMode.SUBSET) {
+                SubsetWidget.addTag(
+                        new SubsetTag(
+                                "Presets." + preset.name,
+                                stack -> preset.items.contains(Preset.getIdentifier(stack))));
+            }
+        }
+
     }
 
 }

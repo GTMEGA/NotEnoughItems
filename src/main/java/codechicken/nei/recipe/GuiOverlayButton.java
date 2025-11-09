@@ -106,17 +106,17 @@ public class GuiOverlayButton extends GuiRecipeButton {
     }
 
     @Override
-    public List<String> handleTooltip(GuiRecipe<?> gui, List<String> currenttip) {
+    public List<String> handleTooltip(List<String> currenttip) {
         currenttip.add(NEIClientUtils.translate("recipe.overlay"));
 
-        if (!this.enabled && this.requireShiftForOverlayRecipe && this.canFillCraftingGrid) {
+        if (!this.enabled && requireShiftForOverlayRecipe() && canFillCraftingGrid()) {
             currenttip.set(currenttip.size() - 1, currenttip.get(currenttip.size() - 1) + GuiDraw.TOOLTIP_LINESPACE);
             currenttip.add(
                     EnumChatFormatting.RED + NEIClientUtils.translate("recipe.overlay.mismatch")
                             + EnumChatFormatting.RESET);
         } else if (this.missedMaterialsTooltipLineHandler != null) {
 
-            if ((!this.requireShiftForOverlayRecipe || NEIClientUtils.shiftKey()) && this.canFillCraftingGrid) {
+            if ((!requireShiftForOverlayRecipe() || NEIClientUtils.shiftKey()) && canFillCraftingGrid()) {
                 this.missedMaterialsTooltipLineHandler.setLabelColor(EnumChatFormatting.RED);
             } else {
                 this.missedMaterialsTooltipLineHandler.setLabelColor(EnumChatFormatting.GRAY);
@@ -129,7 +129,7 @@ public class GuiOverlayButton extends GuiRecipeButton {
     }
 
     @Override
-    public Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey, Map<String, String> hotkeys) {
+    public Map<String, String> handleHotkeys(int mousex, int mousey, Map<String, String> hotkeys) {
 
         if (requireShiftForOverlayRecipe()) {
 
@@ -155,6 +155,10 @@ public class GuiOverlayButton extends GuiRecipeButton {
                 NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH),
                 NEIClientUtils.translate("recipe.overlay.bookmarkRecipe"));
 
+        hotkeys.put(
+                NEIClientConfig.getKeyName("gui.bookmark", NEIClientUtils.SHIFT_HASH + NEIClientUtils.CTRL_HASH),
+                NEIClientUtils.translate("recipe.overlay.bookmarkRecipeAndCount"));
+
         return hotkeys;
     }
 
@@ -170,7 +174,7 @@ public class GuiOverlayButton extends GuiRecipeButton {
     protected void drawContent(Minecraft minecraft, int y, int x, boolean mouseOver) {
         DrawableResource icon = ICON_OVERLAY;
 
-        if (this.hasOverlay && (!this.requireShiftForOverlayRecipe || NEIClientUtils.shiftKey())) {
+        if (hasOverlay() && (!requireShiftForOverlayRecipe() || NEIClientUtils.shiftKey())) {
             icon = this.missedMaterialsTooltipLineHandler == null ? ICON_FILL : ICON_FILL_ERROR;
         }
 
@@ -202,18 +206,19 @@ public class GuiOverlayButton extends GuiRecipeButton {
     }
 
     protected List<ItemOverlayState> ingredientsOverlay() {
-        List<PositionedStack> ingredients = this.handlerRef.handler.getIngredientStacks(this.handlerRef.recipeIndex);
+        final List<PositionedStack> ingredients = this.handlerRef.handler
+                .getIngredientStacks(this.handlerRef.recipeIndex);
 
         if (this.itemPresenceCache.size() != ingredients.size()) {
             this.itemPresenceCache.clear();
 
-            if (this.canFillCraftingGrid) {
+            if (canFillCraftingGrid()) {
                 this.itemPresenceCache.addAll(this.handlerRef.getPresenceOverlay(this.firstGui));
             } else if (this.firstGui != null) {
                 this.itemPresenceCache.addAll(presenceOverlay(ingredients));
             }
 
-            List<ItemStack> items = this.itemPresenceCache.stream().filter(state -> !state.isPresent())
+            final List<ItemStack> items = this.itemPresenceCache.stream().filter(state -> !state.isPresent())
                     .map(state -> state.getSlot().item).collect(Collectors.toList());
 
             if (!items.isEmpty()) {
@@ -232,7 +237,7 @@ public class GuiOverlayButton extends GuiRecipeButton {
 
     public void setRequireShiftForOverlayRecipe(boolean require) {
         this.requireShiftForOverlayRecipe = require;
-        this.enabled = this.hasOverlay && (this.requireShiftForOverlayRecipe || this.canFillCraftingGrid);
+        this.enabled = hasOverlay() && (this.requireShiftForOverlayRecipe || canFillCraftingGrid());
     }
 
     public void setCanUseOverlayRenderer(boolean use) {
@@ -259,7 +264,7 @@ public class GuiOverlayButton extends GuiRecipeButton {
         return Recipe.of(this.handlerRef);
     }
 
-    private List<ItemOverlayState> presenceOverlay(List<PositionedStack> ingredients) {
+    protected List<ItemOverlayState> presenceOverlay(List<PositionedStack> ingredients) {
         final List<ItemOverlayState> itemPresenceSlots = new ArrayList<>();
         final List<ItemStack> invStacks = this.firstGui.inventorySlots.inventorySlots.stream()
                 .filter(
@@ -285,9 +290,9 @@ public class GuiOverlayButton extends GuiRecipeButton {
     }
 
     public void overlayRecipe(boolean shift) {
-        if (!this.hasOverlay) return;
+        if (!hasOverlay()) return;
 
-        if (!this.requireShiftForOverlayRecipe || shift) {
+        if (!requireShiftForOverlayRecipe() || shift) {
             if (canFillCraftingGrid()) {
                 this.handlerRef.fillCraftingGrid(this.firstGui, 0);
             }
@@ -298,8 +303,7 @@ public class GuiOverlayButton extends GuiRecipeButton {
     }
 
     @Override
-    public void lastKeyTyped(GuiRecipe<?> gui, char keyChar, int keyID) {
-
+    public void lastKeyTyped(char keyChar, int keyID) {
         if (NEIClientConfig.isKeyHashDown("gui.bookmark") && NEIClientUtils.shiftKey()) {
             saveRecipeInBookmark();
         }
@@ -309,7 +313,11 @@ public class GuiOverlayButton extends GuiRecipeButton {
         final Recipe recipe = getRecipe();
 
         if (!ItemPanels.bookmarkPanel.removeRecipe(recipe.getRecipeId(), BookmarkGrid.DEFAULT_GROUP_ID)) {
-            ItemPanels.bookmarkPanel.addRecipe(recipe, BookmarkGrid.DEFAULT_GROUP_ID);
+            ItemPanels.bookmarkPanel.addRecipe(
+                    recipe,
+                    NEIClientUtils.controlKey()
+                            || NEIClientConfig.getBooleanSetting("inventory.bookmarks.bookmarkRecipeWithCount") ? 1 : 0,
+                    BookmarkGrid.DEFAULT_GROUP_ID);
         }
     }
 

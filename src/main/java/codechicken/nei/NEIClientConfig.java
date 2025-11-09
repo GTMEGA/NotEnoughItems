@@ -56,11 +56,13 @@ import codechicken.nei.config.OptionToggleButtonBoubs;
 import codechicken.nei.config.OptionUtilities;
 import codechicken.nei.config.preset.GuiPresetList;
 import codechicken.nei.event.NEIConfigsLoadedEvent;
+import codechicken.nei.recipe.DebugHandlerWidget;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.InformationHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.RecipeInfo;
+import codechicken.nei.util.ItemUntranslator;
 import codechicken.nei.util.NEIKeyboardUtils;
 import codechicken.obfuscator.ObfuscationRun;
 
@@ -146,6 +148,8 @@ public class NEIClientConfig {
         tag.getTag("inventory.widgetsenabled").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.widgetsenabled"));
 
+        tag.getTag("findFuelsParallel").getBooleanValue(true);
+
         tag.getTag("inventory.autocrafting").getBooleanValue(true);
         tag.getTag("inventory.dynamicFontSize").getBooleanValue(true);
         tag.getTag("inventory.hidden").getBooleanValue(false);
@@ -206,6 +210,10 @@ public class NEIClientConfig {
                         0,
                         OptionIntegerField.UNSIGNED_INT_MAX));
 
+        tag.getTag("inventory.bookmarks.showRecipeHandlerIcon").setComment("Show Recipe Handler Icon")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.bookmarks.showRecipeHandlerIcon", true));
+
         tag.getTag("inventory.bookmarks.recipeChainDir").getIntValue(1);
         API.addOption(new OptionCycled("inventory.bookmarks.recipeChainDir", 2, true));
 
@@ -217,17 +225,17 @@ public class NEIClientConfig {
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarks.bookmarkItemsWithRecipe", true));
 
+        tag.getTag("inventory.bookmarks.bookmarkRecipeWithCount").setComment("Bookmark recipe with count")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.bookmarks.bookmarkRecipeWithCount", true));
+
         tag.getTag("inventory.guirecipe.jeiStyleTabs").setComment("Enable/disable JEI Style Tabs")
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButtonBoubs("inventory.guirecipe.jeiStyleTabs", true));
 
-        tag.getTag("inventory.guirecipe.jeiStyleRecipeCatalyst").setComment("Enable/disable JEI Style Recipe Catalysts")
-                .getBooleanValue(true);
-        API.addOption(new OptionToggleButton("inventory.guirecipe.jeiStyleRecipeCatalyst", true));
-
-        tag.getTag("inventory.guirecipe.jeiStyleCycledIngredients").setComment("JEI styled cycled ingredients")
-                .getBooleanValue(true);
-        API.addOption(new OptionToggleButton("inventory.guirecipe.jeiStyleCycledIngredients", true));
+        tag.getTag("inventory.guirecipe.jeiStyleRecipeCatalyst")
+                .setComment("JEI Style Recipe Catalysts (0 - none, 1 - grid, 2 - scroll)").getIntValue(1);
+        API.addOption(new OptionCycled("inventory.guirecipe.jeiStyleRecipeCatalyst", 3, true));
 
         tag.getTag("inventory.guirecipe.cycledIngredientsTooltip").setComment("Show cycled ingredients tooltip")
                 .getBooleanValue(true);
@@ -245,12 +253,23 @@ public class NEIClientConfig {
                 .getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.guirecipe.slotHighlightPresent", true));
 
+        tag.getTag("inventory.guirecipe.infiniteScroll").setComment("Use Infinite Scroll for Handlers")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.guirecipe.infiniteScroll", true));
+
+        tag.getTag("inventory.guirecipe.maxHeight").setComment("Recipe GUI Max Height").getIntValue(370);
+        API.addOption(new OptionIntegerField("inventory.guirecipe.maxHeight", 166, 4000));
+
         tag.getTag("inventory.guirecipe.shiftOverlayRecipe")
                 .setComment("Require holding shift to move items when overlaying recipe").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.guirecipe.shiftOverlayRecipe", true));
 
         tag.getTag("inventory.guirecipe.profile").getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.guirecipe.profile", true));
+
+        tag.getTag("inventory.guirecipe.handlerInfo").setComment("ADVANCED: Handler Info Widget")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.guirecipe.handlerInfo", true));
 
         tag.getTag("inventory.subsets.enabled").setComment("Enable/disable Subsets Dropdown").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.subsets.enabled", true));
@@ -261,15 +280,25 @@ public class NEIClientConfig {
         tag.getTag("inventory.history.enabled").setComment("Enable/disable History Panel").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.history.enabled", true));
 
-        tag.getTag("inventory.history.historyColor").setComment("Color of the history area display")
-                .getHexValue(0xee555555);
-        API.addOption(new OptionIntegerField("inventory.history.historyColor", 0, OptionIntegerField.UNSIGNED_INT_MAX));
+        tag.getTag("inventory.history.color").setComment("Color of the history area display").getHexValue(0xee555555);
+        API.addOption(new OptionIntegerField("inventory.history.color", 0, OptionIntegerField.UNSIGNED_INT_MAX));
 
         tag.getTag("inventory.history.useRows").setComment("Rows used in historical areas").getIntValue(2);
         API.addOption(new OptionIntegerField("inventory.history.useRows", 1, 5));
 
-        tag.getTag("inventory.history.splittingMode").getIntValue(1);
-        API.addOption(new OptionCycled("inventory.history.splittingMode", 2, true));
+        tag.getTag("inventory.craftables.enabled").setComment("Enable/disable Craftables Panel").getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.craftables.enabled", true));
+
+        tag.getTag("inventory.craftables.color").setComment("Color of the craftables area display")
+                .getHexValue(0xee555555);
+        API.addOption(new OptionIntegerField("inventory.craftables.color", 0, OptionIntegerField.UNSIGNED_INT_MAX));
+
+        tag.getTag("inventory.craftables.useRows").setComment("Rows used in craftables areas").getIntValue(2);
+        API.addOption(new OptionIntegerField("inventory.craftables.useRows", 1, 5));
+
+        tag.getTag("inventory.craftables.favoritesOnly").setComment("Show Only Favorites Recipes")
+                .getBooleanValue(false);
+        API.addOption(new OptionToggleButton("inventory.craftables.favoritesOnly", true));
 
         tag.getTag("inventory.collapsibleItems.enabled").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.collapsibleItems.enabled", true) {
@@ -391,6 +420,8 @@ public class NEIClientConfig {
         });
         tag.getTag("inventory.hotkeysHelpText").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.hotkeysHelpText", true));
+        tag.getTag("inventory.showHotkeys").getBooleanValue(true);
+        API.addOption(new OptionToggleButton("inventory.showHotkeys", true));
 
         tag.getTag("loadPluginsInParallel").getBooleanValue(true);
         tag.getTag("itemLoadingTimeout").getIntValue(500);
@@ -415,6 +446,24 @@ public class NEIClientConfig {
 
         tag.getTag("inventory.autocrafting").setComment("Autocrafting").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.autocrafting", true));
+
+        tag.getTag("inventory.itemUntranslator").setComment("Item Untranslator").getBooleanValue(true);
+        API.addOption(new OptionToggleButton("inventory.itemUntranslator", true) {
+
+            @Override
+            public boolean onClick(int button) {
+                super.onClick(button);
+
+                if (enableItemUntranslator()) {
+                    ItemUntranslator.getInstance().load();
+                } else {
+                    ItemUntranslator.getInstance().unload();
+                }
+
+                return true;
+            }
+
+        });
 
         tag.getTag("tools.handler_load_from_config").setComment("ADVANCED: Load handlers from config")
                 .getBooleanValue(false);
@@ -492,12 +541,15 @@ public class NEIClientConfig {
         API.addOption(new OptionCycled("inventory.search.widgetAutofocus", 3, true));
 
         tag.getTag("inventory.search.patternMode").setComment("Search Mode").getIntValue(1);
-        API.addOption(new OptionCycled("inventory.search.patternMode", 3, true) {
+        API.addOption(new OptionCycled("inventory.search.patternMode", 4, true) {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
         });
@@ -550,7 +602,7 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
-                // SearchField.searchParser.clearCache();
+                SearchField.searchParser.clearCache();
                 return super.onClick(button);
             }
 
@@ -567,8 +619,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -592,8 +647,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -616,8 +674,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -640,8 +701,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -664,8 +728,11 @@ public class NEIClientConfig {
 
             @Override
             public boolean onClick(int button) {
+                if (!super.onClick(button)) {
+                    return false;
+                }
                 SearchField.searchParser.clearCache();
-                return super.onClick(button);
+                return true;
             }
 
             @Override
@@ -683,6 +750,9 @@ public class NEIClientConfig {
 
         });
 
+        tag.getTag("inventory.search.logSearchExceptions").setComment("Search exceptions for extended+")
+                .getBooleanValue(false);
+
         String prefixRedefinitions = tag.getTag("inventory.search.prefixRedefinitions").setComment(
                 "Redefine search prefixes by providing a char-to-char map (JSON). The keys are the original prefixes, the values the new ones. Example: { \"$\": \"€\", \"#\": \"+\", \"@\": \"°\", \"%\": \"!\" }")
                 .getValue("{}");
@@ -693,6 +763,7 @@ public class NEIClientConfig {
             };
             Map<Character, Character> charMap = new Gson().fromJson(prefixRedefinitions, typeToken.getType());
             SearchField.searchParser.prefixRedefinitions.putAll(charMap);
+            SearchField.searchParser.clearCache();
         } catch (JsonParseException e) {
             logger.warn("Failed to convert prefix redefinitions from JSON to CharToCharMap:", e);
         }
@@ -744,6 +815,7 @@ public class NEIClientConfig {
         API.addHashBind("gui.hide", Keyboard.KEY_O);
         API.addHashBind("gui.search", Keyboard.KEY_F);
         API.addKeyBind("gui.bookmark", Keyboard.KEY_A);
+        API.addHashBind("gui.favorite", Keyboard.KEY_F + NEIClientUtils.SHIFT_HASH);
         API.addHashBind("gui.remove_recipe", Keyboard.KEY_A + NEIClientUtils.SHIFT_HASH);
         API.addKeyBind("gui.bookmark_pull_items", Keyboard.KEY_V);
         API.addKeyBind("gui.overlay", Keyboard.KEY_S);
@@ -770,6 +842,7 @@ public class NEIClientConfig {
         API.addKeyBind("world.creative", 0);
         API.addHashBind("gui.copy_name", Keyboard.KEY_C + NEIClientUtils.CTRL_HASH);
         API.addHashBind("gui.copy_oredict", Keyboard.KEY_D + NEIClientUtils.CTRL_HASH);
+        API.addHashBind("gui.copy_id", Keyboard.KEY_X + NEIClientUtils.CTRL_HASH);
         API.addHashBind("gui.chat_link_item", Keyboard.KEY_L + NEIClientUtils.CTRL_HASH);
     }
 
@@ -830,6 +903,10 @@ public class NEIClientConfig {
     }
 
     public static void unloadWorld() {
+        if (world == null) {
+            return;
+        }
+
         if (ItemPanels.bookmarkPanel != null) {
             ItemPanels.bookmarkPanel.save();
         }
@@ -840,6 +917,8 @@ public class NEIClientConfig {
 
         if (world != null) {
             world.saveNBT();
+            NEIClientConfig.worldPath = null;
+            world = null;
         }
     }
 
@@ -858,7 +937,7 @@ public class NEIClientConfig {
         final int hash = getKeyBinding(string);
 
         if (hash != Keyboard.CHAR_NONE && Keyboard.getEventKeyState()) {
-            return KeyManager.keyStates.containsKey(string) ? hash == Keyboard.getEventKey()
+            return KeyManager.keyStates.containsKey(string) ? Keyboard.isKeyDown(NEIKeyboardUtils.unhash(hash))
                     : hash == NEIClientUtils.getKeyHash();
         }
 
@@ -937,6 +1016,7 @@ public class NEIClientConfig {
                     pluginNEIConfigLoaded = true;
                     MinecraftForge.EVENT_BUS.post(new NEIConfigsLoadedEvent());
 
+                    DebugHandlerWidget.loadHandlerInfoPatch();
                     ItemList.loadItems.restart();
                 }
             }.start();
@@ -1033,8 +1113,8 @@ public class NEIClientConfig {
         return getBooleanSetting("inventory.guirecipe.slotHighlightPresent");
     }
 
-    public static boolean areJEIStyleRecipeCatalystsVisible() {
-        return getBooleanSetting("inventory.guirecipe.jeiStyleRecipeCatalyst");
+    public static int getJEIStyleRecipeCatalysts() {
+        return getIntSetting("inventory.guirecipe.jeiStyleRecipeCatalyst");
     }
 
     public static boolean useCreativeTabStyle() {
@@ -1051,10 +1131,6 @@ public class NEIClientConfig {
 
     public static boolean optimizeGuiOverlapComputation() {
         return getBooleanSetting("inventory.optimize_gui_overlap_computation");
-    }
-
-    public static boolean useJEIStyledCycledIngredients() {
-        return getBooleanSetting("inventory.guirecipe.jeiStyleCycledIngredients");
     }
 
     public static boolean showCycledIngredientsTooltip() {
@@ -1165,12 +1241,20 @@ public class NEIClientConfig {
         return getBooleanSetting("inventory.history.enabled");
     }
 
+    public static boolean showCraftablesPanelWidget() {
+        return getBooleanSetting("inventory.craftables.enabled");
+    }
+
     public static int getGridRenderingCacheMode() {
         return OpenGlHelper.framebufferSupported ? getIntSetting("inventory.gridRenderingCacheMode") : 0;
     }
 
     public static boolean enableCollapsibleItems() {
         return getBooleanSetting("inventory.collapsibleItems.enabled");
+    }
+
+    public static boolean enableItemUntranslator() {
+        return getBooleanSetting("inventory.itemUntranslator");
     }
 
     public static boolean getMagnetMode() {

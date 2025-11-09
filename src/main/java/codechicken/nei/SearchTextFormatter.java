@@ -1,66 +1,96 @@
 package codechicken.nei;
 
-import java.util.List;
-import java.util.StringJoiner;
-
 import net.minecraft.util.EnumChatFormatting;
 
 import codechicken.nei.FormattedTextField.TextFormatter;
-import codechicken.nei.SearchTokenParser.SearchToken;
+import codechicken.nei.search.SearchExpressionFormatVisitor;
+import codechicken.nei.search.SearchExpressionUtils;
+import codechicken.nei.search.SearchToken;
 
 public class SearchTextFormatter implements TextFormatter {
 
     protected final SearchTokenParser searchParser;
+    protected String contextToken = "";
 
     public SearchTextFormatter(SearchTokenParser searchParser) {
         this.searchParser = searchParser;
     }
 
+    public void setContextToken(String contextToken) {
+        this.contextToken = contextToken;
+    }
+
+    @Override
     public String format(String text) {
-        final String[] parts = (text + "| ").split("\\|");
-        StringJoiner formattedText = new StringJoiner(EnumChatFormatting.GRAY + "|");
+        final int patternMode = NEIClientConfig.getIntSetting("inventory.search.patternMode");
+        if (patternMode == 3) {
+            final int spaceModeEnabled = NEIClientConfig.getIntSetting("inventory.search.spaceMode");
+            if (spaceModeEnabled == 1) {
+                text = SearchTokenParser.SPACE_PATTERN.matcher(text).replaceAll("\\\\ ");
+            }
+            final SearchExpressionFormatVisitor visitor = new SearchExpressionFormatVisitor(searchParser);
+            return SearchExpressionUtils.visitRecipeSearchExpression(text, visitor);
+        } else {
+            final StringBuilder formattedText = new StringBuilder();
 
-        for (int i = 0; i < parts.length - 1; i++) {
-            final String filterText = parts[i];
-            final List<SearchToken> tokens = searchParser.splitSearchText(filterText);
-            StringBuilder formattedPart = new StringBuilder();
-            int startIndex = 0;
+            for (String[] orQuery : searchParser.splitByDelimiters(text, "|", false)) {
+                final String filterText = orQuery[1];
 
-            for (SearchToken token : tokens) {
-                formattedPart.append(filterText.substring(startIndex, token.start));
-                EnumChatFormatting tokenColor = EnumChatFormatting.RESET;
+                formattedText.append(SearchExpressionUtils.HIGHLIGHTS.OR + orQuery[0]);
 
-                if (token.firstChar != null) {
-                    tokenColor = searchParser.getProvider(token.firstChar).getHighlightedColor();
+                for (String[] contextPart : searchParser.splitByDelimiters(filterText, this.contextToken, false)) {
+
+                    if (!contextPart[0].isEmpty()) {
+                        formattedText.append(
+                                SearchExpressionUtils.HIGHLIGHTS.RECIPE + contextPart[0].substring(0, 1)
+                                        + EnumChatFormatting.RESET);
+                        contextPart[1] = contextPart[0].substring(1) + contextPart[1];
+                    }
+
+                    if (contextPart[1].isEmpty()) {
+                        continue;
+                    }
+
+                    int startIndex = 0;
+
+                    for (SearchToken token : searchParser.splitSearchText(contextPart[1])) {
+                        formattedText.append(contextPart[1].substring(startIndex, token.start));
+                        EnumChatFormatting tokenColor = EnumChatFormatting.RESET;
+
+                        if (token.firstChar != null) {
+                            tokenColor = searchParser.getProvider(token.firstChar).getHighlightedColor();
+                        }
+
+                        if (token.ignore != null) {
+                            formattedText
+                                    .append(SearchExpressionUtils.HIGHLIGHTS.NEGATE + String.valueOf(token.ignore));
+                        }
+
+                        if (token.firstChar != null) {
+                            formattedText.append(tokenColor + String.valueOf(token.firstChar));
+                        }
+
+                        if (token.quotes) {
+                            formattedText.append(SearchExpressionUtils.HIGHLIGHTS.QUOTED + "\"");
+                        }
+
+                        if (!token.rawText.isEmpty()) {
+                            formattedText.append(tokenColor + token.rawText);
+                        }
+
+                        if (token.quotes) {
+                            formattedText.append(SearchExpressionUtils.HIGHLIGHTS.QUOTED + "\"");
+                        }
+
+                        startIndex = token.end;
+                    }
+
+                    formattedText.append(contextPart[1].substring(startIndex, contextPart[1].length()));
                 }
 
-                if (token.ignore) {
-                    formattedPart.append(EnumChatFormatting.BLUE + "-");
-                }
-
-                if (token.firstChar != null) {
-                    formattedPart.append(tokenColor + String.valueOf(token.firstChar));
-                }
-
-                if (token.quotes) {
-                    formattedPart.append(EnumChatFormatting.GOLD + "\"");
-                }
-
-                if (!token.rawText.isEmpty()) {
-                    formattedPart.append(tokenColor + token.rawText);
-                }
-
-                if (token.quotes) {
-                    formattedPart.append(EnumChatFormatting.GOLD + "\"");
-                }
-
-                startIndex = token.end;
             }
 
-            formattedPart.append(filterText.substring(startIndex, filterText.length()));
-            formattedText.add(formattedPart);
+            return formattedText.toString();
         }
-
-        return formattedText.toString();
     }
 }

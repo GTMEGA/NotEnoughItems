@@ -13,11 +13,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,7 +39,6 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.ItemFilter;
 import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.ICraftingHandler;
@@ -48,7 +47,7 @@ import codechicken.nei.recipe.StackInfo;
 import codechicken.nei.util.NBTJson;
 import codechicken.nei.util.NEIMouseUtils;
 
-public class SubsetWidget extends Button implements ItemFilterProvider, IContainerTooltipHandler {
+public class SubsetWidget extends Button implements ItemFilterProvider {
 
     protected static final int SLOT_HEIGHT = 18;
     protected static final int MARGIN = 2;
@@ -199,7 +198,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
         }
 
         public String name() {
-            int idx = this.fullname.indexOf('.');
+            int idx = this.fullname.lastIndexOf('.');
             return idx < 0 ? this.fullname : this.fullname.substring(idx + 1);
         }
 
@@ -369,12 +368,18 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
     private static class DefaultParserProvider implements ISearchParserProvider {
 
         public ItemFilter getFilter(String searchText) {
-            final String pathPart = searchText.replaceAll("\\s+", "").toLowerCase();
+            final int patternMode = NEIClientConfig.getIntSetting("inventory.search.patternMode");
+            Pattern pattern = null;
+            if (patternMode != 3) {
+                searchText = searchText.replaceAll("\\s+", "").toLowerCase();
+            } else {
+                pattern = SearchField.getPattern(searchText, patternMode);
+            }
             final AnyMultiItemFilter filter = new AnyMultiItemFilter();
             final Set<ItemStack> filteredItems = new HashSet<>();
 
             for (SubsetTag tag : tags.values()) {
-                if (tag.filter != null && tag.path.contains(pathPart)) {
+                if (tag.filter != null && matches(tag.path, searchText, pattern)) {
                     filteredItems.addAll(tag.items);
                     filter.filters.add(tag.filter);
                 }
@@ -394,6 +399,14 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
         @Override
         public SearchMode getSearchMode() {
             return SearchMode.fromInt(NEIClientConfig.getIntSetting("inventory.search.subsetsSearchMode"));
+        }
+
+        private boolean matches(String name, String searchText, Pattern pattern) {
+            if (pattern != null) {
+                return pattern.matcher(name).find();
+            } else {
+                return name.contains(searchText);
+            }
         }
     }
 
@@ -422,6 +435,17 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
                 parentname = parent.parent();
             }
 
+            updateHiddenItems();
+        }
+    }
+
+    public static void removeTag(String path) {
+        updateState.stop();
+
+        synchronized (tags) {
+            tags.keySet().removeIf(
+                    parentpath -> parentpath.equals(path.toLowerCase())
+                            || parentpath.startsWith(path.toLowerCase() + "."));
             updateHiddenItems();
         }
     }
@@ -762,7 +786,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
 
             root.resize(screen, parent, dropRight);
 
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+            GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
             GuiContainerManager.enable2DRender();
             GuiContainerManager.drawItems.zLevel += 100;
 
@@ -913,7 +937,7 @@ public class SubsetWidget extends Button implements ItemFilterProvider, IContain
     }
 
     @Override
-    public Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey, Map<String, String> hotkeys) {
+    public Map<String, String> handleHotkeys(int mousex, int mousey, Map<String, String> hotkeys) {
 
         if (SubsetWidget.hoverStack != null) {
 
