@@ -6,6 +6,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -82,11 +86,14 @@ public class ItemCraftablesPanel
 
     }
 
+    public static ExecutorService craftablesNonBlockingThread = Executors.newFixedThreadPool(1);
+
     public static List<String> guiBlacklist = new ArrayList<>();
     private final int MIN_DELAY = 600;
 
     private Map<String, ArrayList<ICraftingHandler>> identHandlers = new HashMap<>();
     private Map<ItemStack, RecipeId> availableRecipes = new HashMap<>();
+    private Future<Map<ItemStack, RecipeId>> craftablesFuture = null;
 
     private GuiContainer lastGuiContainer = null;
     private ItemStackAmount lastPlayerInventory = null;
@@ -200,6 +207,20 @@ public class ItemCraftablesPanel
 
     private void updateCraftables() {
 
+        if (craftablesFuture != null) {
+            if (craftablesFuture.isCancelled()) {
+                craftablesFuture = null;
+            } else if (craftablesFuture.isDone()) {
+                try {
+                    this.availableRecipes = craftablesFuture.get();
+                    this.grid.onGridChanged();
+                } catch (InterruptedException | ExecutionException e) {
+                } finally {
+                    craftablesFuture = null;
+                }
+            }
+        }
+
         if (!NEIClientConfig.showCraftablesPanelWidget()) {
             clearCraftables();
         } else if (this.lastPlayerInventory == null
@@ -218,10 +239,9 @@ public class ItemCraftablesPanel
                             this.lastPlayerInventory = inv;
                             this.lastGuiContainer = firstGui;
                             this.lastFavoritesCount = FavoriteRecipes.size();
-                            this.availableRecipes = generateCraftables(firstGui);
+                            craftablesFuture = generateCraftablesFuture(firstGui);
                             this.grid.onGridChanged();
                         }
-
                     } else {
                         clearCraftables();
                     }
@@ -241,6 +261,25 @@ public class ItemCraftablesPanel
     private GuiContainer getGuiContainer() {
         final GuiContainer firstGui = NEIClientUtils.getGuiContainer();
         return (firstGui instanceof GuiRecipe gui) ? gui.firstGui : firstGui;
+    }
+
+    private Future<Map<ItemStack, RecipeId>> generateCraftablesFuture(GuiContainer firstGui) {
+        final List<IRecipeHandler> availableHandlers = getAvailableHandlers(firstGui);
+
+        Future<Map<ItemStack, RecipeId>> fut = null;
+        if (!availableHandlers.isEmpty()) {
+            final List<ItemStack> invStacks = ItemCraftablesPanel.this.lastPlayerInventory.values();
+            fut = craftablesNonBlockingThread.submit(() -> {
+                final Map<ItemStack, RecipeId> availableRecipes = new HashMap<>();
+                for (IRecipeHandler handler : availableHandlers) {
+                    try {
+                        availableRecipes.putAll(filterHandlerRecipes(handler, firstGui, invStacks));
+                    } catch (Exception ignore){}
+                }
+                return availableRecipes;
+            });
+        }
+        return fut;
     }
 
     private Map<ItemStack, RecipeId> generateCraftables(GuiContainer firstGui) {
