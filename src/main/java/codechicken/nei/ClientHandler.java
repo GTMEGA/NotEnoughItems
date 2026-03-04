@@ -360,7 +360,7 @@ public class ClientHandler {
              */
             if (NEIClientConfig.isLoaded()) KeyManager.tickKeyStates();
 
-            NEIController.updateUnlimitedItems(mc.thePlayer.inventory);
+//            NEIController.updateUnlimitedItems(mc.thePlayer.inventory);
             if (mc.currentScreen == null) NEIController.processCreativeCycling(mc.thePlayer.inventory);
 
             updateMagnetMode(mc.theWorld, mc.thePlayer);
