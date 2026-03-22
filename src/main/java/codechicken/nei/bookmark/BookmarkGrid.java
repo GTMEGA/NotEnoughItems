@@ -89,7 +89,7 @@ public class BookmarkGrid extends ItemsGrid<BookmarksGridSlot, BookmarkGrid.Book
     public static final Color PLACEHOLDER_COLOR = new Color(0x66222222, true);
 
     public static final int DEFAULT_GROUP_ID = 0;
-    protected static final int GROUP_PANEL_WIDTH = 7;
+    public static final int GROUP_PANEL_WIDTH = 7;
     protected static final float SCALE_SPEED = 0.1f;
 
     protected List<BookmarkItem> bookmarkItems = new ArrayList<>();
@@ -770,6 +770,25 @@ public class BookmarkGrid extends ItemsGrid<BookmarksGridSlot, BookmarkGrid.Book
         int absoluteRowIndex = this.page * this.rows + overRowIndex;
         int absoluteSlotIndex = absoluteRowIndex * this.columns;
         int overGroupId = getRowGroupId(overRowIndex);
+
+        // move group to same grid
+        if (this != sortableGroup.grid) {
+            final BookmarkGroup sourceGroup = sortableGroup.grid.getGroup(sortableGroup.groupId);
+            final List<BookmarkItem> itemsToMove = sortableGroup.getBookmarkItems();
+
+            sortableGroup.grid.removeGroup(sortableGroup.groupId);
+
+            final int groupId = this.addGroup(sourceGroup);
+            for (BookmarkItem item : itemsToMove) {
+                item.groupId = groupId;
+                this.bookmarkItems.add(item);
+            }
+
+            sortableGroup.grid = this;
+            sortableGroup.groupId = groupId;
+            this.onItemsChanged();
+            this.getMask();// force generate grid
+        }
 
         if (sortableGroup.groupId == overGroupId) {
             return;

@@ -1,9 +1,10 @@
 package codechicken.nei;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import codechicken.nei.api.IBookmarkContainerHandler;
@@ -12,36 +13,18 @@ public class DefaultBookmarkContainerHandler implements IBookmarkContainerHandle
 
     @Override
     public void pullBookmarkItemsFromContainer(GuiContainer guiContainer, ArrayList<ItemStack> bookmarkItems) {
-        FastTransferManager manager = new FastTransferManager();
-        LinkedList<ItemStack> containerStacks = manager.saveContainer(guiContainer.inventorySlots);
+        final List<Slot> slots = guiContainer.inventorySlots.inventorySlots;
+        final FastTransferManager manager = new FastTransferManager();
 
         for (ItemStack bookmarkItem : bookmarkItems) {
-
-            int bookmarkSizeBackup = bookmarkItem.stackSize;
-
-            for (int i = 0; i < containerStacks.size() - 4 * 9; i++) { // Last 36 slots are player inventory
-                ItemStack containerItem = containerStacks.get(i);
-
-                if (containerItem == null) {
-                    continue;
-                }
-
-                if (bookmarkItem.isItemEqual(containerItem)) {
-                    if (bookmarkItem.stackSize <= 0) {
-                        break;
-                    }
-
-                    int transferAmount = Math.min(bookmarkItem.stackSize, containerItem.stackSize);
-
+            for (int i = 0; i < slots.size() - 4 * 9; i++) {
+                final Slot slot = slots.get(i);
+                if (slot.getHasStack() && bookmarkItem.isItemEqual(slot.getStack())) {
+                    final int transferAmount = Math.min(bookmarkItem.stackSize, slot.getStack().stackSize);
                     manager.transferItems(guiContainer, i, transferAmount);
                     bookmarkItem.stackSize -= transferAmount;
-
-                    if (bookmarkItem.stackSize == 0) {
-                        break;
-                    }
                 }
             }
-            bookmarkItem.stackSize = bookmarkSizeBackup;
         }
     }
 }

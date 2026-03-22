@@ -11,7 +11,6 @@ import static codechicken.nei.NEIClientConfig.world;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -43,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 
+import mega.blendtronic.api.numberformatting.NumberFormatUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -126,16 +126,22 @@ public class NEIClientUtils extends NEIServerUtils {
         });
     }
 
-    public static String formatNumbers(BigInteger aNumber) {
+    public static String formatNumber(long aNumber) {
+
+        if (NEIModContainer.isBlendtronicLoaded()) {
+            return NumberFormatUtil.formatNumber(aNumber);
+        }
+
         return getDecimalFormat().format(aNumber);
     }
 
-    public static String formatNumbers(long aNumber) {
-        return getDecimalFormat().format(aNumber);
-    }
+    public static String formatFluid(long aNumber) {
 
-    public static String formatNumbers(double aNumber) {
-        return getDecimalFormat().format(aNumber);
+        if (NEIModContainer.isBlendtronicLoaded()) {
+            return NumberFormatUtil.formatFluid(aNumber);
+        }
+
+        return getDecimalFormat().format(aNumber) + " L";
     }
 
     public static void deleteHeldItem() {
@@ -198,7 +204,7 @@ public class NEIClientUtils extends NEIServerUtils {
     public static void cheatItem(ItemStack stack, int button, int mode) {
         if (!canCheatItem(stack)) return;
 
-        if (mode == -1 && button == 0 && shiftKey() && NEIClientConfig.hasSMPCounterPart()) {
+        if (mode == -1 && button == 0 && controlKey() && NEIClientConfig.hasSMPCounterPart()) {
             for (IInfiniteItemHandler handler : ItemInfo.infiniteHandlers) {
                 if (!handler.canHandleItem(stack)) continue;
 
@@ -413,18 +419,11 @@ public class NEIClientUtils extends NEIServerUtils {
         if (textWidth > containerWidth) {
             int dots = fontRenderer.getStringWidth("...");
 
-            if (containerWidth > dots) {
-                textWidth += dots;
-
-                while (textWidth > containerWidth) {
-                    textWidth -= fontRenderer.getCharWidth(text.charAt(text.length() - 1));
-                    text = text.substring(0, text.length() - 1);
-                }
-
-                return text + "...";
+            if (containerWidth <= dots) {
+                return "...";
             }
 
-            return "...";
+            return fontRenderer.trimStringToWidth(text, containerWidth - dots) + "...";
         }
 
         return text;

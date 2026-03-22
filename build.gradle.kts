@@ -71,11 +71,12 @@ repositories {
     exclusive(mega(), "codechicken") {
         includeModule("mega", "blendtronic-mc1.7.10")
     }
+    cursemavenEX()
     modrinthEX()
 }
 
 dependencies {
-    devOnlyNonPublishable("mega:blendtronic-mc1.7.10:1.9.0")
+    devOnlyNonPublishable("mega:blendtronic-mc1.7.10:1.13.0")
     api("codechicken:codechickencore-mc1.7.10:1.4.7-mega:dev")
     shadowImplementation("org.apache.commons:commons-csv:1.10.0")
     compileOnly(deobfModrinth("forge-essentials:7.5.1"))
