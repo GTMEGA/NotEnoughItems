@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import net.minecraft.util.EnumChatFormatting;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -18,6 +17,7 @@ import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.asm.NEICorePlugin;
 import codechicken.nei.config.IMCHandler;
+import codechicken.nei.guihook.HideousLinkedList;
 import codechicken.nei.recipe.GuiRecipeTab;
 import cpw.mods.fml.client.FMLFileResourcePack;
 import cpw.mods.fml.client.FMLFolderResourcePack;
@@ -31,13 +31,15 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
 
+@SuppressWarnings("UnstableApiUsage")
 public class NEIModContainer extends DummyModContainer {
 
-    public static LinkedList<IConfigureNEI> plugins = new LinkedList<>();
+    public static final LinkedList<IConfigureNEI> plugins = new HideousLinkedList<>(new CopyOnWriteArrayList<>());
 
     private static boolean gregTech5Loaded;
     private static boolean gtnhLibLoaded;
@@ -46,7 +48,6 @@ public class NEIModContainer extends DummyModContainer {
 
     public NEIModContainer() {
         super(getModMetadata());
-        loadMetadata();
     }
 
     private static ModMetadata getModMetadata() {
@@ -54,7 +55,7 @@ public class NEIModContainer extends DummyModContainer {
         modMetadata.name = "NotEnoughItems";
         modMetadata.modId = "NotEnoughItems";
         modMetadata.version = Tags.VERSION;
-        modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123");
+        modMetadata.authorList = Arrays.asList("ChickenBones", "mitchej123", "SLPrime");
         modMetadata.url = "https://github.com/GTNewHorizons/NotEnoughItems";
         modMetadata.description = "Recipe Viewer, Inventory Manager, Item Spawner, Cheats and more; GTNH Version includes many enhancements.";
         return modMetadata;
@@ -79,35 +80,11 @@ public class NEIModContainer extends DummyModContainer {
     public List<ArtifactVersion> getDependencies() {
         List<ArtifactVersion> deps = new ArrayList<>();
         deps.add(VersionParser.parseVersionReference("CodeChickenCore@[" + codechicken.core.asm.Tags.VERSION + ",)"));
-        deps.add(VersionParser.parseVersionReference("gtnhlib@[0.6.0,)"));
+        deps.add(VersionParser.parseVersionReference("gtnhlib@[0.9.6,)"));
         return deps;
     }
 
     private String description;
-
-    private void loadMetadata() {
-        description = super.getMetadata().description.replace("Supporters:", EnumChatFormatting.AQUA + "Supporters:");
-    }
-
-    @Override
-    public ModMetadata getMetadata() {
-        StringBuilder s_plugins = new StringBuilder();
-        if (plugins.size() == 0) {
-            s_plugins.append(EnumChatFormatting.RED).append("No installed plugins.");
-        } else {
-            s_plugins.append(EnumChatFormatting.GREEN).append("Installed plugins: ");
-            for (int i = 0; i < plugins.size(); i++) {
-                if (i > 0) s_plugins.append(", ");
-                IConfigureNEI plugin = plugins.get(i);
-                s_plugins.append(plugin.getName()).append(" ").append(plugin.getVersion());
-            }
-            s_plugins.append(".");
-        }
-
-        ModMetadata meta = super.getMetadata();
-        meta.description = description.replace("<plugins>", s_plugins.toString());
-        return meta;
-    }
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
@@ -125,8 +102,10 @@ public class NEIModContainer extends DummyModContainer {
 
     @Subscribe
     public void init(FMLInitializationEvent event) {
-        if (CommonUtils.isClient()) ClientHandler.load();
-
+        if (CommonUtils.isClient()) {
+            ClientHandler.load();
+            IMCForNEI.IMCSender();
+        }
         ServerHandler.load();
     }
 
@@ -145,6 +124,11 @@ public class NEIModContainer extends DummyModContainer {
             ClientHandler.loadHandlerOrdering();
             asmDataTable = null;
         }
+    }
+
+    @Subscribe
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        NEIServerConfig.resetFirstLoad();
     }
 
     @Subscribe

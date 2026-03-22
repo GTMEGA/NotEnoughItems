@@ -66,9 +66,9 @@ import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import codechicken.nei.recipe.AutoCraftingManager;
-import codechicken.nei.recipe.DebugHandlerWidget;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.RecipeCatalysts;
+import codechicken.nei.recipe.debug.DebugHandlerWidget;
 
 public class LayoutManager implements IContainerInputHandler, IContainerTooltipHandler, IContainerDrawHandler,
         IContainerObjectHandler, IKeyStateTracker {
@@ -92,7 +92,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static SubsetWidget dropDown;
     public static SearchField searchField;
     public static ItemZoom itemZoom;
-    public static DebugHandlerWidget recipeHandlerWidget;
 
     public static ButtonCycled options;
     public static ButtonCycled bookmarksButton;
@@ -104,7 +103,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
     public static Button delete;
     public static ButtonCycled gamemode;
     public static Button rain;
-    public static Button magnet;
+    public static ButtonCycled magnet;
     public static Button[] timeButtons = new Button[4];
     public static Button heal;
 
@@ -406,8 +405,6 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
 
         itemZoom = new ItemZoom();
 
-        recipeHandlerWidget = new DebugHandlerWidget();
-
         dropDown = new SubsetWidget();
         searchField = new SearchField("search");
         API.addItemFilter(searchField);
@@ -600,7 +597,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
                 return getStateTip("rain", state);
             }
         };
-        magnet = new Button() {
+        magnet = new ButtonCycled(2) {
 
             @Override
             public boolean onButtonPress(boolean rightclick) {
@@ -786,8 +783,7 @@ public class LayoutManager implements IContainerInputHandler, IContainerTooltipH
             addWidget(dropDown);
         }
 
-        addWidget(recipeHandlerWidget);
-        recipeHandlerWidget.setVisible();
+        addWidget(DebugHandlerWidget.instance);
     }
 
     public static LayoutStyle getLayoutStyle(int id) {

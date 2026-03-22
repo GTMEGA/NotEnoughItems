@@ -10,6 +10,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
+import org.lwjgl.opengl.GL11;
+
+import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.ClientHandler;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.NEIClientUtils;
@@ -34,13 +37,12 @@ public class InformationHandler extends TemplateRecipeHandler {
 
     @Override
     public void drawExtras(int recipe) {
-        CachedInfoPage page = (CachedInfoPage) this.arecipes.get(recipe);
-        drawWrappedText(StatCollector.translateToLocal(page.getPage().info).replace("\\n", "\n"), 4, 24);
+        final CachedInfoPage page = (CachedInfoPage) this.arecipes.get(recipe);
+        drawWrappedText(page.getLines(), 4, 24);
     }
 
-    private void drawWrappedText(String text, int x, int y) {
-        FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-        List<String> lines = font.listFormattedStringToWidth(text, 156);
+    private void drawWrappedText(List<String> lines, int x, int y) {
+        final FontRenderer font = Minecraft.getMinecraft().fontRenderer;
         for (String line : lines) {
             font.drawString(line, x, y, 0);
             y += 10;
@@ -82,14 +84,30 @@ public class InformationHandler extends TemplateRecipeHandler {
         return "nei:textures/gui/recipebg.png";
     }
 
+    @Override
+    public void drawBackground(int recipe) {
+        GL11.glColor4f(1, 1, 1, 1);
+        GuiDraw.changeTexture(getGuiTexture());
+        GuiDraw.drawTexturedModalRect(0, 0, 7, 13, 166, 65);
+    }
+
+    @Override
+    public int getRecipeHeight(int recipe) {
+        final CachedInfoPage page = (CachedInfoPage) this.arecipes.get(recipe);
+        return 24 + page.getLines().size() * 10;
+    }
+
     private class CachedInfoPage extends CachedRecipe {
 
-        private final InformationPage page;
         private final PositionedStack stack;
+        private final List<String> lines;
 
         public CachedInfoPage(InformationPage page) {
-            this.page = page;
-            stack = new PositionedStack(page.items, 75, 2);
+            final FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+            final String info = StatCollector.translateToLocal(page.info).replace("\\n", "\n");
+
+            this.lines = font.listFormattedStringToWidth(info, 156);
+            this.stack = new PositionedStack(page.items, 75, 2);
         }
 
         @Override
@@ -102,8 +120,8 @@ public class InformationHandler extends TemplateRecipeHandler {
             return Collections.singletonList(this.stack);
         }
 
-        public InformationPage getPage() {
-            return page;
+        public List<String> getLines() {
+            return lines;
         }
     }
 

@@ -27,8 +27,6 @@ public class HandlerInfo {
     private int height = DEFAULT_HEIGHT;
     private int width = DEFAULT_WIDTH;
 
-    @Deprecated
-    private int maxRecipesPerPage = DEFAULT_MAX_PER_PAGE;
     private boolean multipleWidgetsAllowed = false;
     private boolean showFavoritesButton = true;
     private boolean showOverlayButton = true;
@@ -47,13 +45,13 @@ public class HandlerInfo {
 
     @Deprecated
     public void setHandlerDimensions(int height, int width, int maxRecipesPerPage) {
-        setHandlerDimensions(width, height, maxRecipesPerPage > 1);
+        setHandlerDimensions(width, height);
+        setMultipleWidgetsAllowed(maxRecipesPerPage > 1);
     }
 
-    public void setHandlerDimensions(int width, int height, boolean multipleWidgetsAllowed) {
+    public void setHandlerDimensions(int width, int height) {
         this.height = height;
         this.width = width;
-        this.multipleWidgetsAllowed = multipleWidgetsAllowed;
     }
 
     public boolean setItem(String itemId, String nbtString) {
@@ -102,6 +100,10 @@ public class HandlerInfo {
     @Deprecated
     public int getMaxRecipesPerPage() {
         return this.multipleWidgetsAllowed ? Integer.MAX_VALUE : 1;
+    }
+
+    public void setMultipleWidgetsAllowed(boolean multipleWidgetsAllowed) {
+        this.multipleWidgetsAllowed = multipleWidgetsAllowed;
     }
 
     public boolean isMultipleWidgetsAllowed() {
@@ -161,6 +163,10 @@ public class HandlerInfo {
             this(handlerClazz.getName(), modName, modId);
         }
 
+        public Builder setDisplayStack(String itemId, String nbtString) {
+            return setDisplayStack(NEIServerUtils.getModdedItem(itemId, nbtString));
+        }
+
         public Builder setDisplayStack(ItemStack stack) {
             this.info.image = null;
             this.info.itemStack = stack;
@@ -197,6 +203,16 @@ public class HandlerInfo {
 
         public Builder setHeight(int height) {
             this.info.height = height;
+            return this;
+        }
+
+        public Builder setShowOverlayButton(boolean showOverlayButton) {
+            this.info.showOverlayButton = showOverlayButton;
+            return this;
+        }
+
+        public Builder setShowFavoritesButton(boolean showFavoritesButton) {
+            this.info.showFavoritesButton = showFavoritesButton;
             return this;
         }
 
