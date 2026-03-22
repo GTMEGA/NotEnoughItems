@@ -49,12 +49,14 @@ public class GuiRecipeCatalyst extends ScrollContainer {
 
     private static final int SLOT_SIZE = 16;
     private static final int BORDER_PADDING = 6;
+    private static final int TRANSPARENCY_BORDER = 4;
     private static final DrawableResource BG_TEXTURE = new DrawableBuilder(
             "nei:textures/catalyst_tab.png",
             0,
             0,
-            28,
-            28).setTextureSize(28, 28).build();
+            28 + TRANSPARENCY_BORDER * 2,
+            28 + TRANSPARENCY_BORDER * 2).setTextureSize(28 + TRANSPARENCY_BORDER * 2, 28 + TRANSPARENCY_BORDER * 2)
+                    .build();
 
     private static final DrawableResource FG_TEXTURE = new DrawableBuilder("nei:textures/slot.png", 0, 0, 18, 18)
             .setTextureSize(18, 18).build();
@@ -134,13 +136,6 @@ public class GuiRecipeCatalyst extends ScrollContainer {
         int index = 0;
 
         for (PositionedStack pStack : this.items) {
-
-            if (pStack.items.length > 1) {
-                final int stackIndex = (pStack.items.length + pStack.getPermutationIndex(pStack.item) + 1)
-                        % pStack.items.length;
-                pStack.setPermutationToRender(stackIndex);
-            }
-
             pStack.relx = visibleWidth - SLOT_SIZE - (index / rows) * SLOT_SIZE;
             pStack.rely = (index % rows) * SLOT_SIZE;
             index++;
@@ -156,7 +151,15 @@ public class GuiRecipeCatalyst extends ScrollContainer {
         if (!this.showWidget) return;
 
         GL11.glColor4f(1, 1, 1, 1);
-        BG_TEXTURE.draw(this.x, this.y, this.w, this.h, BORDER_PADDING, BORDER_PADDING, BORDER_PADDING, BORDER_PADDING);
+        BG_TEXTURE.draw(
+                this.x - TRANSPARENCY_BORDER,
+                this.y - TRANSPARENCY_BORDER,
+                this.w + TRANSPARENCY_BORDER * 2,
+                this.h + TRANSPARENCY_BORDER * 2,
+                BORDER_PADDING + TRANSPARENCY_BORDER,
+                BORDER_PADDING + TRANSPARENCY_BORDER,
+                BORDER_PADDING + TRANSPARENCY_BORDER,
+                BORDER_PADDING + TRANSPARENCY_BORDER);
         FG_TEXTURE.draw(
                 this.x + this.paddingInlineStart - 1,
                 this.y + this.paddingBlockStart - 1,

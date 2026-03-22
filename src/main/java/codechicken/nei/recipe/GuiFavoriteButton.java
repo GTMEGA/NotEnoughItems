@@ -54,7 +54,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
         super(handlerRef, x, y, BUTTON_ID_START + handlerRef.recipeIndex, "❤");
         this.recipe = Recipe.of(this.handlerRef);
 
-        ItemStack stack = FavoriteRecipes.getFavorite(this.recipe.getRecipeId());
+        ItemStack stack = FavoriteRecipes.getManualFavorite(this.recipe.getRecipeId());
         this.favorite = stack != null;
 
         if (stack == null) {
@@ -88,7 +88,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
 
     @Override
     public void update() {
-        this.favorite = this.favorite && FavoriteRecipes.getFavorite(this.recipe.getRecipeId()) != null;
+        this.favorite = this.favorite && FavoriteRecipes.getManualFavorite(this.recipe.getRecipeId()) != null;
     }
 
     @Override
@@ -146,7 +146,6 @@ public class GuiFavoriteButton extends GuiRecipeButton {
     @Override
     public List<String> handleTooltip(List<String> currenttip) {
         currenttip.add(translate("recipe.favorite"));
-
         return currenttip;
     }
 
@@ -178,7 +177,7 @@ public class GuiFavoriteButton extends GuiRecipeButton {
         this.selectedResult = results.get(nextIndex);
         this.favorite = StackInfo.equalItemAndNBT(
                 results.get(nextIndex).getItemStack(),
-                FavoriteRecipes.getFavorite(this.recipe.getRecipeId()),
+                FavoriteRecipes.getManualFavorite(this.recipe.getRecipeId()),
                 true);
 
         return true;
@@ -206,29 +205,47 @@ public class GuiFavoriteButton extends GuiRecipeButton {
 
                     if (stack == null) {
                         stack = ingr.getItemStack();
-                        RecipeId recipeId = FavoriteRecipes.getFavorite(stack);
+                        RecipeId recipeId = FavoriteRecipes.getManualFavorite(stack);
 
                         if (recipeId == null) {
                             for (ItemStack permStack : permutations) {
-                                if ((recipeId = FavoriteRecipes.getFavorite(permStack)) != null) {
+                                if ((recipeId = FavoriteRecipes.getManualFavorite(permStack)) != null) {
                                     stack = permStack;
                                     break;
                                 }
                             }
                         }
 
-                        Recipe recipe = Recipe.of(recipeId);
+                        if (recipeId == null) {
+                            recipeId = FavoriteRecipes.getGeneratedFavorite(stack);
+                        }
 
-                        if (recipe == null) {
-                            stack = null;
-                        } else {
-                            items.add(stack);
-
-                            if (depth >= 0) {
-                                result.add(recipe);
-                                localLoop.add(recipe);
+                        if (recipeId == null) {
+                            for (ItemStack permStack : permutations) {
+                                if ((recipeId = FavoriteRecipes.getGeneratedFavorite(permStack)) != null) {
+                                    stack = permStack;
+                                    break;
+                                }
                             }
                         }
+
+                        if (recipeId != null && FavoriteRecipes.FAVORITE_ITEM.contains(recipeId.getHandleName())) {
+                            items.add(stack);
+                        } else {
+                            Recipe recipe = Recipe.of(recipeId);
+
+                            if (recipe == null) {
+                                stack = null;
+                            } else {
+                                items.add(stack);
+
+                                if (depth >= 0) {
+                                    result.add(recipe);
+                                    localLoop.add(recipe);
+                                }
+                            }
+                        }
+
                     }
 
                     if (stack != null) {

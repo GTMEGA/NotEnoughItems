@@ -104,7 +104,7 @@ public class PositionedStack {
         items = filteringPermutations(items, GuiRecipe.getSearchItemFilter());
         items = filteringPermutations(items, additionalFilter);
 
-        items.sort(Comparator.comparing(FavoriteRecipes::contains).reversed());
+        items.sort(Comparator.comparing(FavoriteRecipes::containsManual).reversed());
         return items;
     }
 
@@ -117,7 +117,7 @@ public class PositionedStack {
     public int getPermutationIndex(ItemStack stack) {
 
         for (int index = 0; index < this.items.length; index++) {
-            if (NEIServerUtils.areStacksSameTypeCraftingWithNBT(items[index], stack)) {
+            if (NEIServerUtils.areStacksSameType(items[index], stack)) {
                 return index;
             }
         }
