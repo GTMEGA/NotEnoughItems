@@ -1,6 +1,6 @@
 plugins {
     antlr
-    id("com.falsepattern.fpgradle-mc") version ("3.1.0")
+    id("com.falsepattern.fpgradle-mc") version "4.0.1"
 }
 
 group = "codechicken"
@@ -8,7 +8,7 @@ group = "codechicken"
 minecraft_fp {
     java {
         compatibility = jvmDowngrader
-        version = JavaVersion.VERSION_17
+        version = JavaVersion.VERSION_25
         jvmDowngraderShade = projectIsLgpl21PlusCompatible
     }
 
